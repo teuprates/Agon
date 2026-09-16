@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA Tutor Inteligente | Agon</title>
+
+  <!-- Dependências Externas -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Custom scrollbar styling for conversation lists and chat feed */
+    .chat-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .chat-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .chat-scroll::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: 4px;
+    }
+    .chat-scroll::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Typing animation indicator */
+    .typing-dot {
+      animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* History item styling */
+    .history-item.active {
+      background-color: var(--bg-active) !important;
+      border-color: var(--border-active) !important;
+    }
+    .history-item.active .history-title {
+      color: var(--color-blue) !important;
+      font-weight: 600;
+    }
+    .history-item.active .history-icon {
+      background-color: var(--color-blue) !important;
+      color: #ffffff !important;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item active"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novo simulado da <strong>Polícia Federal</strong> disponível!</p><span class="text-xs" style="color:var(--text-muted);">Há 10 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT (Chat fills full available height without scrollbars) -->
+    <div class="flex-1 overflow-hidden p-0 animate-fade-in flex flex-col">
+      <section class="flex-1 flex h-full overflow-hidden -m-0">
+
+        <!-- ================= LEFT COLUMN: HISTÓRICO LATERAL ================= -->
+        <aside id="chat-history-sidebar" class="w-64 bg-input border-r border-default flex flex-col shrink-0 h-full relative z-10 transition-transform duration-300 md:translate-x-0" style="background-color: var(--bg-input); border-right: 1px solid var(--border-default);">
+          
+          <!-- Top Button: Nova Conversa -->
+          <div class="p-4 border-b shrink-0" style="border-color: var(--border-default);">
+            <button id="btn-new-chat" type="button" class="btn-secondary w-full justify-center text-sm font-semibold flex items-center gap-2 py-2.5 rounded-xl transition hover:opacity-90 shadow-sm" style="background-color: var(--bg-card); border: 1px solid var(--border-default); color: var(--color-blue);">
+              <i class="fa-solid fa-plus text-xs" style="color: var(--color-blue);"></i>
+              <span>Nova Conversa</span>
+            </button>
+          </div>
+
+          <!-- Histórico Search Input -->
+          <div class="px-4 py-2.5 border-b shrink-0" style="border-color: var(--border-light);">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
+              <input type="text" id="filter-chats" placeholder="Buscar conversas..." class="w-full text-xs py-2 pl-8 pr-3 rounded-xl border outline-none transition" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);" />
+            </div>
+          </div>
+
+          <!-- Past Chats List -->
+          <div class="flex-1 overflow-y-auto px-3 py-3 space-y-1.5 chat-scroll" id="history-list">
+            <div class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider flex items-center justify-between" style="color: var(--text-muted);">
+              <span>Conversas Anteriores</span>
+              <i class="fa-regular fa-clock text-[10px]"></i>
+            </div>
+
+            <!-- Chat 1: Dúvida sobre LIMPE (Ontem) - Active style -->
+            <button type="button" class="history-item active w-full text-left p-3 rounded-xl flex items-start gap-3 transition" data-chat-id="limpe" style="background-color: var(--bg-active); border: 1px solid var(--border-active);">
+              <div class="history-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-message text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1">
+                  <p class="history-title text-xs font-semibold truncate" style="color: var(--color-blue);">Dúvida sobre LIMPE</p>
+                  <span class="text-[10px] shrink-0 font-medium" style="color: var(--text-muted);">Ontem</span>
+                </div>
+                <p class="text-[11px] truncate mt-0.5 leading-snug" style="color: var(--text-secondary);">Princípio da impessoalidade...</p>
+              </div>
+            </button>
+
+            <!-- Chat 2: Resumo de Licitações (Segunda) -->
+            <button type="button" class="history-item w-full text-left p-3 rounded-xl flex items-start gap-3 transition hover:opacity-90" data-chat-id="licitacoes" style="background-color: transparent; border: 1px solid transparent;">
+              <div class="history-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+                <i class="fa-regular fa-message text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1">
+                  <p class="history-title text-xs font-medium truncate" style="color: var(--text-primary);">Resumo de Licitações</p>
+                  <span class="text-[10px] shrink-0 font-medium" style="color: var(--text-muted);">Segunda</span>
+                </div>
+                <p class="text-[11px] truncate mt-0.5 leading-snug" style="color: var(--text-muted);">Lei 14.133/21 modalidades e critérios...</p>
+              </div>
+            </button>
+
+            <!-- Chat 3: Questões de Português (Domingo) -->
+            <button type="button" class="history-item w-full text-left p-3 rounded-xl flex items-start gap-3 transition hover:opacity-90" data-chat-id="portugues" style="background-color: transparent; border: 1px solid transparent;">
+              <div class="history-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+                <i class="fa-regular fa-message text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1">
+                  <p class="history-title text-xs font-medium truncate" style="color: var(--text-primary);">Questões de Português</p>
+                  <span class="text-[10px] shrink-0 font-medium" style="color: var(--text-muted);">Domingo</span>
+                </div>
+                <p class="text-[11px] truncate mt-0.5 leading-snug" style="color: var(--text-muted);">Crase proibida e regência verbal...</p>
+              </div>
+            </button>
+          </div>
+
+          <!-- Bottom Status / Tutor Badge in History Column -->
+          <div class="p-3.5 border-t shrink-0 flex items-center justify-between text-xs" style="border-color: var(--border-default); background-color: var(--bg-card);">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--color-green);"></span>
+              <span class="text-[11px] font-semibold" style="color: var(--text-primary);">IA Concursos v2.4</span>
+            </div>
+            <span class="badge badge-blue text-[10px] font-medium">GPT-4o</span>
+          </div>
+        </aside>
+
+        <!-- ================= RIGHT COLUMN: CHAT PRINCIPAL ================= -->
+        <div class="flex-1 flex flex-col relative h-full overflow-hidden" style="background-color: var(--bg-body);">
+          
+          <!-- Chat Top Header Bar -->
+          <div class="h-16 px-6 border-b shrink-0 flex items-center justify-between" style="background-color: var(--bg-card); border-color: var(--border-default);">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <!-- Mobile Button to toggle conversation history -->
+              <button type="button" id="btn-toggle-history" class="w-9 h-9 rounded-xl flex items-center justify-center md:hidden transition hover:opacity-80" style="background-color: var(--bg-hover); color: var(--text-secondary);" title="Ver Histórico">
+                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+              </button>
+
+              <!-- Tutor Avatar Icon in header -->
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h2 id="current-chat-header-title" class="text-sm font-bold truncate leading-tight" style="color: var(--text-primary);">Dúvida sobre LIMPE</h2>
+                  <span class="badge badge-green text-[10px] font-medium">Online</span>
+                </div>
+                <p id="current-chat-header-subtitle" class="text-xs truncate" style="color: var(--text-secondary);">Direito Administrativo • Foco Polícia Federal &amp; TJSP</p>
+              </div>
+            </div>
+
+            <!-- Top Actions -->
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-export-chat" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-medium transition hover:opacity-80" style="background-color: var(--bg-hover); color: var(--text-secondary);" title="Copiar resumo da conversa">
+                <i class="fa-regular fa-copy text-sm"></i>
+              </button>
+              <button type="button" id="btn-clear-chat" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-medium transition hover:opacity-80" style="background-color: var(--bg-hover); color: var(--text-secondary);" title="Limpar conversa atual">
+                <i class="fa-regular fa-trash-can text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chat History Area (flex-1 overflow-y-auto p-8 space-y-6) -->
+          <div id="chat-messages-container" class="flex-1 overflow-y-auto p-8 space-y-6 chat-scroll">
+
+            <!-- 1. Bot msg: Robot avatar (blue bg), gray bubble (chat-bubble-bot) -->
+            <div class="flex items-start gap-3.5 max-w-3xl animate-fade-in">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+              <div class="flex flex-col gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">IA Tutor Agon</span>
+                  <span class="badge badge-blue text-[10px] px-1.5 py-0.5">Tutor</span>
+                  <span class="text-xs" style="color: var(--text-muted);">Ontem às 14:10</span>
+                </div>
+                <div class="chat-bubble-bot shadow-sm">
+                  <p>Olá, Lucas! Sou seu IA Tutor. Posso te ajudar a entender matérias, resolver dúvidas teóricas, criar questões inéditas ou resumir legislações para o seu concurso. Como posso te ajudar hoje?</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. User msg: Right-aligned. Blue bubble (chat-bubble-user) + user avatar image -->
+            <div class="flex items-start justify-end gap-3.5 max-w-3xl ml-auto animate-fade-in">
+              <div class="flex flex-col items-end gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs" style="color: var(--text-muted);">Ontem às 14:12</span>
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">Lucas Ferreira</span>
+                </div>
+                <div class="chat-bubble-user shadow-sm">
+                  <p>Pode me explicar o princípio da impessoalidade na administração pública?</p>
+                </div>
+              </div>
+              <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="user-avatar shrink-0 mt-1" />
+            </div>
+
+            <!-- 3. Bot msg: Robot avatar, gray bubble (chat-bubble-bot): Explains Impessoalidade with line breaks and bold text. Ends with "Quer que eu crie uma questão...?" -->
+            <div class="flex items-start gap-3.5 max-w-3xl animate-fade-in">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+              <div class="flex flex-col gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">IA Tutor Agon</span>
+                  <span class="badge badge-blue text-[10px] px-1.5 py-0.5">Tutor</span>
+                  <span class="text-xs" style="color: var(--text-muted);">Ontem às 14:13</span>
+                </div>
+                <div class="chat-bubble-bot shadow-sm space-y-3.5">
+                  <p>Com certeza, Lucas! O <strong>Princípio da Impessoalidade</strong> é um dos 5 princípios expressos no <strong>art. 37, caput, da Constituição Federal de 1988</strong> (o clássico mnemônico <strong>LIMPE</strong>: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência).</p>
+                  
+                  <p>Para as provas de concurso público (como Polícia Federal, TJSP e Receita Federal), a doutrina e a jurisprudência analisam a impessoalidade sob <strong>quatro aspectos cruciais</strong>:</p>
+
+                  <div class="space-y-2.5 my-2">
+                    <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                      <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-bullseye mr-1.5"></i>1. Finalidade Pública (Interesse Geral)</p>
+                      <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">Todo ato administrativo deve ter como objetivo sempre o interesse público, nunca a satisfação pessoal do governante ou favorecimento/perseguição de terceiros. A violação deste aspecto acarreta o chamado <strong>desvio de finalidade</strong> (vício que invalida o ato administrativo).</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                      <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-ban mr-1.5"></i>2. Vedação à Promoção Pessoal (Art. 37, § 1º)</p>
+                      <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">A publicidade dos atos, programas, obras, serviços e campanhas dos órgãos públicos deve ter caráter educativo, informativo ou de orientação social, <strong>não podendo constar nomes, símbolos ou imagens</strong> que caracterizem promoção pessoal de autoridades ou servidores.</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                      <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-scale-balanced mr-1.5"></i>3. Princípio da Isonomia / Igualdade de Tratamento</p>
+                      <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">A Administração deve tratar todos os administrados de maneira justa, sem favoritismos e sem perseguições arbitrárias. É justamente deste aspecto que nascem duas das maiores exigências do direito público: o <strong>concurso público</strong> (para ingresso em cargos) e a <strong>licitação</strong> (para contratos administrativos).</p>
+                    </div>
+
+                    <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                      <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-building-columns mr-1.5"></i>4. Teoria da Imputação Volitiva</p>
+                      <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">Os atos praticados pelos agentes públicos são juridicamente imputados ao <strong>órgão ou pessoa jurídica estatal</strong> a que pertencem, e não à pessoa física do servidor. Assim, é o Estado que atua e responde perante a sociedade.</p>
+                    </div>
+                  </div>
+
+                  <div class="p-3 rounded-xl flex items-start gap-3" style="background-color: var(--color-orange-light);">
+                    <i class="fa-solid fa-triangle-exclamation shrink-0 text-sm mt-0.5" style="color: var(--color-orange-text);"></i>
+                    <div>
+                      <p class="text-xs font-semibold" style="color: var(--color-orange-text);">Atenção às pegadinhas de bancas (Cebraspe &amp; FGV):</p>
+                      <p class="text-xs mt-0.5 leading-relaxed" style="color: var(--color-orange-text);">Mesmo quando o prefeito ou governador utiliza recursos do próprio bolso para fazer publicidade de realizações do seu mandato, a promoção pessoal é vedada se utilizar a máquina pública ou os símbolos oficiais!</p>
+                    </div>
+                  </div>
+
+                  <p class="pt-1 leading-relaxed">Quer que eu crie uma questão no estilo <strong>Cebraspe (Certo/Errado)</strong> ou <strong>FGV (Múltipla Escolha)</strong> sobre esse tema para você testar seus conhecimentos e fixar o conteúdo?</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Input Area (p-6 border-t border-default bg-card) -->
+          <div class="p-6 border-t border-default bg-card shrink-0" style="border-top: 1px solid var(--border-default); background-color: var(--bg-card);">
+            
+            <!-- Horizontal scroll row of suggestion buttons -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-3 no-scrollbar" id="suggestions-row">
+              <span class="text-xs font-medium shrink-0 flex items-center gap-1 mr-1" style="color: var(--text-muted);">
+                <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Sugestões:
+              </span>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Explique este tema com exemplos práticos para concursos">
+                <i class="fa-regular fa-lightbulb text-[11px]"></i> Explique este tema
+              </button>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Crie questões inéditas no estilo Cebraspe sobre este tema">
+                <i class="fa-solid fa-circle-question text-[11px]"></i> Crie questões sobre...
+              </button>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Resuma os pontos principais do edital da Polícia Federal">
+                <i class="fa-regular fa-file-lines text-[11px]"></i> Resuma este edital
+              </button>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Crie um mnemônico ou macete para memorizar este conteúdo">
+                <i class="fa-solid fa-brain text-[11px]"></i> Macete de memorização
+              </button>
+            </div>
+
+            <!-- Input Container: text input (form-input style but rounded-full) + absolute positioned send button -->
+            <form id="chat-form" class="relative flex items-center">
+              <input
+                type="text"
+                id="chat-input"
+                placeholder="Pergunte ao IA Tutor (ex: 'Crie uma questão da FGV sobre o princípio da impessoalidade')..."
+                class="form-input rounded-full py-3.5 pl-5 pr-14 text-sm w-full shadow-sm"
+                autocomplete="off"
+              />
+              <button
+                type="submit"
+                id="btn-send-message"
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white transition hover:opacity-90 shadow-md"
+                style="background-color: var(--color-blue);"
+                title="Enviar mensagem (Enter)"
+              >
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+              </button>
+            </form>
+
+            <!-- Bottom Footnote -->
+            <div class="flex items-center justify-between mt-2.5 px-3 text-[11px]" style="color: var(--text-muted);">
+              <span>Pressione <kbd class="px-1.5 py-0.5 rounded text-[10px] font-mono" style="background-color: var(--bg-hover); border: 1px solid var(--border-default);">Enter ↵</kbd> para enviar</span>
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-[10px]"></i> Treinado na jurisprudência do STF/STJ e editais oficiais</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button class="modal-tab active" data-tab="dados">Dados</button>
+        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar-lg" />
+            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Lucas Ferreira</h3>
+            <p class="text-sm" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Script -->
+  <script src="../js/script.js"></script>
+
+  <!-- Page-specific Chat Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const messagesContainer = document.getElementById('chat-messages-container');
+      const chatForm = document.getElementById('chat-form');
+      const chatInput = document.getElementById('chat-input');
+      const btnNewChat = document.getElementById('btn-new-chat');
+      const btnClearChat = document.getElementById('btn-clear-chat');
+      const btnExportChat = document.getElementById('btn-export-chat');
+      const historyItems = document.querySelectorAll('.history-item');
+      const suggestions = document.querySelectorAll('.btn-suggestion');
+      const filterInput = document.getElementById('filter-chats');
+      const headerTitle = document.getElementById('current-chat-header-title');
+      const headerSubtitle = document.getElementById('current-chat-header-subtitle');
+      const historySidebar = document.getElementById('chat-history-sidebar');
+      const btnToggleHistory = document.getElementById('btn-toggle-history');
+
+      // Scroll to bottom helper
+      function scrollToBottom() {
+        if (messagesContainer) {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      }
+      scrollToBottom();
+
+      // Mobile history toggle
+      if (btnToggleHistory && historySidebar) {
+        btnToggleHistory.addEventListener('click', () => {
+          const isOpen = historySidebar.classList.contains('translate-x-0');
+          if (isOpen) {
+            historySidebar.classList.remove('translate-x-0');
+            historySidebar.classList.add('-translate-x-full');
+          } else {
+            historySidebar.classList.remove('-translate-x-full');
+            historySidebar.classList.add('translate-x-0');
+          }
+        });
+      }
+
+      // Past conversations dataset
+      const chatConversations = {
+        limpe: {
+          title: 'Dúvida sobre LIMPE',
+          subtitle: 'Direito Administrativo • Foco Polícia Federal & TJSP',
+          messages: [
+            {
+              sender: 'bot',
+              time: 'Ontem às 14:10',
+              content: '<p>Olá, Lucas! Sou seu <strong>IA Tutor</strong>. Posso te ajudar a entender matérias, resolver dúvidas teóricas, criar questões inéditas ou resumir legislações para o seu concurso. Como posso te ajudar hoje?</p>'
+            },
+            {
+              sender: 'user',
+              time: 'Ontem às 14:12',
+              content: 'Pode me explicar o princípio da impessoalidade na administração pública?'
+            },
+            {
+              sender: 'bot',
+              time: 'Ontem às 14:13',
+              content: `<p>Com certeza, Lucas! O <strong>Princípio da Impessoalidade</strong> é um dos 5 princípios expressos no <strong>art. 37, caput, da Constituição Federal de 1988</strong> (o clássico mnemônico <strong>LIMPE</strong>: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência).</p>
+              
+              <p>Para as provas de concurso público (como Polícia Federal, TJSP e Receita Federal), a doutrina e a jurisprudência analisam a impessoalidade sob <strong>quatro aspectos cruciais</strong>:</p>
+
+              <div class="space-y-2.5 my-2">
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                  <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-bullseye mr-1.5"></i>1. Finalidade Pública (Interesse Geral)</p>
+                  <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">Todo ato administrativo deve ter como objetivo sempre o interesse público, nunca a satisfação pessoal do governante ou favorecimento/perseguição de terceiros. A violação deste aspecto acarreta o chamado <strong>desvio de finalidade</strong> (vício que invalida o ato administrativo).</p>
+                </div>
+
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                  <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-ban mr-1.5"></i>2. Vedação à Promoção Pessoal (Art. 37, § 1º)</p>
+                  <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">A publicidade dos atos, programas, obras, serviços e campanhas dos órgãos públicos deve ter caráter educativo, informativo ou de orientação social, <strong>não podendo constar nomes, símbolos ou imagens</strong> que caracterizem promoção pessoal de autoridades ou servidores.</p>
+                </div>
+
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                  <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-scale-balanced mr-1.5"></i>3. Princípio da Isonomia / Igualdade de Tratamento</p>
+                  <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">A Administração deve tratar todos os administrados de maneira justa, sem favoritismos e sem perseguições arbitrárias. É justamente deste aspecto que nascem duas das maiores exigências do direito público: o <strong>concurso público</strong> (para ingresso em cargos) e a <strong>licitação</strong> (para contratos administrativos).</p>
+                </div>
+
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover); border-left: 3px solid var(--color-blue);">
+                  <p class="font-semibold text-xs" style="color: var(--color-blue);"><i class="fa-solid fa-building-columns mr-1.5"></i>4. Teoria da Imputação Volitiva</p>
+                  <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-secondary);">Os atos praticados pelos agentes públicos são juridicamente imputados ao <strong>órgão ou pessoa jurídica estatal</strong> a que pertencem, e não à pessoa física do servidor. Assim, é o Estado que atua e responde perante a sociedade.</p>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl flex items-start gap-3" style="background-color: var(--color-orange-light);">
+                <i class="fa-solid fa-triangle-exclamation shrink-0 text-sm mt-0.5" style="color: var(--color-orange-text);"></i>
+                <div>
+                  <p class="text-xs font-semibold" style="color: var(--color-orange-text);">Atenção às pegadinhas de bancas (Cebraspe &amp; FGV):</p>
+                  <p class="text-xs mt-0.5 leading-relaxed" style="color: var(--color-orange-text);">Mesmo quando o prefeito ou governador utiliza recursos do próprio bolso para fazer publicidade de realizações do seu mandato, a promoção pessoal é vedada se utilizar a máquina pública ou os símbolos oficiais!</p>
+                </div>
+              </div>
+
+              <p class="pt-1 leading-relaxed">Quer que eu crie uma questão no estilo <strong>Cebraspe (Certo/Errado)</strong> ou <strong>FGV (Múltipla Escolha)</strong> sobre esse tema para você testar seus conhecimentos e fixar o conteúdo?</p>`
+            }
+          ]
+        },
+        licitacoes: {
+          title: 'Resumo de Licitações',
+          subtitle: 'Direito Administrativo • Nova Lei de Licitações (Lei nº 14.133/2021)',
+          messages: [
+            {
+              sender: 'user',
+              time: 'Segunda às 19:20',
+              content: 'Pode resumir as 5 modalidades de licitação da Lei nº 14.133/21 e o que mudou em relação à Lei 8.666?'
+            },
+            {
+              sender: 'bot',
+              time: 'Segunda às 19:22',
+              content: `<p>Olá, Lucas! Com a <strong>Nova Lei de Licitações (Lei nº 14.133/2021)</strong>, tivemos uma reformulação importante das modalidades:</p>
+              <div class="space-y-2 my-2">
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover);">
+                  <p class="text-xs font-semibold" style="color: var(--color-blue);">1. Pregão (Obrigatório para bens e serviços comuns)</p>
+                  <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Critério de julgamento por menor preço ou maior desconto.</p>
+                </div>
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover);">
+                  <p class="text-xs font-semibold" style="color: var(--color-blue);">2. Concorrência (Bens e serviços especiais e obras)</p>
+                  <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Aplicável a objetos de maior complexidade técnica.</p>
+                </div>
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover);">
+                  <p class="text-xs font-semibold" style="color: var(--color-blue);">3. Concurso (Trabalho técnico, científico ou artístico)</p>
+                  <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Concessão de prêmio ou remuneração ao vencedor.</p>
+                </div>
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover);">
+                  <p class="text-xs font-semibold" style="color: var(--color-blue);">4. Leilão (Alienação de bens públicos)</p>
+                  <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Critério de maior lance, independentemente do valor da avaliação.</p>
+                </div>
+                <div class="p-3 rounded-xl" style="background-color: var(--bg-hover);">
+                  <p class="text-xs font-semibold" style="color: var(--color-blue);">5. Diálogo Competitivo (Nova modalidade!)</p>
+                  <p class="text-xs mt-0.5" style="color: var(--text-secondary);">Para inovações tecnológicas e soluções complexas onde o Estado precisa debater com licitantes pré-selecionados.</p>
+                </div>
+              </div>
+              <p class="text-xs"><strong>Atenção:</strong> <em>Tomada de Preços</em> e <em>Convite</em> foram <strong>extintas</strong> na Lei 14.133/21!</p>`
+            }
+          ]
+        },
+        portugues: {
+          title: 'Questões de Português',
+          subtitle: 'Língua Portuguesa • Casos Proibidos e Facultativos de Crase',
+          messages: [
+            {
+              sender: 'user',
+              time: 'Domingo às 10:15',
+              content: 'Quais são os casos mais cobrados de crase facultativa?'
+            },
+            {
+              sender: 'bot',
+              time: 'Domingo às 10:16',
+              content: `<p>Excelente pergunta, Lucas! O mnemônico clássico para <strong>Crase Facultativa</strong> é:</p>
+              <div class="p-3 rounded-xl my-2" style="background-color: var(--color-blue-light);">
+                <p class="text-xs font-bold" style="color: var(--color-blue-text);">Mnemônico: "Até a sua Maria"</p>
+                <ul class="text-xs list-disc list-inside mt-1 space-y-1" style="color: var(--color-blue-text);">
+                  <li><strong>Até:</strong> Depois da preposição <em>até</em> (ex: Foi até a / até à praia).</li>
+                  <li><strong>Sua:</strong> Antes de pronome possessivo feminino singular (ex: Refiro-me a / à sua mãe).</li>
+                  <li><strong>Maria:</strong> Antes de nomes próprios femininos sem determinação (ex: Entreguei o livro a / à Maria).</li>
+                </ul>
+              </div>
+              <p class="text-xs">Lembre-se: no caso do pronome possessivo, se for no plural (<em>suas</em>) e vier apenas a preposição <em>a</em> (ex: <em>a suas amigas</em>), não há crase!</p>`
+            }
+          ]
+        }
+      };
+
+      // Render messages function
+      function renderMessages(messages) {
+        messagesContainer.innerHTML = '';
+        messages.forEach(msg => {
+          const wrapper = document.createElement('div');
+          if (msg.sender === 'user') {
+            wrapper.className = 'flex items-start justify-end gap-3.5 max-w-3xl ml-auto animate-fade-in';
+            wrapper.innerHTML = `
+              <div class="flex flex-col items-end gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs" style="color: var(--text-muted);">${msg.time || 'Agora'}</span>
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">Lucas Ferreira</span>
+                </div>
+                <div class="chat-bubble-user shadow-sm">
+                  <p>${msg.content}</p>
+                </div>
+              </div>
+              <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="user-avatar shrink-0 mt-1" />
+            `;
+          } else {
+            wrapper.className = 'flex items-start gap-3.5 max-w-3xl animate-fade-in';
+            wrapper.innerHTML = `
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+              <div class="flex flex-col gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">IA Tutor Agon</span>
+                  <span class="badge badge-blue text-[10px] px-1.5 py-0.5">Tutor</span>
+                  <span class="text-xs" style="color: var(--text-muted);">${msg.time || 'Agora'}</span>
+                </div>
+                <div class="chat-bubble-bot shadow-sm space-y-3">
+                  ${msg.content}
+                </div>
+              </div>
+            `;
+          }
+          messagesContainer.appendChild(wrapper);
+        });
+        scrollToBottom();
+      }
+
+      // History item click listener
+      historyItems.forEach(item => {
+        item.addEventListener('click', () => {
+          historyItems.forEach(i => {
+            i.classList.remove('active');
+            i.style.backgroundColor = 'transparent';
+            i.style.borderColor = 'transparent';
+            const icon = i.querySelector('.history-icon');
+            if (icon) {
+              icon.style.backgroundColor = 'var(--bg-hover)';
+              icon.style.color = 'var(--text-secondary)';
+            }
+            const title = i.querySelector('.history-title');
+            if (title) {
+              title.style.color = 'var(--text-primary)';
+              title.classList.remove('font-semibold');
+              title.classList.add('font-medium');
+            }
+          });
+
+          item.classList.add('active');
+          item.style.backgroundColor = 'var(--bg-active)';
+          item.style.borderColor = 'var(--border-active)';
+          const activeIcon = item.querySelector('.history-icon');
+          if (activeIcon) {
+            activeIcon.style.backgroundColor = 'var(--color-blue)';
+            activeIcon.style.color = '#ffffff';
+          }
+          const activeTitle = item.querySelector('.history-title');
+          if (activeTitle) {
+            activeTitle.style.color = 'var(--color-blue)';
+            activeTitle.classList.remove('font-medium');
+            activeTitle.classList.add('font-semibold');
+          }
+
+          const chatId = item.getAttribute('data-chat-id');
+          if (chatConversations[chatId]) {
+            headerTitle.textContent = chatConversations[chatId].title;
+            headerSubtitle.textContent = chatConversations[chatId].subtitle;
+            renderMessages(chatConversations[chatId].messages);
+          }
+
+          // Close mobile history if open
+          if (window.innerWidth < 768 && historySidebar) {
+            historySidebar.classList.remove('translate-x-0');
+            historySidebar.classList.add('-translate-x-full');
+          }
+        });
+      });
+
+      // Filter history list
+      if (filterInput) {
+        filterInput.addEventListener('input', (e) => {
+          const val = e.target.value.toLowerCase().trim();
+          historyItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(val) ? 'flex' : 'none';
+          });
+        });
+      }
+
+      // New Chat button
+      if (btnNewChat) {
+        btnNewChat.addEventListener('click', () => {
+          historyItems.forEach(i => {
+            i.classList.remove('active');
+            i.style.backgroundColor = 'transparent';
+            i.style.borderColor = 'transparent';
+          });
+          headerTitle.textContent = 'Nova Conversa';
+          headerSubtitle.textContent = 'Escolha um tópico ou digite sua dúvida sobre concursos';
+          renderMessages([
+            {
+              sender: 'bot',
+              time: 'Agora',
+              content: '<p>Olá, Lucas! Iniciei uma nova sessão. Sobre qual disciplina ou tema você gostaria de estudar agora? Você pode pedir explicações teóricas, resolução de questões da Cebraspe/FGV ou resumos de leis.</p>'
+            }
+          ]);
+          if (chatInput) chatInput.focus();
+        });
+      }
+
+      // Clear current chat
+      if (btnClearChat) {
+        btnClearChat.addEventListener('click', () => {
+          if (confirm('Deseja limpar as mensagens desta conversa?')) {
+            renderMessages([
+              {
+                sender: 'bot',
+                time: 'Agora',
+                content: '<p>Histórico da conversa limpo! Como posso ajudar você agora nos seus estudos para concurso?</p>'
+              }
+            ]);
+          }
+        });
+      }
+
+      // Export chat feedback
+      if (btnExportChat) {
+        btnExportChat.addEventListener('click', () => {
+          navigator.clipboard.writeText(messagesContainer.innerText).then(() => {
+            alert('Resumo da conversa copiado para a área de transferência com sucesso!');
+          }).catch(() => {
+            alert('Não foi possível copiar. Selecione o texto manualmente.');
+          });
+        });
+      }
+
+      // Suggestion chips
+      suggestions.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const prompt = btn.getAttribute('data-prompt');
+          if (prompt && chatInput) {
+            chatInput.value = prompt;
+            chatInput.focus();
+          }
+        });
+      });
+
+      // Show temporary typing indicator
+      function showTypingIndicator() {
+        const typingEl = document.createElement('div');
+        typingEl.id = 'typing-indicator';
+        typingEl.className = 'flex items-start gap-3.5 max-w-3xl animate-fade-in';
+        typingEl.innerHTML = `
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+            <i class="fa-solid fa-robot text-base"></i>
+          </div>
+          <div class="flex flex-col gap-1 max-w-[85%]">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold" style="color: var(--text-primary);">IA Tutor Agon</span>
+              <span class="text-xs" style="color: var(--text-muted);">digitando...</span>
+            </div>
+            <div class="chat-bubble-bot shadow-sm flex items-center gap-1.5 py-3 px-4">
+              <span class="typing-dot w-2 h-2 rounded-full inline-block" style="background-color: var(--color-blue);"></span>
+              <span class="typing-dot w-2 h-2 rounded-full inline-block" style="background-color: var(--color-blue);"></span>
+              <span class="typing-dot w-2 h-2 rounded-full inline-block" style="background-color: var(--color-blue);"></span>
+            </div>
+          </div>
+        `;
+        messagesContainer.appendChild(typingEl);
+        scrollToBottom();
+      }
+
+      function removeTypingIndicator() {
+        const typingEl = document.getElementById('typing-indicator');
+        if (typingEl) typingEl.remove();
+      }
+
+      // Simulate AI response based on query
+      function generateBotResponse(query) {
+        const lower = query.toLowerCase();
+
+        if (lower.includes('questão') || lower.includes('questoes') || lower.includes('simule') || lower.includes('crie')) {
+          return `
+            <p>Aqui está uma questão inédita no padrão da banca <strong>Cebraspe</strong> para você treinar:</p>
+            <div class="p-4 rounded-xl my-2" style="background-color: var(--bg-hover); border: 1px solid var(--border-default);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="badge badge-blue text-[10px]">Polícia Federal • Direito Administrativo</span>
+                <span class="text-[11px] font-semibold" style="color: var(--text-muted);">Cebraspe / Certo ou Errado</span>
+              </div>
+              <p class="text-xs leading-relaxed" style="color: var(--text-primary);">
+                <strong>(Agon Inédita / 2025)</strong> Em conformidade com o princípio da impessoalidade e com a jurisprudência sumulada do Supremo Tribunal Federal, a fixação de critério de idade em concurso público é válida sempre que constar em edital, independentemente de previsão legal ou da natureza das atribuições do cargo.
+              </p>
+              <div class="mt-4 flex gap-3">
+                <button type="button" class="btn-quiz-opt px-4 py-2 rounded-lg text-xs font-semibold border transition hover:opacity-80" data-correct="false" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);">
+                  <i class="fa-solid fa-check text-green-500 mr-1.5"></i> CERTO
+                </button>
+                <button type="button" class="btn-quiz-opt px-4 py-2 rounded-lg text-xs font-semibold border transition hover:opacity-80" data-correct="true" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);">
+                  <i class="fa-solid fa-xmark text-red-500 mr-1.5"></i> ERRADO
+                </button>
+              </div>
+              <div class="quiz-feedback hidden mt-3 p-3 rounded-lg text-xs"></div>
+            </div>
+            <p class="text-xs">Clique em uma das opções acima para responder e ver a justificativa detalhada com a <strong>Súmula 683 do STF</strong>!</p>
+          `;
+        }
+
+        if (lower.includes('licita') || lower.includes('14.133')) {
+          return `
+            <p>Excelente tema! Na <strong>Lei 14.133/2021</strong>, os princípios da licitação estão dispostos no art. 5º. Além dos constitucionais (LIMPE), foram agregados princípios como o <strong>planejamento, transparência, eficácia, segregação de funções e desenvolvimento nacional sustentável</strong>.</p>
+            <p>Gostaria que eu comparasse os limites de dispensa de licitação por valor atualizados para este ano?</p>
+          `;
+        }
+
+        if (lower.includes('crase') || lower.includes('português') || lower.includes('portugues')) {
+          return `
+            <p>Dica de ouro de Língua Portuguesa para bancas de concurso:</p>
+            <p><strong>Substitua a palavra feminina por uma masculina correspondente.</strong> Se antes da masculina surgir <em>"ao"</em>, haverá crase antes da feminina!</p>
+            <p class="text-xs my-1 italic">Exemplo: "Fui à praia" &rarr; "Fui ao parque" (Houve <em>ao</em>, portanto há crase!).</p>
+            <p>Deseja ver uma lista de expressões prepositivas com crase obrigatória?</p>
+          `;
+        }
+
+        return `
+          <p>Entendido, Lucas! Analisando sua dúvida com base no histórico recente das bancas <strong>Cebraspe, FGV e Vunesp</strong>:</p>
+          <p class="text-xs leading-relaxed">Esse tópico possui alta incidência nas provas da <strong>Polícia Federal</strong> e <strong>TJSP</strong>. A recomendação da nossa metodologia é sempre aliar a leitura da letra da lei (legislação seca) com a resolução de pelo menos 15 a 20 questões comentadas para fixar as nuances das pegadinhas.</p>
+          <p class="text-xs">Posso sintetizar um mapa mental sobre este conceito ou criar um simulado rápido de 3 questões. O que prefere?</p>
+        `;
+      }
+
+      // Handle chat submission
+      if (chatForm) {
+        chatForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const query = chatInput.value.trim();
+          if (!query) return;
+
+          // Add user message
+          const userMsgEl = document.createElement('div');
+          userMsgEl.className = 'flex items-start justify-end gap-3.5 max-w-3xl ml-auto animate-fade-in';
+          userMsgEl.innerHTML = `
+            <div class="flex flex-col items-end gap-1.5 max-w-[85%]">
+              <div class="flex items-center gap-2">
+                <span class="text-xs" style="color: var(--text-muted);">Agora</span>
+                <span class="text-xs font-semibold" style="color: var(--text-primary);">Lucas Ferreira</span>
+              </div>
+              <div class="chat-bubble-user shadow-sm">
+                <p>${query}</p>
+              </div>
+            </div>
+            <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="user-avatar shrink-0 mt-1" />
+          `;
+          messagesContainer.appendChild(userMsgEl);
+          chatInput.value = '';
+          scrollToBottom();
+
+          // Show typing indicator
+          showTypingIndicator();
+
+          // Simulate bot reply delay
+          setTimeout(() => {
+            removeTypingIndicator();
+
+            const botMsgEl = document.createElement('div');
+            botMsgEl.className = 'flex items-start gap-3.5 max-w-3xl animate-fade-in';
+            botMsgEl.innerHTML = `
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+              <div class="flex flex-col gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">IA Tutor Agon</span>
+                  <span class="badge badge-blue text-[10px] px-1.5 py-0.5">Tutor</span>
+                  <span class="text-xs" style="color: var(--text-muted);">Agora</span>
+                </div>
+                <div class="chat-bubble-bot shadow-sm space-y-3">
+                  ${generateBotResponse(query)}
+                </div>
+              </div>
+            `;
+            messagesContainer.appendChild(botMsgEl);
+
+            // Hook quiz button clicks if any were generated
+            botMsgEl.querySelectorAll('.btn-quiz-opt').forEach(btn => {
+              btn.addEventListener('click', function () {
+                const isCorrect = this.getAttribute('data-correct') === 'true';
+                const feedbackEl = this.closest('.rounded-xl').querySelector('.quiz-feedback');
+                if (feedbackEl) {
+                  feedbackEl.classList.remove('hidden');
+                  if (isCorrect) {
+                    feedbackEl.style.backgroundColor = 'var(--color-green-light)';
+                    feedbackEl.style.color = 'var(--color-green-text)';
+                    feedbackEl.innerHTML = `
+                      <p class="font-bold mb-1"><i class="fa-solid fa-circle-check mr-1.5"></i>Resposta Correta: O item está ERRADO!</p>
+                      <p class="leading-relaxed"><strong>Justificativa (Súmula 683/STF):</strong> <em>"O limite de idade para a inscrição em concurso público só se legitima quando previsto em <strong>lei formal</strong> (não basta edital) e desde que justificado pela <strong>natureza das atribuições</strong> do cargo a ser preenchido."</em> Parabéns!</p>
+                    `;
+                  } else {
+                    feedbackEl.style.backgroundColor = 'var(--color-red-light)';
+                    feedbackEl.style.color = 'var(--color-red)';
+                    feedbackEl.innerHTML = `
+                      <p class="font-bold mb-1"><i class="fa-solid fa-circle-xmark mr-1.5"></i>Incorreto! O item está ERRADO.</p>
+                      <p class="leading-relaxed"><strong>Cuidado com a pegadinha:</strong> Pela <strong>Súmula 683 do STF</strong>, a restrição etária depende obrigatoriamente de <strong>previsão em LEI</strong> e de compatibilidade com as atribuições do cargo. Mera previsão editalícia é flagrantemente inconstitucional!</p>
+                    `;
+                  }
+                }
+              });
+            });
+
+            scrollToBottom();
+          }, 700);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conquistas | Agon</title>
+
+  <!-- Google Fonts & Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    .badge-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+    .badge-card:hover {
+      transform: translateY(-4px);
+    }
+    .badge-card.unlocked:hover {
+      border-color: var(--color-blue);
+    }
+  </style>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item active"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novo simulado da <strong>Polícia Federal</strong> disponível!</p><span class="text-xs" style="color:var(--text-muted);">Há 10 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-8 animate-fade-in space-y-8">
+      
+      <!-- Top Title & Overview Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">
+              Conquistas & Gamificação
+            </h1>
+            <span class="badge badge-blue text-xs font-semibold">Temporada 2025</span>
+          </div>
+          <p class="text-sm mt-1" style="color: var(--text-secondary);">
+            Transforme cada hora de estudo em evolução concreta e desbloqueie recompensas exclusivas.
+          </p>
+        </div>
+
+        <!-- Quick Info Badges -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="card px-4 py-2 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--color-orange-light); color: var(--color-orange);">
+              <i class="fa-solid fa-fire text-sm"></i>
+            </div>
+            <div>
+              <p class="text-xs leading-none" style="color: var(--text-muted);">Sequência</p>
+              <p class="text-sm font-bold leading-tight" style="color: var(--text-primary);">12 Dias</p>
+            </div>
+          </div>
+
+          <div class="card px-4 py-2 flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--color-green-light); color: var(--color-green);">
+              <i class="fa-solid fa-check-circle text-sm"></i>
+            </div>
+            <div>
+              <p class="text-xs leading-none" style="color: var(--text-muted);">Desbloqueadas</p>
+              <p class="text-sm font-bold leading-tight" style="color: var(--text-primary);">3 / 6 Badges</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. TOP BANNER (CARD) -->
+      <div class="card p-6 md:p-8 relative overflow-hidden" style="background-color: var(--bg-card);">
+        <div class="flex flex-col md:flex-row md:items-center gap-6">
+          
+          <!-- Big Medal Icon (Gradient BG Blue to Cyan) -->
+          <div class="w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center shrink-0 shadow-lg"
+               style="background: linear-gradient(135deg, var(--color-blue), var(--color-cyan)); color: #FFFFFF;">
+            <i class="fa-solid fa-medal text-4xl md:text-5xl"></i>
+          </div>
+
+          <!-- Text Block & Progress Bar -->
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-2">
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl md:text-2xl font-bold tracking-tight" style="color: var(--text-primary);">
+                  Nível 12 - Concurseiro Dedicado
+                </h2>
+                <span class="badge badge-green text-xs font-semibold">Ativo</span>
+              </div>
+              <span class="text-base md:text-lg font-bold" style="color: var(--color-blue);">
+                1.800 / 2.500 XP
+              </span>
+            </div>
+
+            <!-- Progress Bar (72%, gradient blue/cyan) -->
+            <div class="progress-track h-3.5 w-full my-3">
+              <div class="progress-fill-gradient h-3.5 transition-all duration-500" style="width: 72%;"></div>
+            </div>
+
+            <!-- Subtitle -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs md:text-sm">
+              <p class="font-medium" style="color: var(--text-secondary);">
+                Faltam 700 XP para o próximo nível.
+              </p>
+              <p style="color: var(--text-muted);">
+                Próxima patente: <strong style="color: var(--text-primary);">Nível 13 — Mestre dos Concursos</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. SECTION 1: SUAS CONQUISTAS -->
+      <div class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: var(--color-blue-light); color: var(--color-blue);">
+              <i class="fa-solid fa-trophy text-base"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold leading-tight" style="color: var(--text-primary);">
+                Suas Conquistas
+              </h3>
+              <p class="text-xs" style="color: var(--text-muted);">
+                Clique em um badge para conferir detalhes e critérios de desbloqueio.
+              </p>
+            </div>
+          </div>
+
+          <!-- Filter Tabs -->
+          <div class="flex items-center gap-1.5 p-1 rounded-xl" style="background-color: var(--bg-hover);">
+            <button class="filter-tab active text-xs font-medium px-3 py-1.5 rounded-lg transition-all" data-filter="all" style="background: var(--bg-card); color: var(--color-blue); box-shadow: var(--shadow-sm);">
+              Todas (6)
+            </button>
+            <button class="filter-tab text-xs font-medium px-3 py-1.5 rounded-lg transition-all" data-filter="unlocked" style="color: var(--text-secondary);">
+              Desbloqueadas (3)
+            </button>
+            <button class="filter-tab text-xs font-medium px-3 py-1.5 rounded-lg transition-all" data-filter="locked" style="color: var(--text-secondary);">
+              Bloqueadas (3)
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid of Badges (cols-2 md:cols-4 lg:cols-6 gap-6) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" id="badges-grid">
+          
+          <!-- Badge 1: Foco Total (Unlocked, colored: orange fire) -->
+          <div class="card badge-card unlocked p-5 flex flex-col items-center text-center relative group"
+               data-badge-status="unlocked"
+               data-badge-title="Foco Total"
+               data-badge-subtitle="7 dias seguidos"
+               data-badge-desc="Manteve o plano de estudos ativo por 7 dias ininterruptos com resolução mínima de questões."
+               data-badge-xp="+250 XP"
+               data-badge-date="Conquistado em 08/09/2025"
+               data-badge-color="orange"
+               data-badge-icon="fa-fire">
+            <span class="absolute top-3 right-3 text-xs" title="Desbloqueada">
+              <i class="fa-solid fa-circle-check text-sm" style="color: var(--color-green);"></i>
+            </span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-3.5 shadow-sm transition-transform group-hover:scale-110"
+                 style="background: var(--color-orange-light); color: var(--color-orange);">
+              <i class="fa-solid fa-fire"></i>
+            </div>
+            <h4 class="font-bold text-sm mb-1 leading-tight" style="color: var(--text-primary);">
+              Foco Total
+            </h4>
+            <span class="text-xs" style="color: var(--text-muted);">
+              7 dias seguidos
+            </span>
+          </div>
+
+          <!-- Badge 2: Estudioso (Unlocked, colored: blue book) -->
+          <div class="card badge-card unlocked p-5 flex flex-col items-center text-center relative group"
+               data-badge-status="unlocked"
+               data-badge-title="Estudioso"
+               data-badge-subtitle="40 horas de estudo"
+               data-badge-desc="Acumulou mais de 40 horas líquidas registradas no cronômetro e trilhas de estudo da plataforma."
+               data-badge-xp="+300 XP"
+               data-badge-date="Conquistado em 12/09/2025"
+               data-badge-color="blue"
+               data-badge-icon="fa-book">
+            <span class="absolute top-3 right-3 text-xs" title="Desbloqueada">
+              <i class="fa-solid fa-circle-check text-sm" style="color: var(--color-green);"></i>
+            </span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-3.5 shadow-sm transition-transform group-hover:scale-110"
+                 style="background: var(--color-blue-light); color: var(--color-blue);">
+              <i class="fa-solid fa-book"></i>
+            </div>
+            <h4 class="font-bold text-sm mb-1 leading-tight" style="color: var(--text-primary);">
+              Estudioso
+            </h4>
+            <span class="text-xs" style="color: var(--text-muted);">
+              40 horas de estudo
+            </span>
+          </div>
+
+          <!-- Badge 3: Centurião (Unlocked, colored: green check-double) -->
+          <div class="card badge-card unlocked p-5 flex flex-col items-center text-center relative group"
+               data-badge-status="unlocked"
+               data-badge-title="Centurião"
+               data-badge-subtitle="100 questões resolvidas"
+               data-badge-desc="Resolveu 100 questões no banco de questões mantendo taxa de acerto consistente."
+               data-badge-xp="+200 XP"
+               data-badge-date="Conquistado em 01/09/2025"
+               data-badge-color="green"
+               data-badge-icon="fa-check-double">
+            <span class="absolute top-3 right-3 text-xs" title="Desbloqueada">
+              <i class="fa-solid fa-circle-check text-sm" style="color: var(--color-green);"></i>
+            </span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-3.5 shadow-sm transition-transform group-hover:scale-110"
+                 style="background: var(--color-green-light); color: var(--color-green);">
+              <i class="fa-solid fa-check-double"></i>
+            </div>
+            <h4 class="font-bold text-sm mb-1 leading-tight" style="color: var(--text-primary);">
+              Centurião
+            </h4>
+            <span class="text-xs" style="color: var(--text-muted);">
+              100 questões resolvidas
+            </span>
+          </div>
+
+          <!-- Badge 4: Mestre (Locked: opacity-60 grayscale: gray crown) -->
+          <div class="card badge-card locked opacity-60 grayscale p-5 flex flex-col items-center text-center relative group"
+               data-badge-status="locked"
+               data-badge-title="Mestre"
+               data-badge-subtitle="90% em simulado"
+               data-badge-desc="Obtenha taxa de acerto igual ou superior a 90% em um simulado oficial com mais de 50 itens."
+               data-badge-xp="+600 XP"
+               data-badge-date="Bloqueada — Requer 90% em Simulado"
+               data-badge-color="gray"
+               data-badge-icon="fa-crown">
+            <span class="absolute top-3 right-3 text-xs" title="Bloqueada">
+              <i class="fa-solid fa-lock text-xs" style="color: var(--text-muted);"></i>
+            </span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-3.5 shadow-sm"
+                 style="background: var(--bg-hover); color: var(--text-muted);">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <h4 class="font-bold text-sm mb-1 leading-tight" style="color: var(--text-primary);">
+              Mestre
+            </h4>
+            <span class="text-xs" style="color: var(--text-muted);">
+              90% em simulado
+            </span>
+          </div>
+
+          <!-- Badge 5: Premium (Locked: opacity-60 grayscale: gray gem) -->
+          <div class="card badge-card locked opacity-60 grayscale p-5 flex flex-col items-center text-center relative group"
+               data-badge-status="locked"
+               data-badge-title="Premium"
+               data-badge-subtitle="Assinante Agon Pro"
+               data-badge-desc="Desbloqueie ferramentas avançadas com IA, simulados inéditos e mentoria com assinatura Premium."
+               data-badge-xp="+400 XP"
+               data-badge-date="Bloqueada — Disponível para assinantes"
+               data-badge-color="gray"
+               data-badge-icon="fa-gem">
+            <span class="absolute top-3 right-3 text-xs" title="Bloqueada">
+              <i class="fa-solid fa-lock text-xs" style="color: var(--text-muted);"></i>
+            </span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-3.5 shadow-sm"
+                 style="background: var(--bg-hover); color: var(--text-muted);">
+              <i class="fa-solid fa-gem"></i>
+            </div>
+            <h4 class="font-bold text-sm mb-1 leading-tight" style="color: var(--text-primary);">
+              Premium
+            </h4>
+            <span class="text-xs" style="color: var(--text-muted);">
+              Assinante Agon Pro
+            </span>
+          </div>
+
+          <!-- Badge 6: Maratonista (Locked: opacity-60 grayscale: gray infinity) -->
+          <div class="card badge-card locked opacity-60 grayscale p-5 flex flex-col items-center text-center relative group"
+               data-badge-status="locked"
+               data-badge-title="Maratonista"
+               data-badge-subtitle="30 dias seguidos"
+               data-badge-desc="Mantenha sua disciplina inabalável estudando durante 30 dias ininterruptos."
+               data-badge-xp="+500 XP"
+               data-badge-date="Em andamento: 12 / 30 dias (40%)"
+               data-badge-color="gray"
+               data-badge-icon="fa-infinity">
+            <span class="absolute top-3 right-3 text-xs" title="Em andamento">
+              <i class="fa-solid fa-hourglass-half text-xs" style="color: var(--color-orange);"></i>
+            </span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-3.5 shadow-sm"
+                 style="background: var(--bg-hover); color: var(--text-muted);">
+              <i class="fa-solid fa-infinity"></i>
+            </div>
+            <h4 class="font-bold text-sm mb-1 leading-tight" style="color: var(--text-primary);">
+              Maratonista
+            </h4>
+            <span class="text-xs" style="color: var(--text-muted);">
+              30 dias seguidos
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3. SECTION 2: PRÓXIMAS CONQUISTAS -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: var(--color-orange-light); color: var(--color-orange);">
+            <i class="fa-solid fa-flag-checkered text-base"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold leading-tight" style="color: var(--text-primary);">
+              Próximas Conquistas
+            </h3>
+            <p class="text-xs" style="color: var(--text-muted);">
+              Metas em progresso com maior proximidade de conclusão.
+            </p>
+          </div>
+        </div>
+
+        <!-- Próxima Conquista: Card Maratonista -->
+        <div class="card p-6 relative overflow-hidden">
+          <div class="flex flex-col md:flex-row md:items-center gap-6">
+            
+            <!-- Infinity Icon (Gray) -->
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 text-3xl"
+                 style="background: var(--bg-hover); color: var(--text-muted);">
+              <i class="fa-solid fa-infinity"></i>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                <div class="flex items-center gap-2.5">
+                  <h4 class="text-lg font-bold" style="color: var(--text-primary);">
+                    Maratonista
+                  </h4>
+                  <span class="badge badge-orange text-xs font-semibold">Em andamento</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-base font-bold" style="color: var(--color-orange);">
+                    12 / 30 dias
+                  </span>
+                  <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background: var(--color-orange-light); color: var(--color-orange-text);">
+                    40%
+                  </span>
+                </div>
+              </div>
+
+              <p class="text-xs md:text-sm mb-3" style="color: var(--text-secondary);">
+                Estude por 30 dias consecutivos para conquistar este distintivo de constância máxima e ganhar <strong>+500 XP</strong>.
+              </p>
+
+              <!-- Orange Progress Bar (40%) -->
+              <div class="progress-track h-3 w-full">
+                <div class="progress-fill-orange h-3 transition-all duration-500" style="width: 40%;"></div>
+              </div>
+
+              <!-- Additional Help Text -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 text-xs" style="color: var(--text-muted);">
+                <span><i class="fa-solid fa-fire mr-1 text-amber-500"></i> Faltam apenas <strong>18 dias</strong> para completar o desafio.</span>
+                <span>Último dia registrado: <strong>Hoje, 21:11</strong></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bonus Section: Trilhas de Níveis e Recompensas (Gamification Hierarchy) -->
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="font-bold text-base" style="color: var(--text-primary);">
+              Progressão de Patentes Agon
+            </h4>
+            <p class="text-xs" style="color: var(--text-muted);">
+              Seu avanço até o topo da carreira pública.
+            </p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background: var(--color-blue-light); color: var(--color-blue-text);">
+            Nível 12 / 20
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="p-4 rounded-xl border flex flex-col items-center text-center" style="background: var(--bg-hover); border-color: var(--border-light);">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2" style="background: var(--color-green-light); color: var(--color-green);">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <span class="text-xs font-semibold" style="color: var(--text-primary);">Nível 10 — Focado</span>
+            <span class="text-xs mt-0.5" style="color: var(--text-muted);">1.200 XP • Concluído</span>
+          </div>
+
+          <div class="p-4 rounded-xl border flex flex-col items-center text-center" style="background: var(--bg-hover); border-color: var(--border-light);">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2" style="background: var(--color-green-light); color: var(--color-green);">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <span class="text-xs font-semibold" style="color: var(--text-primary);">Nível 11 — Determinado</span>
+            <span class="text-xs mt-0.5" style="color: var(--text-muted);">1.500 XP • Concluído</span>
+          </div>
+
+          <div class="p-4 rounded-xl border-2 flex flex-col items-center text-center relative" style="background: var(--bg-card); border-color: var(--color-blue); box-shadow: var(--shadow-sm);">
+            <span class="badge badge-blue text-xs font-bold absolute -top-2.5">Você Está Aqui</span>
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2" style="background: var(--color-blue); color: #fff;">
+              12
+            </div>
+            <span class="text-xs font-bold" style="color: var(--color-blue);">Nível 12 — Dedicado</span>
+            <span class="text-xs mt-0.5 font-medium" style="color: var(--text-secondary);">1.800 XP • Em evolução</span>
+          </div>
+
+          <div class="p-4 rounded-xl border flex flex-col items-center text-center opacity-70" style="background: var(--bg-hover); border-color: var(--border-light);">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2" style="background: var(--bg-input); color: var(--text-muted);">
+              <i class="fa-solid fa-lock text-xs"></i>
+            </div>
+            <span class="text-xs font-semibold" style="color: var(--text-secondary);">Nível 13 — Mestre</span>
+            <span class="text-xs mt-0.5" style="color: var(--text-muted);">2.500 XP • Bloqueado</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- BADGE DETAIL MODAL -->
+  <div id="badge-detail-modal" class="modal-overlay">
+    <div class="modal-content p-6">
+      <div class="flex items-center justify-between pb-4 mb-4" style="border-bottom: 1px solid var(--border-light);">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-award" style="color: var(--color-blue);"></i>
+          <h3 class="font-bold text-lg" id="modal-badge-header-title" style="color: var(--text-primary);">Detalhes da Conquista</h3>
+        </div>
+        <button id="modal-badge-close" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted); background:var(--bg-hover);">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex flex-col items-center text-center my-4">
+        <div id="modal-badge-icon-box" class="w-20 h-20 rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm">
+          <i id="modal-badge-icon" class="fa-solid fa-medal"></i>
+        </div>
+        <h4 id="modal-badge-name" class="text-xl font-bold" style="color: var(--text-primary);">Nome do Badge</h4>
+        <span id="modal-badge-sub" class="text-xs font-semibold mt-1 px-3 py-1 rounded-full badge-blue">Subtítulo</span>
+      </div>
+
+      <p id="modal-badge-desc" class="text-sm text-center leading-relaxed mb-6" style="color: var(--text-secondary);">
+        Descrição dos critérios desta conquista.
+      </p>
+
+      <div class="space-y-3 p-4 rounded-xl mb-6" style="background: var(--bg-input);">
+        <div class="flex justify-between text-xs">
+          <span style="color: var(--text-muted);">Recompensa:</span>
+          <span id="modal-badge-xp" class="font-bold" style="color: var(--color-green);">+250 XP</span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span style="color: var(--text-muted);">Status:</span>
+          <span id="modal-badge-date" class="font-medium" style="color: var(--text-primary);">Desbloqueado</span>
+        </div>
+      </div>
+
+      <button id="modal-badge-btn-ok" class="btn-primary w-full justify-center text-sm">
+        Entendi
+      </button>
+    </div>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button class="modal-tab active" data-tab="dados">Dados</button>
+        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar-lg" />
+            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Lucas Ferreira</h3>
+            <p class="text-sm" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/script.js"></script>
+
+  <!-- Interactive Badges Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Filter Badges Logic
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      const badgeCards = document.querySelectorAll('.badge-card');
+
+      filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const filter = tab.dataset.filter;
+          filterTabs.forEach(t => {
+            t.classList.remove('active');
+            t.style.background = 'transparent';
+            t.style.color = 'var(--text-secondary)';
+            t.style.boxShadow = 'none';
+          });
+          tab.classList.add('active');
+          tab.style.background = 'var(--bg-card)';
+          tab.style.color = 'var(--color-blue)';
+          tab.style.boxShadow = 'var(--shadow-sm)';
+
+          badgeCards.forEach(card => {
+            const status = card.dataset.badgeStatus;
+            if (filter === 'all' || filter === status) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // 2. Badge Detail Modal Logic
+      const badgeModal = document.getElementById('badge-detail-modal');
+      const badgeCloseBtn = document.getElementById('modal-badge-close');
+      const badgeOkBtn = document.getElementById('modal-badge-btn-ok');
+
+      const modalIconBox = document.getElementById('modal-badge-icon-box');
+      const modalIcon = document.getElementById('modal-badge-icon');
+      const modalName = document.getElementById('modal-badge-name');
+      const modalSub = document.getElementById('modal-badge-sub');
+      const modalDesc = document.getElementById('modal-badge-desc');
+      const modalXp = document.getElementById('modal-badge-xp');
+      const modalDate = document.getElementById('modal-badge-date');
+
+      function openBadgeModal(card) {
+        const title = card.dataset.badgeTitle;
+        const sub = card.dataset.badgeSubtitle;
+        const desc = card.dataset.badgeDesc;
+        const xp = card.dataset.badgeXp;
+        const date = card.dataset.badgeDate;
+        const color = card.dataset.badgeColor;
+        const icon = card.dataset.badgeIcon;
+        const status = card.dataset.badgeStatus;
+
+        modalName.textContent = title;
+        modalSub.textContent = sub;
+        modalDesc.textContent = desc;
+        modalXp.textContent = xp;
+        modalDate.textContent = date;
+
+        modalIcon.className = `fa-solid ${icon}`;
+
+        if (status === 'locked') {
+          modalIconBox.style.background = 'var(--bg-hover)';
+          modalIconBox.style.color = 'var(--text-muted)';
+          modalSub.className = 'text-xs font-semibold mt-1 px-3 py-1 rounded-full badge-gray';
+        } else if (color === 'orange') {
+          modalIconBox.style.background = 'var(--color-orange-light)';
+          modalIconBox.style.color = 'var(--color-orange)';
+          modalSub.className = 'text-xs font-semibold mt-1 px-3 py-1 rounded-full badge-orange';
+        } else if (color === 'blue') {
+          modalIconBox.style.background = 'var(--color-blue-light)';
+          modalIconBox.style.color = 'var(--color-blue)';
+          modalSub.className = 'text-xs font-semibold mt-1 px-3 py-1 rounded-full badge-blue';
+        } else if (color === 'green') {
+          modalIconBox.style.background = 'var(--color-green-light)';
+          modalIconBox.style.color = 'var(--color-green)';
+          modalSub.className = 'text-xs font-semibold mt-1 px-3 py-1 rounded-full badge-green';
+        }
+
+        if (badgeModal) {
+          badgeModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeBadgeModal() {
+        if (badgeModal) {
+          badgeModal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+
+      badgeCards.forEach(card => {
+        card.addEventListener('click', () => openBadgeModal(card));
+      });
+
+      if (badgeCloseBtn) badgeCloseBtn.addEventListener('click', closeBadgeModal);
+      if (badgeOkBtn) badgeOkBtn.addEventListener('click', closeBadgeModal);
+      if (badgeModal) {
+        badgeModal.addEventListener('click', (e) => {
+          if (e.target === badgeModal) closeBadgeModal();
+        });
+      }
+    });
+  </script>
+</body>
+</html>

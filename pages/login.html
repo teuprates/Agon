@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans min-h-screen overflow-x-hidden flex items-center justify-center" style="background-color: var(--bg-body); color: var(--text-primary);">
+
+  <!-- AUTH CONTAINER -->
+  <div class="auth-page w-full">
+    <div class="auth-card animate-fade-in mx-auto" style="border: 1px solid var(--border-light);">
+      <!-- Logo -->
+      <div class="flex items-center justify-center gap-2 mb-8">
+        <a href="index.html" class="flex items-center gap-2 group cursor-pointer transition transform hover:scale-105">
+          <div class="w-10 h-10 relative">
+            <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+          </div>
+          <span class="text-3xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+        </a>
+      </div>
+
+      <!-- Title & Subtitle -->
+      <div class="text-center mb-7">
+        <h2 class="text-xl font-bold tracking-tight mb-2" style="color: var(--text-primary);">Sua aprovação começa com constância.</h2>
+        <p class="text-sm" style="color: var(--text-secondary);">Faça login para continuar seus estudos.</p>
+      </div>
+
+      <!-- Form -->
+      <form onsubmit="event.preventDefault(); window.location.href='index.html';" class="space-y-4">
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="form-label">E-mail</label>
+          <div class="relative">
+            <i class="fa-regular fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-sm" style="color: var(--text-muted);"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="seu.email@exemplo.com"
+              value="lucas.ferreira@email.com"
+              class="form-input pl-11"
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- Password Field with "Esqueci minha senha" -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="password" class="form-label mb-0">Senha</label>
+            <a href="#" onclick="alert('Um link de recuperação foi enviado para seu e-mail!'); return false;" class="text-xs font-semibold hover:underline" style="color: var(--color-blue);">
+              Esqueci minha senha
+            </a>
+          </div>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-sm" style="color: var(--text-muted);"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder="••••••••"
+              value="senha123"
+              class="form-input pl-11 pr-11"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              id="toggle-password"
+              class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-sm transition hover:opacity-80"
+              style="color: var(--text-muted);"
+              title="Mostrar/ocultar senha"
+              aria-label="Mostrar ou ocultar senha"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-xs" style="color: var(--text-secondary);">
+            <input
+              type="checkbox"
+              id="remember"
+              checked
+              class="rounded border"
+              style="accent-color: var(--color-blue); width: 15px; height: 15px;"
+            />
+            <span>Lembrar de mim</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-primary w-full justify-center py-3 text-sm font-semibold tracking-wide shadow-md mt-2 transition hover:shadow-lg"
+        >
+          <span>Entrar</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </form>
+
+      <!-- Divider "ou" -->
+      <div class="relative my-6 text-center">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full" style="border-top: 1px solid var(--border-default);"></div>
+        </div>
+        <div class="relative inline-block px-3 text-xs font-medium uppercase tracking-wider" style="background-color: var(--bg-card); color: var(--text-muted);">
+          ou
+        </div>
+      </div>
+
+      <!-- Google Login Button -->
+      <button
+        type="button"
+        onclick="window.location.href='index.html';"
+        class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl text-sm font-medium transition hover:opacity-95 shadow-sm"
+        style="background-color: var(--bg-input); border: 1px solid var(--border-default); color: var(--text-primary);"
+      >
+        <img
+          src="https://www.svgrepo.com/show/475656/google-color.svg"
+          alt="Google"
+          class="w-5 h-5 shrink-0"
+        />
+        <span>Entrar com Google</span>
+      </button>
+
+      <!-- Cadastro Link -->
+      <p class="text-center text-sm mt-6" style="color: var(--text-secondary);">
+        Não tem uma conta?
+        <a href="cadastro.html" class="font-semibold hover:underline" style="color: var(--color-blue);">
+          Cadastre-se
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Theme Toggle Button fixed in corner -->
+  <button
+    class="theme-toggle"
+    style="position: fixed; top: 24px; right: 24px; width: 42px; height: 42px; border-radius: 12px; background-color: var(--bg-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; color: var(--text-secondary);"
+    title="Alternar tema"
+    aria-label="Alternar tema"
+  >
+    <i class="fa-solid fa-moon"></i>
+  </button>
+
+  <!-- Script -->
+  <script src="../js/script.js"></script>
+  <script>
+    // Password visibility toggle
+    const togglePasswordBtn = document.getElementById('toggle-password');
+    const passwordInput = document.getElementById('password');
+    if (togglePasswordBtn && passwordInput) {
+      togglePasswordBtn.addEventListener('click', () => {
+        const isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        const icon = togglePasswordBtn.querySelector('i');
+        if (icon) {
+          icon.className = isPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

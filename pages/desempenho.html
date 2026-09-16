@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agon | Desempenho — Análise de Evolução e Estatísticas</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Agon Design System Styles -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item active"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90 transition-opacity" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novo simulado da <strong>Polícia Federal</strong> disponível!</p><span class="text-xs" style="color:var(--text-muted);">Há 10 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-8 animate-fade-in">
+      <div class="max-w-7xl mx-auto space-y-8">
+
+        <!-- 1. HEADER -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">Desempenho</h1>
+            <p class="text-sm sm:text-base mt-1" style="color: var(--text-secondary);">Acompanhe sua evolução e identifique pontos de melhoria.</p>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center p-1 rounded-xl" style="background-color: var(--bg-hover); border: 1px solid var(--border-default);">
+              <button class="px-3.5 py-1.5 text-xs font-semibold rounded-lg shadow-sm" style="background-color: var(--bg-card); color: var(--color-blue);">Últimos 6 meses</button>
+              <button class="px-3.5 py-1.5 text-xs font-medium rounded-lg hover:opacity-80 transition-opacity" style="color: var(--text-secondary);">Últimos 30 dias</button>
+              <button class="px-3.5 py-1.5 text-xs font-medium rounded-lg hover:opacity-80 transition-opacity" style="color: var(--text-secondary);">Ano de 2025</button>
+            </div>
+            <button class="btn-secondary text-xs flex items-center gap-2 py-2 px-3.5" title="Exportar relatório detalhado">
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i> Exportar
+            </button>
+          </div>
+        </div>
+
+        <!-- STATS OVERVIEW CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+          <!-- Card 1: Taxa de Acertos Atual -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold" style="color: var(--text-secondary);">Taxa de Acertos Atual</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background: var(--color-green-light); color: var(--color-green);">
+                <i class="fa-solid fa-bullseye"></i>
+              </div>
+            </div>
+            <div class="my-3">
+              <div class="text-2xl font-bold tracking-tight" style="color: var(--text-primary);">82%</div>
+              <div class="mt-1.5">
+                <span class="badge badge-green flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-trend-up text-xs"></i> +27 p.p. desde Jan
+                </span>
+              </div>
+            </div>
+            <div class="pt-2 flex items-center justify-between text-xs" style="border-top: 1px solid var(--border-light);">
+              <span style="color: var(--text-muted);">Meta estabelecida</span>
+              <span class="font-medium" style="color: var(--color-green);">80% (superada)</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Questões Resolvidas -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold" style="color: var(--text-secondary);">Questões Resolvidas</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background: var(--color-blue-light); color: var(--color-blue);">
+                <i class="fa-solid fa-circle-question"></i>
+              </div>
+            </div>
+            <div class="my-3">
+              <div class="text-2xl font-bold tracking-tight" style="color: var(--text-primary);">1.248</div>
+              <div class="mt-1.5">
+                <span class="badge badge-blue flex items-center gap-1">
+                  <i class="fa-solid fa-clock text-xs"></i> 42h 30m estudadas
+                </span>
+              </div>
+            </div>
+            <div class="pt-2 flex items-center justify-between text-xs" style="border-top: 1px solid var(--border-light);">
+              <span style="color: var(--text-muted);">Sequência de estudos</span>
+              <span class="font-medium" style="color: var(--color-orange);"><i class="fa-solid fa-fire text-xs mr-1"></i>12 dias consecutivos</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Média em Simulados -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold" style="color: var(--text-secondary);">Média em Simulados</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background: var(--color-purple-light); color: var(--color-purple);">
+                <i class="fa-solid fa-file-signature"></i>
+              </div>
+            </div>
+            <div class="my-3">
+              <div class="text-2xl font-bold tracking-tight" style="color: var(--text-primary);">75.0%</div>
+              <div class="mt-1.5">
+                <span class="badge badge-purple flex items-center gap-1">
+                  <i class="fa-solid fa-chart-simple text-xs"></i> 3 simulados oficiais
+                </span>
+              </div>
+            </div>
+            <div class="pt-2 flex items-center justify-between text-xs" style="border-top: 1px solid var(--border-light);">
+              <span style="color: var(--text-muted);">Média da concorrência</span>
+              <span class="font-medium" style="color: var(--text-primary);">63.3%</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Posição Competitiva -->
+          <div class="card p-5 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold" style="color: var(--text-secondary);">Melhor Ranking</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm" style="background: var(--color-orange-light); color: var(--color-orange);">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+            </div>
+            <div class="my-3">
+              <div class="text-2xl font-bold tracking-tight" style="color: var(--color-primary);">Top 12%</div>
+              <div class="mt-1.5">
+                <span class="badge badge-orange flex items-center gap-1">
+                  <i class="fa-solid fa-medal text-xs"></i> PF - Agente (42º lugar)
+                </span>
+              </div>
+            </div>
+            <div class="pt-2 flex items-center justify-between text-xs" style="border-top: 1px solid var(--border-light);">
+              <span style="color: var(--text-muted);">Nível de pontuação</span>
+              <span class="font-medium" style="color: var(--color-green);">Zona de aprovação</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. TOP GRID (2 cols, lg:grid-cols-2 gap-6 mb-8) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          
+          <!-- Left Card: Evolução de Acertos -->
+          <div class="card p-6 flex flex-col justify-between">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                <div>
+                  <h3 class="card-title text-lg font-bold">Evolução de Acertos</h3>
+                  <p class="card-subtitle text-xs sm:text-sm mt-0.5">Crescimento contínuo da taxa de acertos nos últimos meses</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="badge badge-green font-semibold">
+                    <i class="fa-solid fa-arrow-trend-up text-xs mr-1"></i> +27%
+                  </span>
+                  <span class="badge badge-gray text-xs">Jan - Jun</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative w-full" style="height: 310px;">
+              <canvas id="lineChartDesempenho"></canvas>
+            </div>
+            <div class="pt-4 mt-2 flex items-center justify-between text-xs" style="border-top: 1px solid var(--border-light); color: var(--text-secondary);">
+              <span>Partiu de <strong>55%</strong> em Janeiro</span>
+              <span style="color: var(--color-green); font-weight: 600;"><i class="fa-solid fa-check-circle mr-1"></i>Atingiu 82% em Junho</span>
+            </div>
+          </div>
+
+          <!-- Right Card: Comparativo por Disciplina -->
+          <div class="card p-6 flex flex-col justify-between">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                <div>
+                  <h3 class="card-title text-lg font-bold">Comparativo por Disciplina</h3>
+                  <p class="card-subtitle text-xs sm:text-sm mt-0.5">Seu percentual de acertos versus a média geral dos concorrentes</p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <span class="badge badge-blue text-xs font-semibold">
+                    <i class="fa-solid fa-layer-group text-xs mr-1"></i> 5 Disciplinas
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="relative w-full" style="height: 310px;">
+              <canvas id="radarChart"></canvas>
+            </div>
+            <div class="pt-4 mt-2 flex items-center justify-between text-xs" style="border-top: 1px solid var(--border-light); color: var(--text-secondary);">
+              <span>Ponto forte: <strong style="color: var(--color-blue);">Informática (90%)</strong></span>
+              <span>Atenção: <strong style="color: var(--color-orange);">Rac. Lógico (60%)</strong></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3. BOTTOM CARD: HISTÓRICO DE SIMULADOS -->
+        <div class="card p-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h3 class="card-title text-lg font-bold">Histórico de Simulados</h3>
+              <p class="card-subtitle text-xs sm:text-sm mt-0.5">Rendimento detalhado nas provas simuladas com notas e posições no ranking</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="badge badge-blue">3 simulados concluídos</span>
+              <a href="simulados.html" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-xs"></i> Fazer Novo Simulado
+              </a>
+            </div>
+          </div>
+
+          <!-- Responsive Table Container -->
+          <div class="overflow-x-auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="text-left py-3 px-4">Simulado</th>
+                  <th class="text-left py-3 px-4">Data</th>
+                  <th class="text-left py-3 px-4">Nota</th>
+                  <th class="text-left py-3 px-4">Ranking</th>
+                  <th class="text-left py-3 px-4">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Row 1: PF - Agente -->
+                <tr class="transition-colors">
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--color-blue-light); color: var(--color-blue);">
+                        <i class="fa-solid fa-shield-halved text-base"></i>
+                      </div>
+                      <div>
+                        <span class="font-bold text-sm block" style="color: var(--text-primary);">PF - Agente</span>
+                        <span class="text-xs" style="color: var(--text-muted);">Polícia Federal • 120 itens (C/E)</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 font-medium text-sm" style="color: var(--text-secondary);">
+                    10/05/2025
+                  </td>
+                  <td class="py-4 px-4">
+                    <span class="font-bold text-base" style="color: var(--color-green);">85%</span>
+                    <span class="text-xs block" style="color: var(--text-muted);">102 acertos</span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-trophy text-xs" style="color: var(--color-orange);"></i>
+                      <span class="font-semibold text-sm" style="color: var(--text-primary);">Top 12%</span>
+                    </div>
+                    <span class="text-xs block" style="color: var(--text-muted);">42º de 350 participantes</span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <span class="badge badge-green">
+                      <i class="fa-solid fa-circle-check text-xs mr-1"></i> Concluído
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Row 2: Receita Federal -->
+                <tr class="transition-colors">
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--color-orange-light); color: var(--color-orange);">
+                        <i class="fa-solid fa-landmark text-base"></i>
+                      </div>
+                      <div>
+                        <span class="font-bold text-sm block" style="color: var(--text-primary);">Receita Federal</span>
+                        <span class="text-xs" style="color: var(--text-muted);">Auditor Fiscal • 140 questões (Múltipla Escolha)</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 font-medium text-sm" style="color: var(--text-secondary);">
+                    28/04/2025
+                  </td>
+                  <td class="py-4 px-4">
+                    <span class="font-bold text-base" style="color: var(--color-orange);">68%</span>
+                    <span class="text-xs block" style="color: var(--text-muted);">95 acertos</span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-chart-line text-xs" style="color: var(--color-blue);"></i>
+                      <span class="font-semibold text-sm" style="color: var(--text-primary);">Top 35%</span>
+                    </div>
+                    <span class="text-xs block" style="color: var(--text-muted);">175º de 500 participantes</span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <span class="badge badge-green">
+                      <i class="fa-solid fa-circle-check text-xs mr-1"></i> Concluído
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Row 3: TJSP - Escrevente -->
+                <tr class="transition-colors">
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style="background: var(--color-purple-light); color: var(--color-purple);">
+                        <i class="fa-solid fa-scale-balanced text-base"></i>
+                      </div>
+                      <div>
+                        <span class="font-bold text-sm block" style="color: var(--text-primary);">TJSP - Escrevente</span>
+                        <span class="text-xs" style="color: var(--text-muted);">Tribunal de Justiça de SP • 100 questões</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-4 px-4 font-medium text-sm" style="color: var(--text-secondary);">
+                    15/04/2025
+                  </td>
+                  <td class="py-4 px-4">
+                    <span class="font-bold text-base" style="color: var(--color-blue);">72%</span>
+                    <span class="text-xs block" style="color: var(--text-muted);">72 acertos</span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-medal text-xs" style="color: var(--color-purple);"></i>
+                      <span class="font-semibold text-sm" style="color: var(--text-primary);">Top 20%</span>
+                    </div>
+                    <span class="text-xs block" style="color: var(--text-muted);">84º de 420 participantes</span>
+                  </td>
+                  <td class="py-4 px-4">
+                    <span class="badge badge-green">
+                      <i class="fa-solid fa-circle-check text-xs mr-1"></i> Concluído
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bottom Footer Information -->
+          <div class="mt-6 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs" style="border-top: 1px solid var(--border-light); color: var(--text-muted);">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-circle-info text-sm" style="color: var(--color-blue);"></i>
+              <span>Os rankings são calculados com base em todos os alunos que submeteram o simulado no prazo.</span>
+            </div>
+            <a href="simulados.html" class="font-medium hover:underline flex items-center gap-1" style="color: var(--color-blue);">
+              Ver histórico completo de simulados <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80 transition-opacity" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button class="modal-tab active" data-tab="dados">Dados</button>
+        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar-lg" />
+            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Lucas Ferreira</h3>
+            <p class="text-sm" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Agon JS -->
+  <script src="../js/script.js"></script>
+
+  <!-- Chart.js Initialization for Desempenho -->
+  <script>
+    let lineChartDesempenhoInstance = null;
+    let radarChartInstance = null;
+
+    function initDesempenhoCharts() {
+      if (typeof getChartColors !== 'function') return;
+      const colors = getChartColors();
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+      // 1. Line Chart: Evolução de Acertos
+      const ctxLine = document.getElementById('lineChartDesempenho');
+      if (ctxLine) {
+        if (lineChartDesempenhoInstance) lineChartDesempenhoInstance.destroy();
+        lineChartDesempenhoInstance = new Chart(ctxLine, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            datasets: [{
+              label: 'Taxa de Acertos',
+              data: [55, 62, 68, 72, 78, 82],
+              borderColor: colors.green,
+              backgroundColor: colors.bgGreen,
+              borderWidth: 2.5,
+              fill: true,
+              tension: 0.35,
+              pointBackgroundColor: colors.pointBg,
+              pointBorderColor: colors.green,
+              pointBorderWidth: 2.5,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+                titleColor: isDark ? '#F8FAFC' : '#1E293B',
+                bodyColor: isDark ? '#E2E8F0' : '#475569',
+                borderColor: colors.grid,
+                borderWidth: 1,
+                padding: 10,
+                displayColors: false,
+                callbacks: {
+                  label: function(context) {
+                    return ` ${context.raw}% de acertos`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  color: colors.grid,
+                  drawBorder: false,
+                },
+                ticks: {
+                  color: colors.text,
+                  font: { family: 'Inter', size: 12 },
+                },
+              },
+              y: {
+                grid: {
+                  color: colors.grid,
+                  drawBorder: false,
+                },
+                ticks: {
+                  color: colors.text,
+                  font: { family: 'Inter', size: 12 },
+                  callback: function(value) {
+                    return value + '%';
+                  },
+                },
+                min: 40,
+                max: 100,
+                stepSize: 10,
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Radar Chart: Comparativo por Disciplina
+      const ctxRadar = document.getElementById('radarChart');
+      if (ctxRadar) {
+        if (radarChartInstance) radarChartInstance.destroy();
+        radarChartInstance = new Chart(ctxRadar, {
+          type: 'radar',
+          data: {
+            labels: ['Português', 'Dir. Const.', 'Dir. Adm.', 'Rac. Lógico', 'Informática'],
+            datasets: [
+              {
+                label: 'Seu Desempenho',
+                data: [85, 78, 65, 60, 90],
+                borderColor: colors.blue,
+                backgroundColor: colors.bgBlue,
+                borderWidth: 2.5,
+                pointBackgroundColor: colors.blue,
+                pointBorderColor: colors.pointBg,
+                pointBorderWidth: 2,
+                pointRadius: 4.5,
+                pointHoverRadius: 6.5,
+              },
+              {
+                label: 'Média Geral',
+                data: [70, 65, 60, 55, 75],
+                borderColor: colors.grayLine,
+                backgroundColor: isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(107, 114, 128, 0.12)',
+                borderWidth: 2,
+                borderDash: [4, 4],
+                pointBackgroundColor: colors.grayLine,
+                pointBorderColor: colors.pointBg,
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  color: colors.text,
+                  font: { family: 'Inter', size: 12, weight: '500' },
+                  boxWidth: 14,
+                  padding: 16,
+                  usePointStyle: true,
+                }
+              },
+              tooltip: {
+                backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+                titleColor: isDark ? '#F8FAFC' : '#1E293B',
+                bodyColor: isDark ? '#E2E8F0' : '#475569',
+                borderColor: colors.grid,
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: function(context) {
+                    return ` ${context.dataset.label}: ${context.raw}%`;
+                  }
+                }
+              }
+            },
+            scales: {
+              r: {
+                min: 0,
+                max: 100,
+                ticks: {
+                  stepSize: 20,
+                  display: false,
+                  color: colors.text,
+                  backdropColor: 'transparent',
+                },
+                grid: {
+                  color: colors.grid,
+                },
+                angleLines: {
+                  color: colors.grid,
+                },
+                pointLabels: {
+                  color: colors.text,
+                  font: { family: 'Inter', size: 11, weight: '600' },
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // Initialize charts safely
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDesempenhoCharts);
+    } else {
+      initDesempenhoCharts();
+    }
+
+    // Re-render charts when theme changes to keep colors responsive
+    const themeObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          initDesempenhoCharts();
+        }
+      });
+    });
+    themeObserver.observe(document.documentElement, { attributes: true });
+  </script>
+</body>
+</html>

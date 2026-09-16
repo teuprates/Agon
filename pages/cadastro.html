@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agon | Criar Conta</title>
+
+  <!-- External Dependencies -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans min-h-screen auth-page py-10 px-4 flex items-center justify-center relative" style="color: var(--text-primary);">
+
+  <!-- Fixed Theme Toggle Button (Top-Right) -->
+  <button
+    class="theme-toggle fixed top-5 right-5 sm:top-6 sm:right-6 w-11 h-11 rounded-xl flex items-center justify-center cursor-pointer shadow-md z-50 transition-transform hover:scale-105"
+    title="Alternar tema"
+    style="background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-default);"
+    aria-label="Alternar tema claro e escuro"
+  >
+    <i class="fa-solid fa-moon text-base"></i>
+  </button>
+
+  <!-- Auth Card -->
+  <div class="auth-card animate-fade-in my-auto" style="border: 1px solid var(--border-light); max-width: 480px;">
+    <!-- Logo Centered -->
+    <div class="flex flex-col items-center justify-center mb-6">
+      <a href="index.html" class="flex items-center gap-2.5 group cursor-pointer" title="Ir para o início">
+        <div class="w-9 h-9 relative transition-transform group-hover:scale-105">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+      <h1 class="text-xl sm:text-2xl font-bold text-center mt-4 mb-1" style="color: var(--text-primary);">
+        Crie sua conta no Agon
+      </h1>
+      <p class="text-sm text-center" style="color: var(--text-secondary);">
+        Comece sua jornada rumo à aprovação.
+      </p>
+    </div>
+
+    <!-- Registration Form -->
+    <form onsubmit="event.preventDefault(); window.location.href='index.html';" class="space-y-4">
+      <!-- Nome Completo -->
+      <div>
+        <label for="nome" class="form-label">Nome Completo</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none" style="color: var(--text-muted);">
+            <i class="fa-regular fa-user text-sm"></i>
+          </span>
+          <input
+            type="text"
+            id="nome"
+            name="nome"
+            required
+            placeholder="Lucas Ferreira"
+            class="form-input pl-10"
+            style="background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-default);"
+          />
+        </div>
+      </div>
+
+      <!-- E-mail -->
+      <div>
+        <label for="email" class="form-label">E-mail</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none" style="color: var(--text-muted);">
+            <i class="fa-regular fa-envelope text-sm"></i>
+          </span>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="lucas.ferreira@email.com"
+            class="form-input pl-10"
+            style="background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-default);"
+          />
+        </div>
+      </div>
+
+      <!-- Senha -->
+      <div>
+        <label for="senha" class="form-label">Senha</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none" style="color: var(--text-muted);">
+            <i class="fa-solid fa-lock text-sm"></i>
+          </span>
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            required
+            minlength="8"
+            placeholder="Mínimo de 8 caracteres"
+            class="form-input pl-10 pr-10"
+            style="background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-default);"
+          />
+          <button
+            type="button"
+            class="toggle-password absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer hover:opacity-80"
+            data-target="senha"
+            style="color: var(--text-muted);"
+            title="Alternar visualização da senha"
+            tabindex="-1"
+          >
+            <i class="fa-regular fa-eye text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirmar Senha -->
+      <div>
+        <label for="confirmar-senha" class="form-label">Confirmar Senha</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none" style="color: var(--text-muted);">
+            <i class="fa-solid fa-shield-halved text-sm"></i>
+          </span>
+          <input
+            type="password"
+            id="confirmar-senha"
+            name="confirmar-senha"
+            required
+            minlength="8"
+            placeholder="Confirme sua senha"
+            class="form-input pl-10 pr-10"
+            style="background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-default);"
+          />
+          <button
+            type="button"
+            class="toggle-password absolute inset-y-0 right-0 flex items-center pr-3.5 cursor-pointer hover:opacity-80"
+            data-target="confirmar-senha"
+            style="color: var(--text-muted);"
+            title="Alternar visualização da confirmação de senha"
+            tabindex="-1"
+          >
+            <i class="fa-regular fa-eye text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Concurso de Interesse -->
+      <div>
+        <label for="concurso" class="form-label">Concurso de Interesse</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none" style="color: var(--text-muted);">
+            <i class="fa-solid fa-bullseye text-sm"></i>
+          </span>
+          <select
+            id="concurso"
+            name="concurso"
+            required
+            class="form-input form-select pl-10 pr-9 w-full appearance-none cursor-pointer"
+            style="background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-default);"
+          >
+            <option value="" disabled selected style="background-color: var(--bg-card); color: var(--text-muted);">Selecione...</option>
+            <option value="policia-federal" style="background-color: var(--bg-card); color: var(--text-primary);">Polícia Federal</option>
+            <option value="receita-federal" style="background-color: var(--bg-card); color: var(--text-primary);">Receita Federal</option>
+            <option value="tjsp" style="background-color: var(--bg-card); color: var(--text-primary);">TJSP</option>
+            <option value="trf" style="background-color: var(--bg-card); color: var(--text-primary);">Tribunal Regional Federal</option>
+            <option value="inss" style="background-color: var(--bg-card); color: var(--text-primary);">INSS</option>
+            <option value="outro" style="background-color: var(--bg-card); color: var(--text-primary);">Outro</option>
+          </select>
+          <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none" style="color: var(--text-muted);">
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Checkbox Termos de Uso -->
+      <div class="flex items-start gap-2.5 pt-1">
+        <input
+          type="checkbox"
+          id="termos"
+          required
+          class="mt-1 h-4 w-4 rounded cursor-pointer"
+          style="accent-color: var(--color-blue);"
+        />
+        <label for="termos" class="text-xs leading-relaxed cursor-pointer select-none" style="color: var(--text-secondary);">
+          Aceito os
+          <a href="#" class="font-medium hover:underline" style="color: var(--color-blue);">Termos de Uso</a>
+          e
+          <a href="#" class="font-medium hover:underline" style="color: var(--color-blue);">Política de Privacidade</a>
+        </label>
+      </div>
+
+      <!-- Botão Criar Conta -->
+      <button
+        type="submit"
+        class="btn-primary w-full justify-center py-3 text-sm font-semibold rounded-xl cursor-pointer shadow-md transition-opacity hover:opacity-95 mt-2"
+        style="background-color: var(--color-blue); color: #fff;"
+      >
+        <i class="fa-solid fa-user-plus text-sm mr-1"></i>
+        Criar conta
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="relative flex items-center justify-center my-5">
+      <div class="w-full border-t" style="border-color: var(--border-default);"></div>
+      <span class="absolute px-3 text-xs uppercase tracking-wider font-medium" style="background-color: var(--bg-card); color: var(--text-muted);">
+        ou
+      </span>
+    </div>
+
+    <!-- Botão Google -->
+    <button
+      type="button"
+      onclick="window.location.href='index.html'"
+      class="btn-secondary w-full justify-center py-2.5 text-sm font-medium rounded-xl flex items-center gap-3 cursor-pointer transition-colors"
+      style="background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-default);"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+      </svg>
+      Cadastrar com Google
+    </button>
+
+    <!-- Link para Login -->
+    <div class="pt-5 mt-5 text-center" style="border-top: 1px solid var(--border-light);">
+      <p class="text-xs" style="color: var(--text-secondary);">
+        Já tem uma conta?
+        <a href="login.html" class="font-semibold hover:underline ml-1" style="color: var(--color-blue);">
+          Faça login
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Shared Script (Theme Toggle, etc.) -->
+  <script src="../js/script.js"></script>
+
+  <!-- Password visibility toggle script -->
+  <script>
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const icon = btn.querySelector('i');
+        if (input) {
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

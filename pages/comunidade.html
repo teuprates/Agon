@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comunidade | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    /* Community Specific Styles */
+    .post-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .post-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-default);
+    }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+    }
+    .action-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .action-btn.liked {
+      color: var(--color-red) !important;
+    }
+    .action-btn.bookmarked {
+      color: var(--color-blue) !important;
+    }
+    .hashtag-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background-color: var(--bg-hover);
+      color: var(--text-secondary);
+    }
+    .hashtag-tag:hover {
+      background-color: var(--color-blue-light);
+      color: var(--color-blue);
+    }
+    .community-sidebar-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .user-rank-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      transition: background-color 0.15s ease;
+    }
+    .user-rank-item:hover {
+      background-color: var(--bg-hover);
+    }
+    .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--color-green);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+    .comment-bubble {
+      background-color: var(--bg-hover);
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item active"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novo simulado da <strong>Polícia Federal</strong> disponível!</p><span class="text-xs" style="color:var(--text-muted);">Há 10 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 animate-fade-in">
+      <div class="max-w-6xl mx-auto space-y-6">
+
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="pulse-dot"></span>
+              <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--color-green);">Comunidade Ativa</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">Comunidade Agon</h1>
+            <p class="text-sm sm:text-base mt-1" style="color: var(--text-secondary);">Conecte-se, tire dúvidas e compartilhe materiais com milhares de concurseiros em todo o Brasil.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="btn-open-new-post" class="btn-primary">
+              <i class="fa-solid fa-pen-to-square text-xs"></i> Nova Publicação
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter / Tabs Bar -->
+        <div class="flex items-center justify-between gap-4 flex-wrap pb-1">
+          <div class="flex items-center gap-2 overflow-x-auto py-1">
+            <button class="filter-tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all" style="background-color: var(--color-blue); color: #fff;" data-category="todos">
+              <i class="fa-solid fa-fire mr-1"></i> Em Destaque
+            </button>
+            <button class="filter-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all" style="background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-default);" data-category="duvidas">
+              <i class="fa-regular fa-circle-question mr-1"></i> Dúvidas
+            </button>
+            <button class="filter-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all" style="background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-default);" data-category="materiais">
+              <i class="fa-solid fa-book-open mr-1"></i> Materiais & Resumos
+            </button>
+            <button class="filter-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all" style="background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-default);" data-category="motivacao">
+              <i class="fa-regular fa-lightbulb mr-1"></i> Dicas & Motivação
+            </button>
+          </div>
+          <div class="relative w-full sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
+            <input type="text" id="feed-search-input" placeholder="Filtrar no feed..." class="form-input text-xs py-2 pl-9 pr-3 rounded-xl w-full" />
+          </div>
+        </div>
+
+        <!-- TWO COLUMNS LAYOUT -->
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
+
+          <!-- LEFT COLUMN: FEED PRINCIPAL -->
+          <div class="flex-1 space-y-4 w-full min-w-0" id="main-feed-container">
+
+            <!-- Composer / Card Criar Publicação -->
+            <div class="card p-4 sm:p-5">
+              <div class="flex gap-3">
+                <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="user-avatar shrink-0" style="border: 2px solid var(--color-blue);" />
+                <div class="flex-1">
+                  <textarea id="composer-textarea" rows="2" placeholder="No que você está pensando, Lucas? Compartilhe uma dúvida, dica ou material..." class="w-full bg-transparent resize-none border-0 text-sm focus:outline-none" style="color: var(--text-primary);"></textarea>
+                  
+                  <div class="pt-3 mt-2 flex items-center justify-between flex-wrap gap-2" style="border-top: 1px solid var(--border-light);">
+                    <div class="flex items-center gap-1 sm:gap-2">
+                      <button type="button" class="composer-tag-btn action-btn text-xs hover:text-blue-500" title="Adicionar matéria">
+                        <i class="fa-solid fa-tag text-blue-500"></i> Matéria
+                      </button>
+                      <button type="button" class="composer-tag-btn action-btn text-xs hover:text-purple-500" title="Anexar material">
+                        <i class="fa-solid fa-paperclip text-purple-500"></i> Anexo
+                      </button>
+                      <button type="button" class="composer-tag-btn action-btn text-xs hover:text-green-500" title="Adicionar enquete">
+                        <i class="fa-solid fa-square-poll-vertical text-green-500"></i> Enquete
+                      </button>
+                    </div>
+                    <button type="button" id="btn-publish-post" class="btn-primary py-2 px-5 text-xs font-semibold">
+                      Publicar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Filter Alert (Hidden by default) -->
+            <div id="filter-indicator" class="hidden p-3 rounded-xl flex items-center justify-between text-xs" style="background-color: var(--color-blue-light); color: var(--color-blue-text);">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-filter"></i> Filtrando por: <strong id="filter-indicator-text">#ConcursoPF2025</strong>
+              </span>
+              <button id="btn-clear-filter" class="font-bold underline hover:opacity-80">Limpar filtro</button>
+            </div>
+
+            <!-- POST 1 (Card) -->
+            <article class="post-card p-5 sm:p-6" data-post-id="post-1" data-tags="#DireitoConstitucional #RemédiosConstitucionais #ConcursoPF2025" data-category="duvidas">
+              <!-- User Row -->
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/150?img=32" alt="Mariana Silva" class="user-avatar shrink-0" />
+                  <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-bold text-sm sm:text-base leading-tight" style="color: var(--text-primary);">Mariana Silva</span>
+                      <span class="badge badge-blue">Direito Constitucional</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs mt-0.5" style="color: var(--text-muted);">
+                      <span>Há 2 horas</span>
+                      <span>•</span>
+                      <span class="flex items-center gap-1"><i class="fa-solid fa-shield-halved text-[10px]" style="color: var(--color-blue);"></i> Foco PF (Agente)</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="relative">
+                  <button class="p-2 rounded-lg text-muted hover:text-primary hover:bg-hover transition-colors" title="Mais opções" style="color: var(--text-muted);">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Content Text -->
+              <div class="space-y-2 mb-4">
+                <p class="text-sm sm:text-base leading-relaxed" style="color: var(--text-primary);">
+                  Alguém tem uma dica de como memorizar os remédios constitucionais? Estou sempre confundindo o Mandado de Segurança coletivo com a Ação Popular nas questões da Cebraspe. Se alguém tiver algum mnemônico ou esquema visual salvador, agradeço muito!
+                </p>
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <span class="hashtag-tag" onclick="filterByTag('#DireitoConstitucional')">#DireitoConstitucional</span>
+                  <span class="hashtag-tag" onclick="filterByTag('#RemédiosConstitucionais')">#RemédiosConstitucionais</span>
+                  <span class="hashtag-tag" onclick="filterByTag('#ConcursoPF2025')">#ConcursoPF2025</span>
+                </div>
+              </div>
+
+              <!-- Actions Row (border-t) -->
+              <div class="pt-3 flex items-center justify-between text-xs sm:text-sm" style="border-top: 1px solid var(--border-light);">
+                <div class="flex items-center gap-2 sm:gap-4">
+                  <!-- Heart Button -->
+                  <button type="button" class="action-btn like-toggle-btn" data-liked="false" data-count="24">
+                    <i class="fa-regular fa-heart text-base"></i>
+                    <span class="like-count font-semibold">24</span>
+                  </button>
+
+                  <!-- Comment Button -->
+                  <button type="button" class="action-btn comment-toggle-btn" data-target="comments-post-1">
+                    <i class="fa-regular fa-comment text-base"></i>
+                    <span class="font-medium">8 respostas</span>
+                  </button>
+
+                  <!-- Share Button -->
+                  <button type="button" class="action-btn share-btn" title="Compartilhar">
+                    <i class="fa-solid fa-share-nodes text-base"></i>
+                    <span class="hidden sm:inline font-medium">Compartilhar</span>
+                  </button>
+                </div>
+
+                <!-- Bookmark Button (ml-auto) -->
+                <button type="button" class="action-btn bookmark-toggle-btn ml-auto" data-bookmarked="false" title="Salvar publicação">
+                  <i class="fa-regular fa-bookmark text-base"></i>
+                </button>
+              </div>
+
+              <!-- Expandable Comments Drawer -->
+              <div id="comments-post-1" class="hidden mt-4 pt-4 space-y-3" style="border-top: 1px dashed var(--border-default);">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Comentários em destaque</span>
+                  <span class="text-xs" style="color: var(--text-muted);">8 respostas</span>
+                </div>
+
+                <!-- Comment 1 -->
+                <div class="flex gap-2.5 items-start text-xs">
+                  <img src="https://i.pravatar.cc/150?img=15" alt="Rafael Mendes" class="w-8 h-8 rounded-full shrink-0" />
+                  <div class="flex-1 comment-bubble">
+                    <div class="flex items-center justify-between mb-1">
+                      <strong style="color: var(--text-primary);">Rafael Mendes</strong>
+                      <span style="color: var(--text-muted);">Há 1 hora</span>
+                    </div>
+                    <p style="color: var(--text-primary);">Mariana, grava assim: <strong>Ação Popular = Cidadão</strong> (lembre do título de eleitor!). Mandado de Segurança protege direito líquido e certo não amparado por HC ou HD. Ajuda muito nas provas!</p>
+                  </div>
+                </div>
+
+                <!-- Comment 2 -->
+                <div class="flex gap-2.5 items-start text-xs">
+                  <img src="https://i.pravatar.cc/150?img=27" alt="Aline Torres" class="w-8 h-8 rounded-full shrink-0" />
+                  <div class="flex-1 comment-bubble">
+                    <div class="flex items-center justify-between mb-1">
+                      <strong style="color: var(--text-primary);">Aline Torres</strong>
+                      <span style="color: var(--text-muted);">Há 45 min</span>
+                    </div>
+                    <p style="color: var(--text-primary);">Uso o mnemônico do <strong>H-H-M-M-A</strong>: HC (Liberdade de locomoção), HD (Informação pessoal), MS (Direito líquido e certo), MI (Falta de norma regulamentadora), AP (Qualquer cidadão contra ato lesivo).</p>
+                  </div>
+                </div>
+
+                <!-- Quick Reply Box -->
+                <div class="flex gap-2.5 items-center mt-3 pt-2">
+                  <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="w-7 h-7 rounded-full shrink-0" />
+                  <div class="flex-1 relative">
+                    <input type="text" placeholder="Escreva uma resposta para Mariana..." class="form-input text-xs py-2 pl-3 pr-10 rounded-xl" />
+                    <button class="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold" style="color: var(--color-blue);"><i class="fa-solid fa-paper-plane"></i></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- POST 2 (Card) -->
+            <article class="post-card p-5 sm:p-6" data-post-id="post-2" data-tags="#RaciocínioLógico #TabelaVerdade #Materiais" data-category="materiais">
+              <!-- User Row -->
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/150?img=12" alt="Carlos Eduardo" class="user-avatar shrink-0" />
+                  <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-bold text-sm sm:text-base leading-tight" style="color: var(--text-primary);">Carlos Eduardo</span>
+                      <span class="badge badge-purple">Raciocínio Lógico</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs mt-0.5" style="color: var(--text-muted);">
+                      <span>Há 5 horas</span>
+                      <span>•</span>
+                      <span class="flex items-center gap-1"><i class="fa-solid fa-calculator text-[10px]" style="color: var(--color-purple);"></i> Foco Receita Federal</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="relative">
+                  <button class="p-2 rounded-lg text-muted hover:text-primary hover:bg-hover transition-colors" title="Mais opções" style="color: var(--text-muted);">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Content Text -->
+              <div class="space-y-3 mb-4">
+                <p class="text-sm sm:text-base leading-relaxed" style="color: var(--text-primary);">
+                  Pessoal, o professor liberou um novo material de Tabela Verdade na área de Materiais. Ajuda muito! Recomendo.
+                </p>
+
+                <!-- Attached Material Card Preview -->
+                <div class="p-4 rounded-xl flex items-center justify-between gap-4 transition-all" style="background-color: var(--bg-hover); border: 1px solid var(--border-default);">
+                  <div class="flex items-center gap-3.5 min-w-0">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-xl" style="background-color: var(--color-purple-light); color: var(--color-purple);">
+                      <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div class="min-w-0">
+                      <h4 class="font-bold text-xs sm:text-sm truncate" style="color: var(--text-primary);">Resumo_Tabela_Verdade_Equivalencias_2025.pdf</h4>
+                      <p class="text-xs flex items-center gap-2 mt-0.5" style="color: var(--text-secondary);">
+                        <span>PDF • 4.2 MB</span>
+                        <span>•</span>
+                        <span class="font-medium text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-circle-check text-[10px]"></i> Verificado pelo Agon</span>
+                      </p>
+                    </div>
+                  </div>
+                  <a href="materiais.html" class="btn-primary py-2 px-3 text-xs shrink-0 whitespace-nowrap">
+                    <i class="fa-solid fa-download text-xs"></i> Acessar
+                  </a>
+                </div>
+
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <span class="hashtag-tag" onclick="filterByTag('#RaciocínioLógico')">#RaciocínioLógico</span>
+                  <span class="hashtag-tag" onclick="filterByTag('#TabelaVerdade')">#TabelaVerdade</span>
+                  <span class="hashtag-tag" onclick="filterByTag('#Materiais')">#Materiais</span>
+                </div>
+              </div>
+
+              <!-- Actions Row (border-t) -->
+              <div class="pt-3 flex items-center justify-between text-xs sm:text-sm" style="border-top: 1px solid var(--border-light);">
+                <div class="flex items-center gap-2 sm:gap-4">
+                  <!-- Heart Button (Red-500, 56) -->
+                  <button type="button" class="action-btn liked like-toggle-btn text-red-500" data-liked="true" data-count="56">
+                    <i class="fa-solid fa-heart text-base text-red-500"></i>
+                    <span class="like-count font-semibold text-red-500">56</span>
+                  </button>
+
+                  <!-- Comment Button (12 respostas) -->
+                  <button type="button" class="action-btn comment-toggle-btn" data-target="comments-post-2">
+                    <i class="fa-regular fa-comment text-base"></i>
+                    <span class="font-medium">12 respostas</span>
+                  </button>
+
+                  <!-- Share Button -->
+                  <button type="button" class="action-btn share-btn" title="Compartilhar">
+                    <i class="fa-solid fa-share-nodes text-base"></i>
+                    <span class="hidden sm:inline font-medium">Compartilhar</span>
+                  </button>
+                </div>
+
+                <!-- Bookmark Button (ml-auto) -->
+                <button type="button" class="action-btn bookmark-toggle-btn bookmarked ml-auto" data-bookmarked="true" title="Salvo nos seus favoritos">
+                  <i class="fa-solid fa-bookmark text-base" style="color: var(--color-blue);"></i>
+                </button>
+              </div>
+
+              <!-- Expandable Comments Drawer -->
+              <div id="comments-post-2" class="hidden mt-4 pt-4 space-y-3" style="border-top: 1px dashed var(--border-default);">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Comentários em destaque</span>
+                  <span class="text-xs" style="color: var(--text-muted);">12 respostas</span>
+                </div>
+
+                <!-- Comment 1 -->
+                <div class="flex gap-2.5 items-start text-xs">
+                  <img src="https://i.pravatar.cc/150?img=20" alt="Juliana Costa" class="w-8 h-8 rounded-full shrink-0" />
+                  <div class="flex-1 comment-bubble">
+                    <div class="flex items-center justify-between mb-1">
+                      <strong style="color: var(--text-primary);">Juliana Costa</strong>
+                      <span style="color: var(--text-muted);">Há 3 horas</span>
+                    </div>
+                    <p style="color: var(--text-primary);">Material impecável! As negações de 'Se P então Q' (regra do MANÉ - Mantém a primeira e Nega a segunda) caem em 90% das questões!</p>
+                  </div>
+                </div>
+
+                <!-- Quick Reply Box -->
+                <div class="flex gap-2.5 items-center mt-3 pt-2">
+                  <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="w-7 h-7 rounded-full shrink-0" />
+                  <div class="flex-1 relative">
+                    <input type="text" placeholder="Escreva uma resposta para Carlos..." class="form-input text-xs py-2 pl-3 pr-10 rounded-xl" />
+                    <button class="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold" style="color: var(--color-blue);"><i class="fa-solid fa-paper-plane"></i></button>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <!-- POST 3 (Card) - Feed Completeness -->
+            <article class="post-card p-5 sm:p-6" data-post-id="post-3" data-tags="#ConcursoPF2025 #Motivação #DicasDePortuguês" data-category="motivacao">
+              <!-- User Row -->
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/150?img=47" alt="Bruno Castro" class="user-avatar shrink-0" />
+                  <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-bold text-sm sm:text-base leading-tight" style="color: var(--text-primary);">Bruno Castro</span>
+                      <span class="badge badge-green">Língua Portuguesa</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs mt-0.5" style="color: var(--text-muted);">
+                      <span>Há 8 horas</span>
+                      <span>•</span>
+                      <span class="flex items-center gap-1"><i class="fa-solid fa-award text-[10px]" style="color: var(--color-green);"></i> TJSP Escrevente</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="relative">
+                  <button class="p-2 rounded-lg text-muted hover:text-primary hover:bg-hover transition-colors" title="Mais opções" style="color: var(--text-muted);">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Content Text -->
+              <div class="space-y-2 mb-4">
+                <p class="text-sm sm:text-base leading-relaxed" style="color: var(--text-primary);">
+                  Bati meu recorde pessoal de questões resolvidas hoje (140 questões com 84% de acerto)! Para quem está sofrendo com crase antes de pronomes relativos, façam mapas mentais coloridos. A retenção visual faz toda a diferença nos simulados. Pra cima! 🚀
+                </p>
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <span class="hashtag-tag" onclick="filterByTag('#DicasDePortuguês')">#DicasDePortuguês</span>
+                  <span class="hashtag-tag" onclick="filterByTag('#Motivação')">#Motivação</span>
+                  <span class="hashtag-tag" onclick="filterByTag('#ConcursoPF2025')">#ConcursoPF2025</span>
+                </div>
+              </div>
+
+              <!-- Actions Row (border-t) -->
+              <div class="pt-3 flex items-center justify-between text-xs sm:text-sm" style="border-top: 1px solid var(--border-light);">
+                <div class="flex items-center gap-2 sm:gap-4">
+                  <!-- Heart Button -->
+                  <button type="button" class="action-btn like-toggle-btn" data-liked="false" data-count="41">
+                    <i class="fa-regular fa-heart text-base"></i>
+                    <span class="like-count font-semibold">41</span>
+                  </button>
+
+                  <!-- Comment Button -->
+                  <button type="button" class="action-btn comment-toggle-btn" data-target="comments-post-3">
+                    <i class="fa-regular fa-comment text-base"></i>
+                    <span class="font-medium">15 respostas</span>
+                  </button>
+
+                  <!-- Share Button -->
+                  <button type="button" class="action-btn share-btn" title="Compartilhar">
+                    <i class="fa-solid fa-share-nodes text-base"></i>
+                    <span class="hidden sm:inline font-medium">Compartilhar</span>
+                  </button>
+                </div>
+
+                <!-- Bookmark Button (ml-auto) -->
+                <button type="button" class="action-btn bookmark-toggle-btn ml-auto" data-bookmarked="false" title="Salvar publicação">
+                  <i class="fa-regular fa-bookmark text-base"></i>
+                </button>
+              </div>
+
+              <!-- Expandable Comments Drawer -->
+              <div id="comments-post-3" class="hidden mt-4 pt-4 space-y-3" style="border-top: 1px dashed var(--border-default);">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Comentários em destaque</span>
+                  <span class="text-xs" style="color: var(--text-muted);">15 respostas</span>
+                </div>
+
+                <div class="flex gap-2.5 items-start text-xs">
+                  <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="w-8 h-8 rounded-full shrink-0" style="border: 2px solid var(--color-blue);" />
+                  <div class="flex-1 comment-bubble">
+                    <div class="flex items-center justify-between mb-1">
+                      <strong style="color: var(--text-primary);">Lucas Ferreira (Você)</strong>
+                      <span style="color: var(--text-muted);">Há 2 horas</span>
+                    </div>
+                    <p style="color: var(--text-primary);">Parabéns Bruno! Essa consistência é inspiradora. Vou aplicar o mapa mental na revisão de amanhã.</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+          </div>
+
+          <!-- RIGHT COLUMN: SIDEBAR COMUNIDADE -->
+          <div class="w-full lg:w-72 shrink-0 space-y-6">
+
+            <!-- CARD 1: TÓPICOS EM ALTA -->
+            <div class="community-sidebar-card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-fire text-lg" style="color: var(--color-orange);"></i>
+                  <h3 class="font-bold text-base" style="color: var(--text-primary);">Tópicos em Alta</h3>
+                </div>
+                <span class="badge badge-orange text-[10px]">Hoje</span>
+              </div>
+
+              <div class="space-y-3">
+                <!-- Topic 1 -->
+                <div class="group cursor-pointer p-2.5 rounded-xl transition-all hover:bg-hover" onclick="filterByTag('#ConcursoPF2025')">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold" style="color: var(--color-blue);">#ConcursoPF2025</span>
+                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded" style="background-color: var(--bg-hover); color: var(--text-muted);">1.4k</span>
+                  </div>
+                  <p class="text-xs mt-0.5" style="color: var(--text-muted);">Edital iminente & cronogramas</p>
+                </div>
+
+                <!-- Topic 2 -->
+                <div class="group cursor-pointer p-2.5 rounded-xl transition-all hover:bg-hover" onclick="filterByTag('#DicasDePortuguês')">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold" style="color: var(--color-blue);">#DicasDePortuguês</span>
+                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded" style="background-color: var(--bg-hover); color: var(--text-muted);">892</span>
+                  </div>
+                  <p class="text-xs mt-0.5" style="color: var(--text-muted);">Mnemônicos e sintaxe FGV</p>
+                </div>
+
+                <!-- Topic 3 -->
+                <div class="group cursor-pointer p-2.5 rounded-xl transition-all hover:bg-hover" onclick="filterByTag('#Motivação')">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold" style="color: var(--color-blue);">#Motivação</span>
+                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded" style="background-color: var(--bg-hover); color: var(--text-muted);">654</span>
+                  </div>
+                  <p class="text-xs mt-0.5" style="color: var(--text-muted);">Depoimentos de aprovados</p>
+                </div>
+
+                <!-- Topic 4 -->
+                <div class="group cursor-pointer p-2.5 rounded-xl transition-all hover:bg-hover" onclick="filterByTag('#DireitoAdministrativo')">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold" style="color: var(--color-blue);">#DireitoAdministrativo</span>
+                    <span class="text-[11px] font-bold px-1.5 py-0.5 rounded" style="background-color: var(--bg-hover); color: var(--text-muted);">521</span>
+                  </div>
+                  <p class="text-xs mt-0.5" style="color: var(--text-muted);">Nova Lei de Licitações (14.133)</p>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-3 text-center" style="border-top: 1px solid var(--border-light);">
+                <button class="text-xs font-semibold hover:underline" style="color: var(--color-blue);">
+                  Ver todos os tópicos <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD 2: USUÁRIOS MAIS ATIVOS -->
+            <div class="community-sidebar-card p-5">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-trophy text-lg" style="color: var(--color-orange);"></i>
+                  <h3 class="font-bold text-base" style="color: var(--text-primary);">Usuários Mais Ativos</h3>
+                </div>
+                <span class="text-xs" style="color: var(--text-muted);">Semanal</span>
+              </div>
+
+              <div class="space-y-2">
+                <!-- Row 1: Mariana Silva -->
+                <div class="user-rank-item">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style="background-color: #FEF3C7; color: #D97706;">
+                    1
+                  </div>
+                  <img src="https://i.pravatar.cc/150?img=32" alt="Mariana Silva" class="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold truncate" style="color: var(--text-primary);">Mariana Silva</p>
+                    <p class="text-[11px]" style="color: var(--text-muted);">48 contribuições</p>
+                  </div>
+                  <span class="text-xs font-bold shrink-0" style="color: var(--color-blue);">2.4k XP</span>
+                </div>
+
+                <!-- Row 2: Carlos Eduardo -->
+                <div class="user-rank-item">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+                    2
+                  </div>
+                  <img src="https://i.pravatar.cc/150?img=12" alt="Carlos Eduardo" class="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold truncate" style="color: var(--text-primary);">Carlos Eduardo</p>
+                    <p class="text-[11px]" style="color: var(--text-muted);">37 contribuições</p>
+                  </div>
+                  <span class="text-xs font-bold shrink-0" style="color: var(--text-secondary);">2.1k XP</span>
+                </div>
+
+                <!-- Row 3: Lucas Ferreira (Você) -->
+                <div class="user-rank-item" style="background-color: var(--color-blue-light); border-radius: 12px;">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style="background-color: var(--color-blue); color: #fff;">
+                    3
+                  </div>
+                  <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="w-9 h-9 rounded-full object-cover shrink-0" style="border: 2px solid var(--color-blue);" />
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold truncate" style="color: var(--color-blue-text);">Lucas Ferreira (Você)</p>
+                    <p class="text-[11px]" style="color: var(--color-blue-text); opacity: 0.8;">Nível 12 • 28 respostas</p>
+                  </div>
+                  <span class="text-xs font-bold shrink-0" style="color: var(--color-blue);">1.8k XP</span>
+                </div>
+              </div>
+
+              <!-- Streak & Rank Note -->
+              <div class="mt-4 p-3 rounded-xl flex items-center justify-between text-xs" style="background-color: var(--bg-hover);">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-fire text-amber-500"></i>
+                  <span style="color: var(--text-secondary);">Faltam <strong>300 XP</strong> para o 2º lugar!</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CARD 3: SALAS DE ESTUDO AO VIVO -->
+            <div class="community-sidebar-card p-5">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-headphones text-sm" style="color: var(--color-green);"></i>
+                  <h4 class="font-bold text-sm" style="color: var(--text-primary);">Salas de Estudo (Pomodoro)</h4>
+                </div>
+              </div>
+              <p class="text-xs mb-3" style="color: var(--text-secondary);">Estude em silêncio com áudio ambiente e câmera voluntária.</p>
+
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-xl flex items-center justify-between" style="background-color: var(--bg-hover);">
+                  <div>
+                    <p class="text-xs font-bold" style="color: var(--text-primary);">Sala PF — Foco Total</p>
+                    <p class="text-[10px] flex items-center gap-1" style="color: var(--color-green);">
+                      <span class="pulse-dot"></span> 32 concurseiros online
+                    </p>
+                  </div>
+                  <button class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background-color: var(--color-blue); color: #fff;">Entrar</button>
+                </div>
+                <div class="p-2.5 rounded-xl flex items-center justify-between" style="background-color: var(--bg-hover);">
+                  <div>
+                    <p class="text-xs font-bold" style="color: var(--text-primary);">Sala Receita & TJSP</p>
+                    <p class="text-[10px] flex items-center gap-1" style="color: var(--color-green);">
+                      <span class="pulse-dot"></span> 19 concurseiros online
+                    </p>
+                  </div>
+                  <button class="text-xs font-semibold px-2.5 py-1 rounded-lg" style="background-color: var(--color-blue); color: #fff;">Entrar</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Guidelines / Regras Card -->
+            <div class="community-sidebar-card p-4 text-xs" style="color: var(--text-muted);">
+              <div class="flex items-center gap-2 font-bold mb-1.5" style="color: var(--text-secondary);">
+                <i class="fa-solid fa-circle-info"></i> Diretrizes da Comunidade
+              </div>
+              <p class="leading-relaxed">Mantenha a cordialidade, compartilhe fontes confiáveis e ajude seus colegas de jornada rumo à posse.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button class="modal-tab active" data-tab="dados">Dados</button>
+        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar-lg" />
+            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Lucas Ferreira</h3>
+            <p class="text-sm" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Javascript -->
+  <script src="../js/script.js"></script>
+
+  <!-- Page-specific interactions for Comunidade -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1. Likes toggle interaction
+      document.querySelectorAll('.like-toggle-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const isLiked = this.getAttribute('data-liked') === 'true';
+          let count = parseInt(this.getAttribute('data-count'), 10) || 0;
+          const icon = this.querySelector('i');
+          const countSpan = this.querySelector('.like-count');
+
+          if (isLiked) {
+            count = Math.max(0, count - 1);
+            this.setAttribute('data-liked', 'false');
+            this.setAttribute('data-count', count);
+            this.classList.remove('liked', 'text-red-500');
+            icon.className = 'fa-regular fa-heart text-base';
+            icon.classList.remove('text-red-500');
+            if (countSpan) countSpan.classList.remove('text-red-500');
+          } else {
+            count += 1;
+            this.setAttribute('data-liked', 'true');
+            this.setAttribute('data-count', count);
+            this.classList.add('liked', 'text-red-500');
+            icon.className = 'fa-solid fa-heart text-base text-red-500';
+            if (countSpan) countSpan.classList.add('text-red-500');
+          }
+          if (countSpan) countSpan.textContent = count;
+        });
+      });
+
+      // 2. Bookmarks toggle interaction
+      document.querySelectorAll('.bookmark-toggle-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const isBookmarked = this.getAttribute('data-bookmarked') === 'true';
+          const icon = this.querySelector('i');
+
+          if (isBookmarked) {
+            this.setAttribute('data-bookmarked', 'false');
+            this.classList.remove('bookmarked');
+            icon.className = 'fa-regular fa-bookmark text-base';
+            icon.style.color = '';
+          } else {
+            this.setAttribute('data-bookmarked', 'true');
+            this.classList.add('bookmarked');
+            icon.className = 'fa-solid fa-bookmark text-base';
+            icon.style.color = 'var(--color-blue)';
+          }
+        });
+      });
+
+      // 3. Comments drawer toggle
+      document.querySelectorAll('.comment-toggle-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const targetId = this.getAttribute('data-target');
+          if (targetId) {
+            const drawer = document.getElementById(targetId);
+            if (drawer) {
+              drawer.classList.toggle('hidden');
+            }
+          }
+        });
+      });
+
+      // 4. Publish new post
+      const btnPublish = document.getElementById('btn-publish-post');
+      const composerTextarea = document.getElementById('composer-textarea');
+      const feedContainer = document.getElementById('main-feed-container');
+
+      if (btnPublish && composerTextarea && feedContainer) {
+        btnPublish.addEventListener('click', function () {
+          const text = composerTextarea.value.trim();
+          if (!text) {
+            composerTextarea.focus();
+            return;
+          }
+
+          const newArticle = document.createElement('article');
+          newArticle.className = 'post-card p-5 sm:p-6 animate-fade-in';
+          newArticle.setAttribute('data-category', 'duvidas');
+          newArticle.setAttribute('data-tags', '#Geral #Dúvidas');
+          newArticle.innerHTML = `
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Ferreira" class="user-avatar shrink-0" style="border: 2px solid var(--color-blue);" />
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-sm sm:text-base leading-tight" style="color: var(--text-primary);">Lucas Ferreira (Você)</span>
+                    <span class="badge badge-blue">Geral</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs mt-0.5" style="color: var(--text-muted);">
+                    <span>Agora mesmo</span>
+                    <span>•</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-circle-check text-[10px]" style="color: var(--color-green);"></i> Concurseiro Ativo</span>
+                  </div>
+                </div>
+              </div>
+              <div class="relative">
+                <button class="p-2 rounded-lg text-muted hover:text-primary hover:bg-hover transition-colors" style="color: var(--text-muted);">
+                  <i class="fa-solid fa-ellipsis"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-2 mb-4">
+              <p class="text-sm sm:text-base leading-relaxed" style="color: var(--text-primary); white-space: pre-line;">${escapeHtml(text)}</p>
+              <div class="flex flex-wrap gap-2 pt-1">
+                <span class="hashtag-tag">#ComunidadeAgon</span>
+                <span class="hashtag-tag">#Estudos</span>
+              </div>
+            </div>
+
+            <div class="pt-3 flex items-center justify-between text-xs sm:text-sm" style="border-top: 1px solid var(--border-light);">
+              <div class="flex items-center gap-2 sm:gap-4">
+                <button type="button" class="action-btn like-toggle-btn" data-liked="false" data-count="0">
+                  <i class="fa-regular fa-heart text-base"></i>
+                  <span class="like-count font-semibold">0</span>
+                </button>
+                <button type="button" class="action-btn">
+                  <i class="fa-regular fa-comment text-base"></i>
+                  <span class="font-medium">0 respostas</span>
+                </button>
+                <button type="button" class="action-btn share-btn">
+                  <i class="fa-solid fa-share-nodes text-base"></i>
+                  <span class="hidden sm:inline font-medium">Compartilhar</span>
+                </button>
+              </div>
+              <button type="button" class="action-btn bookmark-toggle-btn ml-auto" data-bookmarked="false">
+                <i class="fa-regular fa-bookmark text-base"></i>
+              </button>
+            </div>
+          `;
+
+          // Insert right after composer
+          const composerCard = composerTextarea.closest('.card');
+          if (composerCard && composerCard.nextElementSibling) {
+            feedContainer.insertBefore(newArticle, composerCard.nextElementSibling);
+          } else {
+            feedContainer.appendChild(newArticle);
+          }
+
+          composerTextarea.value = '';
+
+          // Re-bind likes/bookmarks for the new element
+          const newLikeBtn = newArticle.querySelector('.like-toggle-btn');
+          if (newLikeBtn) {
+            newLikeBtn.addEventListener('click', function () {
+              const isLiked = this.getAttribute('data-liked') === 'true';
+              let count = parseInt(this.getAttribute('data-count'), 10) || 0;
+              const icon = this.querySelector('i');
+              const countSpan = this.querySelector('.like-count');
+              if (isLiked) {
+                count = Math.max(0, count - 1);
+                this.setAttribute('data-liked', 'false');
+                this.setAttribute('data-count', count);
+                this.classList.remove('liked', 'text-red-500');
+                icon.className = 'fa-regular fa-heart text-base';
+              } else {
+                count += 1;
+                this.setAttribute('data-liked', 'true');
+                this.setAttribute('data-count', count);
+                this.classList.add('liked', 'text-red-500');
+                icon.className = 'fa-solid fa-heart text-base text-red-500';
+              }
+              if (countSpan) countSpan.textContent = count;
+            });
+          }
+
+          const newBookmarkBtn = newArticle.querySelector('.bookmark-toggle-btn');
+          if (newBookmarkBtn) {
+            newBookmarkBtn.addEventListener('click', function () {
+              const isBookmarked = this.getAttribute('data-bookmarked') === 'true';
+              const icon = this.querySelector('i');
+              if (isBookmarked) {
+                this.setAttribute('data-bookmarked', 'false');
+                icon.className = 'fa-regular fa-bookmark text-base';
+                icon.style.color = '';
+              } else {
+                this.setAttribute('data-bookmarked', 'true');
+                icon.className = 'fa-solid fa-bookmark text-base';
+                icon.style.color = 'var(--color-blue)';
+              }
+            });
+          }
+        });
+      }
+
+      // Quick focus on composer when clicking top button
+      const topBtnNewPost = document.getElementById('btn-open-new-post');
+      if (topBtnNewPost && composerTextarea) {
+        topBtnNewPost.addEventListener('click', function () {
+          composerTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          composerTextarea.focus();
+        });
+      }
+
+      // 5. Category filter tabs
+      const categoryTabs = document.querySelectorAll('.filter-tab-btn');
+      categoryTabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+          const category = this.getAttribute('data-category');
+          categoryTabs.forEach(t => {
+            t.classList.remove('active');
+            t.style.backgroundColor = 'var(--bg-card)';
+            t.style.color = 'var(--text-secondary)';
+            t.style.border = '1px solid var(--border-default)';
+          });
+          this.classList.add('active');
+          this.style.backgroundColor = 'var(--color-blue)';
+          this.style.color = '#fff';
+          this.style.border = '1px solid transparent';
+
+          filterFeedByCategory(category);
+        });
+      });
+
+      function filterFeedByCategory(category) {
+        const posts = document.querySelectorAll('#main-feed-container article.post-card');
+        posts.forEach(post => {
+          if (category === 'todos' || post.getAttribute('data-category') === category) {
+            post.style.display = '';
+          } else {
+            post.style.display = 'none';
+          }
+        });
+      }
+
+      // 6. Search within feed
+      const searchInput = document.getElementById('feed-search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          const query = this.value.toLowerCase().trim();
+          const posts = document.querySelectorAll('#main-feed-container article.post-card');
+          posts.forEach(post => {
+            const text = post.textContent.toLowerCase();
+            if (!query || text.includes(query)) {
+              post.style.display = '';
+            } else {
+              post.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      // Clear filter button
+      const btnClearFilter = document.getElementById('btn-clear-filter');
+      if (btnClearFilter) {
+        btnClearFilter.addEventListener('click', function () {
+          clearActiveFilter();
+        });
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, function (m) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
+      }
+    });
+
+    // 7. Global Tag filtering
+    window.filterByTag = function (tag) {
+      const indicator = document.getElementById('filter-indicator');
+      const indicatorText = document.getElementById('filter-indicator-text');
+      if (indicator && indicatorText) {
+        indicatorText.textContent = tag;
+        indicator.classList.remove('hidden');
+      }
+
+      const posts = document.querySelectorAll('#main-feed-container article.post-card');
+      posts.forEach(post => {
+        const tags = post.getAttribute('data-tags') || '';
+        const content = post.textContent || '';
+        if (tags.toLowerCase().includes(tag.toLowerCase()) || content.toLowerCase().includes(tag.toLowerCase())) {
+          post.style.display = '';
+        } else {
+          post.style.display = 'none';
+        }
+      });
+
+      // Scroll to feed top
+      const feedContainer = document.getElementById('main-feed-container');
+      if (feedContainer) {
+        feedContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    window.clearActiveFilter = function () {
+      const indicator = document.getElementById('filter-indicator');
+      if (indicator) indicator.classList.add('hidden');
+
+      const posts = document.querySelectorAll('#main-feed-container article.post-card');
+      posts.forEach(post => post.style.display = '');
+
+      const searchInput = document.getElementById('feed-search-input');
+      if (searchInput) searchInput.value = '';
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banco de Questões | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <style>
+    /* Custom difficulty button states */
+    .btn-diff-facil:hover, .btn-diff-facil.active {
+      border-color: var(--color-green) !important;
+      color: var(--color-green) !important;
+      background-color: var(--color-green-light) !important;
+    }
+    .btn-diff-media:hover, .btn-diff-media.active {
+      border-color: var(--color-orange) !important;
+      color: var(--color-orange) !important;
+      background-color: var(--color-orange-light) !important;
+    }
+    .btn-diff-dificil:hover, .btn-diff-dificil.active {
+      border-color: var(--color-red) !important;
+      color: var(--color-red) !important;
+      background-color: var(--color-red-light) !important;
+    }
+
+    /* Option item interactive styles */
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-default);
+      background-color: var(--bg-card);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .option-item:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--color-blue);
+    }
+    .option-item.selected {
+      border-color: var(--color-blue);
+      background-color: var(--bg-active);
+    }
+    .option-item.correct {
+      border-color: var(--color-green) !important;
+      background-color: var(--color-green-light) !important;
+    }
+    .option-item.incorrect {
+      border-color: var(--color-red) !important;
+      background-color: var(--color-red-light) !important;
+    }
+    .option-letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      background-color: var(--bg-hover);
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+    .option-item.selected .option-letter {
+      background-color: var(--color-blue);
+      color: #fff;
+    }
+    .option-item.correct .option-letter {
+      background-color: var(--color-green);
+      color: #fff;
+    }
+    .option-item.incorrect .option-letter {
+      background-color: var(--color-red);
+      color: #fff;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item active"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novo simulado da <strong>Polícia Federal</strong> disponível!</p><span class="text-xs" style="color:var(--text-muted);">Há 10 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-8 animate-fade-in">
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 items-start">
+
+        <!-- ================= LEFT COLUMN ================= -->
+        <div class="w-full lg:w-64 shrink-0 flex flex-col gap-6">
+
+          <!-- Filter Card -->
+          <div class="card p-5 space-y-4" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="flex items-center justify-between pb-3" style="border-bottom: 1px solid var(--border-light);">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-filter text-sm" style="color: var(--color-blue);"></i>
+                <h3 class="font-bold text-sm tracking-tight" style="color: var(--text-primary);">Filtros de Questões</h3>
+              </div>
+              <button type="button" id="btn-limpar-filtros" class="text-xs font-medium transition hover:opacity-80" style="color: var(--text-muted);" title="Redefinir filtros">
+                Limpar
+              </button>
+            </div>
+
+            <!-- Disciplina Select -->
+            <div>
+              <label for="filter-disciplina" class="form-label text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Disciplina</label>
+              <div class="relative">
+                <select id="filter-disciplina" class="form-select w-full text-xs py-2.5 px-3 pr-8 rounded-xl appearance-none cursor-pointer" style="background-color: var(--bg-input); border: 1px solid var(--border-default); color: var(--text-primary);">
+                  <option value="todas">Todas</option>
+                  <option value="portugues">Português</option>
+                  <option value="direito-constitucional">Direito Constitucional</option>
+                  <option value="raciocinio-logico">Raciocínio Lógico</option>
+                  <option value="dir-administrativo">Dir. Administrativo</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style="color: var(--text-muted);"></i>
+              </div>
+            </div>
+
+            <!-- Banca Select -->
+            <div>
+              <label for="filter-banca" class="form-label text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Banca</label>
+              <div class="relative">
+                <select id="filter-banca" class="form-select w-full text-xs py-2.5 px-3 pr-8 rounded-xl appearance-none cursor-pointer" style="background-color: var(--bg-input); border: 1px solid var(--border-default); color: var(--text-primary);">
+                  <option value="todas">Todas</option>
+                  <option value="cebraspe">Cebraspe</option>
+                  <option value="fgv">FGV</option>
+                  <option value="vunesp">Vunesp</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style="color: var(--text-muted);"></i>
+              </div>
+            </div>
+
+            <!-- Ano Select -->
+            <div>
+              <label for="filter-ano" class="form-label text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Ano</label>
+              <div class="relative">
+                <select id="filter-ano" class="form-select w-full text-xs py-2.5 px-3 pr-8 rounded-xl appearance-none cursor-pointer" style="background-color: var(--bg-input); border: 1px solid var(--border-default); color: var(--text-primary);">
+                  <option value="todos">Todos</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                  <option value="2022">2022</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style="color: var(--text-muted);"></i>
+              </div>
+            </div>
+
+            <!-- Dificuldade Buttons -->
+            <div>
+              <label class="form-label text-xs font-semibold mb-2" style="color: var(--text-secondary);">Dificuldade</label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button type="button" class="btn-diff-facil difficulty-btn py-2 px-1 text-xs font-semibold rounded-xl text-center transition border" data-diff="facil" style="background-color: var(--bg-input); border-color: var(--border-default); color: var(--text-secondary);">
+                  Fácil
+                </button>
+                <button type="button" class="btn-diff-media difficulty-btn py-2 px-1 text-xs font-semibold rounded-xl text-center transition border" data-diff="media" style="background-color: var(--bg-input); border-color: var(--border-default); color: var(--text-secondary);">
+                  Média
+                </button>
+                <button type="button" class="btn-diff-dificil difficulty-btn py-2 px-1 text-xs font-semibold rounded-xl text-center transition border" data-diff="dificil" style="background-color: var(--bg-input); border-color: var(--border-default); color: var(--text-secondary);">
+                  Difícil
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter CTA Button -->
+            <button type="button" id="btn-aplicar-filtros" class="btn-primary w-full justify-center text-xs py-2.5 mt-2 shadow-sm">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i> Aplicar Filtros
+            </button>
+          </div>
+
+          <!-- Performance Card -->
+          <div class="card p-6 text-center" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-2xl flex items-center justify-center text-xl shadow-sm" style="background-color: var(--color-blue-light); color: var(--color-blue);">
+              <i class="fa-solid fa-chart-simple"></i>
+            </div>
+            <h4 class="font-bold text-base" style="color: var(--text-primary);">Seu desempenho</h4>
+            <p class="text-xs mt-0.5" style="color: var(--text-muted);">Estatísticas acumuladas</p>
+
+            <div class="my-4">
+              <div class="text-3xl font-extrabold tracking-tight" style="color: var(--color-blue);">1.248</div>
+              <span class="text-xs font-medium" style="color: var(--text-secondary);">questões resolvidas</span>
+            </div>
+
+            <!-- Progress Bar 78% -->
+            <div class="space-y-2 mt-4 text-left">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-medium" style="color: var(--text-secondary);">Aproveitamento</span>
+                <span class="font-bold" style="color: var(--color-green);">78% de acerto</span>
+              </div>
+              <div class="progress-track h-2.5 w-full" style="background-color: var(--bg-hover);">
+                <div class="progress-fill-green h-2.5" style="width: 78%; background-color: var(--color-green);"></div>
+              </div>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="grid grid-cols-2 gap-2 mt-5 pt-4 border-t text-left" style="border-color: var(--border-light);">
+              <div class="p-2.5 rounded-xl" style="background-color: var(--bg-input);">
+                <p class="text-[11px]" style="color: var(--text-muted);">Acertos</p>
+                <p class="text-sm font-bold" style="color: var(--color-green);"><i class="fa-solid fa-check text-xs mr-1"></i>973</p>
+              </div>
+              <div class="p-2.5 rounded-xl" style="background-color: var(--bg-input);">
+                <p class="text-[11px]" style="color: var(--text-muted);">Erros</p>
+                <p class="text-sm font-bold" style="color: var(--color-red);"><i class="fa-solid fa-xmark text-xs mr-1"></i>275</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= RIGHT COLUMN ================= -->
+        <div class="flex-1 w-full min-w-0 space-y-6">
+
+          <!-- Section Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b" style="border-color: var(--border-light);">
+            <div>
+              <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold tracking-tight" style="color: var(--text-primary);">Banco de Questões</h1>
+                <span class="badge badge-blue text-xs font-semibold">1.248 no total</span>
+              </div>
+              <p class="text-sm mt-1" style="color: var(--text-secondary);">Treine com questões comentadas das principais bancas do Brasil e acelere sua aprovação.</p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="text-xs font-medium px-3 py-1.5 rounded-full" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+                Mostrando <strong style="color: var(--text-primary);">3</strong> de <strong style="color: var(--color-blue);">1.248</strong>
+              </span>
+              <div class="relative">
+                <select class="form-select text-xs py-1.5 pr-7 pl-3 rounded-lg cursor-pointer" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-secondary);">
+                  <option>Mais recentes</option>
+                  <option>Mais difíceis</option>
+                  <option>Mais fáceis</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none" style="color: var(--text-muted);"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Cards Container -->
+          <div class="space-y-6" id="questions-list">
+
+            <!-- ================= QUESTION 1 ================= -->
+            <article class="card p-6 space-y-5 question-card transition" id="question-1" data-disciplina="direito-constitucional" data-banca="cebraspe" data-ano="2024" data-diff="media" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+              <!-- Top Row: Badges & Actions -->
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-light);">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="badge badge-blue font-semibold"><i class="fa-solid fa-scale-balanced text-[10px] mr-1.5"></i>Direito Constitucional</span>
+                  <span class="badge badge-gray font-medium">Cebraspe</span>
+                  <span class="badge badge-gray font-medium">2024</span>
+                  <span class="badge badge-orange font-semibold">Média</span>
+                  <span class="text-xs ml-1 hidden sm:inline" style="color: var(--text-muted);">• Polícia Federal — Agente</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono px-2 py-0.5 rounded" style="background-color: var(--bg-input); color: var(--text-muted);">Q#24891</span>
+                  <button type="button" class="btn-star p-1.5 rounded-lg transition hover:opacity-80" style="color: var(--text-muted);" title="Favoritar questão">
+                    <i class="fa-regular fa-star text-sm"></i>
+                  </button>
+                  <button type="button" class="btn-bookmark p-1.5 rounded-lg transition hover:opacity-80" style="color: var(--text-muted);" title="Salvar no caderno de estudos">
+                    <i class="fa-regular fa-bookmark text-sm"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="space-y-3">
+                <p class="text-sm font-medium leading-relaxed" style="color: var(--text-primary);">
+                  No que tange aos <strong>princípios fundamentais</strong> consagrados expressamente na Constituição da República Federativa do Brasil de 1988 (CF/88), analise as proposições a seguir e assinale a alternativa juridicamente correta que distingue com precisão os <em>fundamentos</em> da República de seus <em>objetivos fundamentais</em>:
+                </p>
+              </div>
+
+              <!-- Radio Options (3 options) -->
+              <div class="space-y-2.5" role="radiogroup" aria-label="Alternativas da questão 1">
+                <!-- Option A -->
+                <label class="option-item" for="q1-opt-a">
+                  <input type="radio" id="q1-opt-a" name="question-1" value="A" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">A</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    A garantia do desenvolvimento nacional e a dignidade da pessoa humana são categorizadas expressamente no texto constitucional como fundamentos soberanos da República Federativa do Brasil.
+                  </span>
+                </label>
+
+                <!-- Option B (Correct) -->
+                <label class="option-item" for="q1-opt-b" data-correct="true">
+                  <input type="radio" id="q1-opt-b" name="question-1" value="B" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">B</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    A construção de uma sociedade livre, justa e solidária é objetivo fundamental da República, enquanto o pluralismo político constitui um de seus fundamentos.
+                  </span>
+                </label>
+
+                <!-- Option C -->
+                <label class="option-item" for="q1-opt-c">
+                  <input type="radio" id="q1-opt-c" name="question-1" value="C" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">C</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    A erradicação da pobreza e da marginalização configura princípio orientador das relações internacionais, enquanto a prevalência dos direitos humanos integra os objetivos fundamentais.
+                  </span>
+                </label>
+              </div>
+
+              <!-- Question Action Bar -->
+              <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--border-light);">
+                <div class="flex items-center gap-3">
+                  <button type="button" class="btn-primary btn-responder text-xs py-2.5 px-6 font-semibold" data-target="question-1">
+                    <i class="fa-solid fa-check text-xs"></i> Responder
+                  </button>
+                  <button type="button" class="btn-secondary btn-comentario text-xs py-2 px-3 flex items-center gap-1.5" data-target="comment-1">
+                    <i class="fa-regular fa-comment-dots text-xs"></i> Comentário do Professor
+                  </button>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-medium" style="color: var(--text-muted);">
+                  <span><i class="fa-solid fa-users text-xs mr-1"></i> 74% de acertos</span>
+                  <span><i class="fa-regular fa-message text-xs mr-1"></i> 18 comentários</span>
+                </div>
+              </div>
+
+              <!-- Feedback Box (Hidden initially) -->
+              <div id="feedback-1" class="hidden p-4 rounded-xl text-xs flex items-center gap-3"></div>
+
+              <!-- Teacher Explanation Box (Collapsible) -->
+              <div id="comment-1" class="hidden p-4 rounded-xl space-y-2 text-xs" style="background-color: var(--bg-input); border: 1px solid var(--border-default);">
+                <div class="flex items-center gap-2 font-bold" style="color: var(--color-blue);">
+                  <i class="fa-solid fa-graduation-cap"></i> Comentário do Professor — Prof. Matheus Santos
+                </div>
+                <p class="leading-relaxed" style="color: var(--text-primary);">
+                  <strong>Gabarito: Alternativa B.</strong><br/>
+                  • <strong>Fundamentos (Art. 1º):</strong> Soberania, Cidadania, Dignidade da pessoa humana, Valores sociais do trabalho e da livre iniciativa, <em>Pluralismo político</em> (mnemônico <strong>SO-CI-DI-VA-PLU</strong>).<br/>
+                  • <strong>Objetivos Fundamentais (Art. 3º):</strong> <em>Construir uma sociedade livre, justa e solidária</em>; garantir o desenvolvimento nacional; erradicar a pobreza e a marginalização; promover o bem de todos sem preconceitos (mnemônico <strong>CON-GA-ER-PRO</strong>).
+                </p>
+              </div>
+            </article>
+
+            <!-- ================= QUESTION 2 ================= -->
+            <article class="card p-6 space-y-5 question-card transition" id="question-2" data-disciplina="portugues" data-banca="fgv" data-ano="2023" data-diff="facil" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+              <!-- Top Row: Badges & Actions -->
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-light);">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="badge badge-purple font-semibold"><i class="fa-solid fa-book text-[10px] mr-1.5"></i>Português</span>
+                  <span class="badge badge-gray font-medium">FGV</span>
+                  <span class="badge badge-gray font-medium">2023</span>
+                  <span class="badge badge-green font-semibold">Fácil</span>
+                  <span class="text-xs ml-1 hidden sm:inline" style="color: var(--text-muted);">• Receita Federal — Auditor</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono px-2 py-0.5 rounded" style="background-color: var(--bg-input); color: var(--text-muted);">Q#19302</span>
+                  <button type="button" class="btn-star p-1.5 rounded-lg transition hover:opacity-80" style="color: var(--text-muted);" title="Favoritar questão">
+                    <i class="fa-regular fa-star text-sm"></i>
+                  </button>
+                  <button type="button" class="btn-bookmark p-1.5 rounded-lg transition hover:opacity-80" style="color: var(--text-muted);" title="Salvar no caderno de estudos">
+                    <i class="fa-regular fa-bookmark text-sm"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="space-y-3">
+                <p class="text-sm font-medium leading-relaxed" style="color: var(--text-primary);">
+                  Em conformidade com a norma-padrão da língua portuguesa referente ao <strong>emprego do acento indicativo de crase</strong>, assinale a opção na qual o sinal gráfico foi utilizado de modo inteiramente correto:
+                </p>
+              </div>
+
+              <!-- Radio Options (3 options) -->
+              <div class="space-y-2.5" role="radiogroup" aria-label="Alternativas da questão 2">
+                <!-- Option A -->
+                <label class="option-item" for="q2-opt-a">
+                  <input type="radio" id="q2-opt-a" name="question-2" value="A" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">A</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    O auditor compareceu à reunião pontualmente e colocou-se disposto à colaborar com a equipe fiscalizadora.
+                  </span>
+                </label>
+
+                <!-- Option B (Correct) -->
+                <label class="option-item" for="q2-opt-b" data-correct="true">
+                  <input type="radio" id="q2-opt-b" name="question-2" value="B" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">B</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    Os documentos foram entregues à comissão organizadora para que ficassem à disposição de todos os concorrentes.
+                  </span>
+                </label>
+
+                <!-- Option C -->
+                <label class="option-item" for="q2-opt-c">
+                  <input type="radio" id="q2-opt-c" name="question-2" value="C" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">C</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    O edital proibiu à permanência de candidatos que chegaram após às treze horas no local de prova.
+                  </span>
+                </label>
+              </div>
+
+              <!-- Question Action Bar -->
+              <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--border-light);">
+                <div class="flex items-center gap-3">
+                  <button type="button" class="btn-primary btn-responder text-xs py-2.5 px-6 font-semibold" data-target="question-2">
+                    <i class="fa-solid fa-check text-xs"></i> Responder
+                  </button>
+                  <button type="button" class="btn-secondary btn-comentario text-xs py-2 px-3 flex items-center gap-1.5" data-target="comment-2">
+                    <i class="fa-regular fa-comment-dots text-xs"></i> Comentário do Professor
+                  </button>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-medium" style="color: var(--text-muted);">
+                  <span><i class="fa-solid fa-users text-xs mr-1"></i> 86% de acertos</span>
+                  <span><i class="fa-regular fa-message text-xs mr-1"></i> 9 comentários</span>
+                </div>
+              </div>
+
+              <!-- Feedback Box -->
+              <div id="feedback-2" class="hidden p-4 rounded-xl text-xs flex items-center gap-3"></div>
+
+              <!-- Teacher Explanation Box -->
+              <div id="comment-2" class="hidden p-4 rounded-xl space-y-2 text-xs" style="background-color: var(--bg-input); border: 1px solid var(--border-default);">
+                <div class="flex items-center gap-2 font-bold" style="color: var(--color-blue);">
+                  <i class="fa-solid fa-graduation-cap"></i> Comentário da Professora — Profa. Camila Duarte
+                </div>
+                <p class="leading-relaxed" style="color: var(--text-primary);">
+                  <strong>Gabarito: Alternativa B.</strong><br/>
+                  • Em 'entregues <strong>à comissão</strong>', há fusão da preposição 'a' exigida pelo verbo entregar com o artigo definido feminino 'a'.<br/>
+                  • A locução prepositiva feminina '<strong>à disposição</strong>' exige crase obrigatória.<br/>
+                  • Na alternativa A, é proibido crase antes de verbo ('à colaborar'). Na alternativa C, o verbo proibir é transitivo direto ('proibiu a permanência', sem preposição), e não há crase após a preposição 'após' ('após as treze horas').
+                </p>
+              </div>
+            </article>
+
+            <!-- ================= QUESTION 3 ================= -->
+            <article class="card p-6 space-y-5 question-card transition" id="question-3" data-disciplina="raciocinio-logico" data-banca="vunesp" data-ano="2022" data-diff="dificil" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+              <!-- Top Row: Badges & Actions -->
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-light);">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="badge font-semibold" style="background-color: var(--color-cyan); color: #fff;"><i class="fa-solid fa-brain text-[10px] mr-1.5"></i>Raciocínio Lógico</span>
+                  <span class="badge badge-gray font-medium">Vunesp</span>
+                  <span class="badge badge-gray font-medium">2022</span>
+                  <span class="badge font-semibold" style="background-color: var(--color-red-light); color: var(--color-red);">Difícil</span>
+                  <span class="text-xs ml-1 hidden sm:inline" style="color: var(--text-muted);">• TJSP — Escrevente Técnico Judiciário</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-mono px-2 py-0.5 rounded" style="background-color: var(--bg-input); color: var(--text-muted);">Q#08477</span>
+                  <button type="button" class="btn-star p-1.5 rounded-lg transition hover:opacity-80" style="color: var(--text-muted);" title="Favoritar questão">
+                    <i class="fa-regular fa-star text-sm"></i>
+                  </button>
+                  <button type="button" class="btn-bookmark p-1.5 rounded-lg transition hover:opacity-80" style="color: var(--text-muted);" title="Salvar no caderno de estudos">
+                    <i class="fa-regular fa-bookmark text-sm"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Question Statement -->
+              <div class="space-y-3">
+                <p class="text-sm font-medium leading-relaxed" style="color: var(--text-primary);">
+                  Considere a seguinte afirmação condicional: <em>"Se o servidor atua com presteza, então o processo judicial não sofre atraso e o cidadão tem seu direito tutelado."</em> De acordo com as leis da lógica proposicional e as equivalências das proposições compostas, uma <strong>negação logicamente equivalente</strong> para essa afirmação é:
+                </p>
+              </div>
+
+              <!-- Radio Options (3 options) -->
+              <div class="space-y-2.5" role="radiogroup" aria-label="Alternativas da questão 3">
+                <!-- Option A -->
+                <label class="option-item" for="q3-opt-a">
+                  <input type="radio" id="q3-opt-a" name="question-3" value="A" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">A</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    Se o servidor não atua com presteza, então o processo judicial sofre atraso ou o cidadão não tem seu direito tutelado.
+                  </span>
+                </label>
+
+                <!-- Option B (Correct) -->
+                <label class="option-item" for="q3-opt-b" data-correct="true">
+                  <input type="radio" id="q3-opt-b" name="question-3" value="B" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">B</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    O servidor atua com presteza, e o processo judicial sofre atraso ou o cidadão não tem seu direito tutelado.
+                  </span>
+                </label>
+
+                <!-- Option C -->
+                <label class="option-item" for="q3-opt-c">
+                  <input type="radio" id="q3-opt-c" name="question-3" value="C" class="mt-1" style="accent-color: var(--color-blue);" />
+                  <span class="option-letter">C</span>
+                  <span class="text-sm leading-relaxed" style="color: var(--text-primary);">
+                    O servidor não atua com presteza, ou o processo judicial não sofre atraso e o cidadão tem seu direito tutelado.
+                  </span>
+                </label>
+              </div>
+
+              <!-- Question Action Bar -->
+              <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--border-light);">
+                <div class="flex items-center gap-3">
+                  <button type="button" class="btn-primary btn-responder text-xs py-2.5 px-6 font-semibold" data-target="question-3">
+                    <i class="fa-solid fa-check text-xs"></i> Responder
+                  </button>
+                  <button type="button" class="btn-secondary btn-comentario text-xs py-2 px-3 flex items-center gap-1.5" data-target="comment-3">
+                    <i class="fa-regular fa-comment-dots text-xs"></i> Comentário do Professor
+                  </button>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-medium" style="color: var(--text-muted);">
+                  <span><i class="fa-solid fa-users text-xs mr-1"></i> 52% de acertos</span>
+                  <span><i class="fa-regular fa-message text-xs mr-1"></i> 31 comentários</span>
+                </div>
+              </div>
+
+              <!-- Feedback Box -->
+              <div id="feedback-3" class="hidden p-4 rounded-xl text-xs flex items-center gap-3"></div>
+
+              <!-- Teacher Explanation Box -->
+              <div id="comment-3" class="hidden p-4 rounded-xl space-y-2 text-xs" style="background-color: var(--bg-input); border: 1px solid var(--border-default);">
+                <div class="flex items-center gap-2 font-bold" style="color: var(--color-blue);">
+                  <i class="fa-solid fa-graduation-cap"></i> Comentário do Professor — Prof. Fernando Costa
+                </div>
+                <p class="leading-relaxed" style="color: var(--text-primary);">
+                  <strong>Gabarito: Alternativa B.</strong><br/>
+                  • A proposição condicional tem o formato: <strong>P → (Q ∧ R)</strong>.<br/>
+                  • A regra para negar uma condicional é a <em>Regra do MANÉ</em> (Mantém a 1ª E Nega a 2ª): <strong>¬[P → S] ≡ P ∧ ¬S</strong>.<br/>
+                  • Como a segunda proposição é uma conjunção (Q ∧ R), aplicamos as <strong>Leis de De Morgan</strong>: ¬(Q ∧ R) ≡ ¬Q ∨ ¬R.<br/>
+                  • Logo: <em>"O servidor atua com presteza (P) <strong>E</strong> o processo sofre atraso (¬Q) <strong>OU</strong> o cidadão não tem seu direito tutelado (¬R)"</em>.
+                </p>
+              </div>
+            </article>
+
+          </div>
+
+          <!-- Empty State (Hidden when questions are visible) -->
+          <div id="empty-state" class="card p-12 text-center hidden space-y-4" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+            <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-2xl" style="background-color: var(--bg-hover); color: var(--text-muted);">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base" style="color: var(--text-primary);">Nenhuma questão encontrada</h3>
+              <p class="text-xs mt-1" style="color: var(--text-muted);">Tente alterar os filtros selecionados ou clique em limpar para ver todas as questões.</p>
+            </div>
+            <button type="button" id="btn-reset-filtros-empty" class="btn-primary text-xs py-2 px-4 mx-auto">
+              Limpar Filtros
+            </button>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t" style="border-color: var(--border-light);">
+            <p class="text-xs" style="color: var(--text-muted);">
+              Mostrando <span class="font-semibold" style="color: var(--text-primary);">1</span> a <span class="font-semibold" style="color: var(--text-primary);">3</span> de <span class="font-semibold" style="color: var(--color-blue);">1.248</span> questões
+            </p>
+            <div class="flex items-center gap-2">
+              <button class="btn-secondary py-1.5 px-3 text-xs opacity-50 cursor-not-allowed" disabled>
+                <i class="fa-solid fa-chevron-left mr-1"></i> Anterior
+              </button>
+              <button class="w-8 h-8 rounded-lg text-xs font-bold" style="background-color: var(--color-blue); color: #fff;">1</button>
+              <button class="w-8 h-8 rounded-lg text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800" style="color: var(--text-secondary);">2</button>
+              <button class="w-8 h-8 rounded-lg text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800" style="color: var(--text-secondary);">3</button>
+              <span class="text-xs px-1" style="color: var(--text-muted);">...</span>
+              <button class="w-8 h-8 rounded-lg text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800" style="color: var(--text-secondary);">416</button>
+              <button class="btn-secondary py-1.5 px-3 text-xs">
+                Próxima <i class="fa-solid fa-chevron-right ml-1"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button class="modal-tab active" data-tab="dados">Dados</button>
+        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar-lg" />
+            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Lucas Ferreira</h3>
+            <p class="text-sm" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Script -->
+  <script src="../js/script.js"></script>
+
+  <!-- Page-specific Interactive Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // ─── Difficulty Buttons Toggle ─────────────────────────────
+      let selectedDiff = null;
+      const diffButtons = document.querySelectorAll('.difficulty-btn');
+
+      diffButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+          const diff = this.dataset.diff;
+          if (selectedDiff === diff) {
+            selectedDiff = null;
+            this.classList.remove('active');
+          } else {
+            diffButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedDiff = diff;
+          }
+          filterQuestions();
+        });
+      });
+
+      // ─── Filter Selects ────────────────────────────────────────
+      const filterDisciplina = document.getElementById('filter-disciplina');
+      const filterBanca = document.getElementById('filter-banca');
+      const filterAno = document.getElementById('filter-ano');
+      const btnLimpar = document.getElementById('btn-limpar-filtros');
+      const btnResetEmpty = document.getElementById('btn-reset-filtros-empty');
+      const btnAplicar = document.getElementById('btn-aplicar-filtros');
+
+      function filterQuestions() {
+        const discVal = filterDisciplina ? filterDisciplina.value : 'todas';
+        const bancaVal = filterBanca ? filterBanca.value : 'todas';
+        const anoVal = filterAno ? filterAno.value : 'todos';
+
+        const questions = document.querySelectorAll('.question-card');
+        let visibleCount = 0;
+
+        questions.forEach(card => {
+          const cardDisc = card.dataset.disciplina;
+          const cardBanca = card.dataset.banca;
+          const cardAno = card.dataset.ano;
+          const cardDiff = card.dataset.diff;
+
+          const matchDisc = discVal === 'todas' || discVal === cardDisc;
+          const matchBanca = bancaVal === 'todas' || bancaVal === cardBanca;
+          const matchAno = anoVal === 'todos' || anoVal === cardAno;
+          const matchDiff = !selectedDiff || selectedDiff === cardDiff;
+
+          if (matchDisc && matchBanca && matchAno && matchDiff) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        const emptyState = document.getElementById('empty-state');
+        if (emptyState) {
+          if (visibleCount === 0) {
+            emptyState.classList.remove('hidden');
+          } else {
+            emptyState.classList.add('hidden');
+          }
+        }
+      }
+
+      function resetFilters() {
+        if (filterDisciplina) filterDisciplina.value = 'todas';
+        if (filterBanca) filterBanca.value = 'todas';
+        if (filterAno) filterAno.value = 'todos';
+        selectedDiff = null;
+        diffButtons.forEach(b => b.classList.remove('active'));
+        filterQuestions();
+      }
+
+      if (btnLimpar) btnLimpar.addEventListener('click', resetFilters);
+      if (btnResetEmpty) btnResetEmpty.addEventListener('click', resetFilters);
+      if (btnAplicar) btnAplicar.addEventListener('click', filterQuestions);
+
+      if (filterDisciplina) filterDisciplina.addEventListener('change', filterQuestions);
+      if (filterBanca) filterBanca.addEventListener('change', filterQuestions);
+      if (filterAno) filterAno.addEventListener('change', filterQuestions);
+
+      // ─── Option Selection Styling ─────────────────────────────
+      document.querySelectorAll('.option-item').forEach(item => {
+        item.addEventListener('click', function () {
+          const radio = this.querySelector('input[type="radio"]');
+          if (radio && !radio.disabled) {
+            radio.checked = true;
+            const parent = this.closest('.question-card');
+            parent.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+          }
+        });
+      });
+
+      // ─── Answer Checking (Responder) ──────────────────────────
+      document.querySelectorAll('.btn-responder').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const cardId = this.dataset.target;
+          const card = document.getElementById(cardId);
+          if (!card) return;
+
+          const selectedOption = card.querySelector('input[type="radio"]:checked');
+          const feedbackId = cardId.replace('question-', 'feedback-');
+          const feedbackBox = document.getElementById(feedbackId);
+          const commentId = cardId.replace('question-', 'comment-');
+          const commentBox = document.getElementById(commentId);
+
+          if (!selectedOption) {
+            if (feedbackBox) {
+              feedbackBox.className = 'p-3 rounded-xl text-xs flex items-center gap-2 border';
+              feedbackBox.style.backgroundColor = 'var(--color-orange-light)';
+              feedbackBox.style.color = 'var(--color-orange-text)';
+              feedbackBox.style.borderColor = 'var(--color-orange)';
+              feedbackBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-sm"></i> <span>Selecione uma alternativa antes de responder.</span>';
+              feedbackBox.classList.remove('hidden');
+            }
+            return;
+          }
+
+          // Disable radios
+          card.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+          this.disabled = true;
+          this.classList.add('opacity-70', 'cursor-not-allowed');
+          this.innerHTML = '<i class="fa-solid fa-check-double text-xs"></i> Respondida';
+
+          const chosenLabel = selectedOption.closest('.option-item');
+          const isCorrect = chosenLabel.getAttribute('data-correct') === 'true';
+
+          // Mark options
+          card.querySelectorAll('.option-item').forEach(opt => {
+            if (opt.getAttribute('data-correct') === 'true') {
+              opt.classList.add('correct');
+            } else if (opt === chosenLabel && !isCorrect) {
+              opt.classList.add('incorrect');
+            }
+          });
+
+          // Show feedback message
+          if (feedbackBox) {
+            feedbackBox.classList.remove('hidden');
+            if (isCorrect) {
+              feedbackBox.className = 'p-3.5 rounded-xl text-xs flex items-center justify-between border';
+              feedbackBox.style.backgroundColor = 'var(--color-green-light)';
+              feedbackBox.style.color = 'var(--color-green-text)';
+              feedbackBox.style.borderColor = 'var(--color-green)';
+              feedbackBox.innerHTML = `
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-circle-check text-base" style="color:var(--color-green);"></i>
+                  <span><strong>Parabéns!</strong> Resposta correta (+10 XP adicionados).</span>
+                </div>
+                <span class="font-bold text-[11px] px-2 py-0.5 rounded-full" style="background:rgba(16,185,129,0.2);">ACERTO</span>
+              `;
+            } else {
+              feedbackBox.className = 'p-3.5 rounded-xl text-xs flex items-center justify-between border';
+              feedbackBox.style.backgroundColor = 'var(--color-red-light)';
+              feedbackBox.style.color = 'var(--color-red)';
+              feedbackBox.style.borderColor = 'var(--color-red)';
+              feedbackBox.innerHTML = `
+                <div class="flex items-center gap-2.5">
+                  <i class="fa-solid fa-circle-xmark text-base" style="color:var(--color-red);"></i>
+                  <span><strong>Não foi dessa vez!</strong> A alternativa correta foi destacada em verde.</span>
+                </div>
+                <span class="font-bold text-[11px] px-2 py-0.5 rounded-full" style="background:rgba(239,68,68,0.2);">ERRO</span>
+              `;
+            }
+          }
+
+          // Auto open teacher comment
+          if (commentBox) {
+            commentBox.classList.remove('hidden');
+          }
+        });
+      });
+
+      // ─── Comment Toggle ───────────────────────────────────────
+      document.querySelectorAll('.btn-comentario').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const targetId = this.dataset.target;
+          const box = document.getElementById(targetId);
+          if (box) {
+            box.classList.toggle('hidden');
+          }
+        });
+      });
+
+      // ─── Star / Bookmark Interactions ────────────────────────
+      document.querySelectorAll('.btn-star').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const icon = this.querySelector('i');
+          if (icon.classList.contains('fa-regular')) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+            this.style.color = 'var(--color-orange)';
+          } else {
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+            this.style.color = 'var(--text-muted)';
+          }
+        });
+      });
+
+      document.querySelectorAll('.btn-bookmark').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const icon = this.querySelector('i');
+          if (icon.classList.contains('fa-regular')) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+            this.style.color = 'var(--color-blue)';
+          } else {
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+            this.style.color = 'var(--text-muted)';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

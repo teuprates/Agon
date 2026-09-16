@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurações | Em Breve — Agon</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Agon Design System Styles -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item active"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90 transition-opacity" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-shield text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Módulo de segurança com <strong>2FA</strong> em fase de testes!</p><span class="text-xs" style="color:var(--text-muted);">Há 30 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 animate-fade-in space-y-8">
+      <div class="max-w-5xl mx-auto space-y-8">
+
+        <!-- BREADCRUMB & ACTIONS -->
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
+            <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <a href="em-breve.html" class="hover:underline">Lançamentos</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span style="color: var(--text-primary);" class="font-medium">Configurações</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="btn-primary text-xs flex items-center gap-2 py-2 px-3.5 open-profile-modal">
+              <i class="fa-regular fa-user"></i> Abrir Painel Rápido de Perfil
+            </button>
+            <a href="index.html" class="btn-secondary text-xs flex items-center gap-2 py-2 px-3.5">
+              <i class="fa-solid fa-arrow-left"></i> Dashboard
+            </a>
+          </div>
+        </div>
+
+        <!-- HERO SECTION -->
+        <div class="coming-soon-hero p-8 md:p-12 text-center relative">
+          <div class="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-orange-500/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-red-500/10 blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+            <!-- Glowing Icon -->
+            <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl mb-5 pulse-glow" style="background: linear-gradient(135deg, var(--color-orange), #EF4444); color: #fff;">
+              <i class="fa-solid fa-gear"></i>
+            </div>
+
+            <!-- Badges -->
+            <div class="flex items-center gap-2 mb-4">
+              <span class="badge badge-orange text-xs font-semibold px-3 py-1 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved"></i> Painel Avançado
+              </span>
+              <span class="badge badge-blue text-xs font-semibold px-3 py-1">
+                Previsão: 2 Semanas
+              </span>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3" style="color: var(--text-primary);">
+              Central Completa de Configurações
+            </h1>
+            <p class="text-base md:text-lg leading-relaxed mb-6" style="color: var(--text-secondary);">
+              Estamos desenvolvendo uma página de configurações avançadas com gerenciamento de segurança (2FA), histórico de faturas do Agon Premium, múltiplos perfis de estudo e personalização de alertas.
+            </p>
+
+            <!-- Quick access to current profile modal note -->
+            <div class="card p-4 rounded-xl border mb-6 flex items-center gap-3 text-left max-w-md" style="background-color: var(--bg-card); border-color: var(--border-default);">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center text-base shrink-0" style="background: var(--color-blue-light); color: var(--color-blue);">
+                <i class="fa-solid fa-circle-info"></i>
+              </div>
+              <div class="flex-1">
+                <p class="text-xs font-bold" style="color: var(--text-primary);">Precisa editar dados agora?</p>
+                <p class="text-[11px]" style="color: var(--text-secondary);">Você já pode alterar foto, tema e preferências básicas pelo menu do perfil no topo.</p>
+              </div>
+              <button class="btn-secondary text-[11px] py-1.5 px-3 whitespace-nowrap shrink-0 open-profile-modal">
+                Ver dados
+              </button>
+            </div>
+
+            <!-- Development Progress -->
+            <div class="w-full max-w-md bg-white/40 dark:bg-slate-800/60 p-4 rounded-2xl border border-default shadow-sm mb-6">
+              <div class="flex justify-between items-center text-xs font-semibold mb-2">
+                <span style="color: var(--text-primary);">Fase 4: Testes de segurança e faturamento</span>
+                <span style="color: var(--color-orange);" class="font-bold">85% concluído</span>
+              </div>
+              <div class="w-full h-3 rounded-full overflow-hidden" style="background-color: var(--border-default);">
+                <div class="h-full rounded-full transition-all duration-700" style="width: 85%; background: linear-gradient(90deg, var(--color-orange), #EF4444);"></div>
+              </div>
+              <div class="flex justify-between text-[11px] mt-2" style="color: var(--text-muted);">
+                <span>Estrutura de Perfil ✓</span>
+                <span>Módulo de Faturas ⏳</span>
+                <span>Lançamento Geral 🚀</span>
+              </div>
+            </div>
+
+            <!-- Notification Form -->
+            <form id="notify-form-config" class="w-full max-w-md flex flex-col sm:flex-row gap-2.5">
+              <input 
+                type="email" 
+                id="notify-email-config" 
+                required
+                placeholder="Seu e-mail para novidades de segurança" 
+                class="search-input flex-1 px-4 py-3 rounded-xl text-sm border focus:outline-none"
+                style="background-color: var(--bg-card); border-color: var(--border-default);"
+              />
+              <button type="submit" class="btn-primary py-3 px-6 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shrink-0 shadow-md hover:shadow-lg">
+                <i class="fa-regular fa-bell"></i> Avise-me
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- SNEAK PEEK FEATURES -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">
+                Novos Controles em Construção
+              </h2>
+              <p class="text-xs md:text-sm mt-0.5" style="color: var(--text-secondary);">
+                Mais poder e controle sobre sua conta, privacidade e cobranças.
+              </p>
+            </div>
+            <span class="badge badge-orange text-xs font-semibold px-2.5 py-1">4 Recursos</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="feature-preview-card p-5 rounded-2xl flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: var(--color-orange-light); color: var(--color-orange);">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-base mb-1" style="color: var(--text-primary);">Autenticação de Dois Fatores (2FA)</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+                  Reforce a segurança de todas as suas anotações, histórico de simulados e progresso com chaves OTP via Google Authenticator ou Microsoft Authenticator.
+                </p>
+              </div>
+            </div>
+
+            <div class="feature-preview-card p-5 rounded-2xl flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: var(--color-blue-light); color: var(--color-blue);">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-base mb-1" style="color: var(--text-primary);">Alertas no WhatsApp & E-mail</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+                  Defina o horário exato da sua rotina para receber uma mensagem matinal motivadora com as matérias do dia e o link direto para o primeiro simulado.
+                </p>
+              </div>
+            </div>
+
+            <div class="feature-preview-card p-5 rounded-2xl flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: var(--color-green-light); color: var(--color-green);">
+                <i class="fa-solid fa-credit-card"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-base mb-1" style="color: var(--text-primary);">Gestão de Assinatura Premium</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+                  Consulte notas fiscais em PDF, altere o cartão de crédito cadastrado, pause a assinatura ou faça upgrade sem burocracia ou contato com suporte.
+                </p>
+              </div>
+            </div>
+
+            <div class="feature-preview-card p-5 rounded-2xl flex gap-4 items-start">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: var(--color-purple-light); color: var(--color-purple);">
+                <i class="fa-solid fa-laptop-code"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-base mb-1" style="color: var(--text-primary);">Sessões e Dispositivos Conectados</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+                  Veja em tempo real em quais aparelhos sua conta está logada (smartphone, computador do trabalho, tablet de estudo) e deslogue remotamente.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK SHORTCUTS -->
+        <div class="space-y-4">
+          <h2 class="font-bold text-lg" style="color: var(--text-primary);">
+            Acesse as Principais Áreas do Agon:
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a href="index.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-blue-light); color: var(--color-blue);">
+                  <i class="fa-solid fa-house"></i>
+                </div>
+                <h3 class="font-bold text-sm mb-1 group-hover:text-blue-600 transition-colors" style="color: var(--text-primary);">Dashboard Inicial</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Visão geral das suas metas diárias, streak de estudos e horas líquidas.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-blue);">
+                <span>Ir para Início</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+
+            <a href="conquistas.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-orange-light); color: var(--color-orange);">
+                  <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h3 class="font-bold text-sm mb-1 group-hover:text-orange-600 transition-colors" style="color: var(--text-primary);">Conquistas & Badges</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Veja suas medalhas desbloqueadas e os próximos troféus de constância.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-orange);">
+                <span>Ver Conquistas</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+
+            <a href="comunidade.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-green-light); color: var(--color-green);">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <h3 class="font-bold text-sm mb-1 group-hover:text-green-600 transition-colors" style="color: var(--text-primary);">Comunidade Agon</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Converse com outros concurseiros e compartilhe dicas de estudo.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-green);">
+                <span>Entrar no Fórum</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-card max-w-lg w-full">
+      <div class="p-6 pb-0 flex items-center justify-between">
+        <h3 class="font-bold text-lg" style="color:var(--text-primary);">Meu Perfil</h3>
+        <button id="modal-close-btn" style="color:var(--text-muted);" class="hover:opacity-75"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="flex border-b px-6 mt-4 gap-6" style="border-color:var(--border-light);">
+        <button class="modal-tab active pb-3 text-sm font-medium" data-tab="dados">Dados</button>
+        <button class="modal-tab pb-3 text-sm font-medium" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab pb-3 text-sm font-medium" data-tab="config">Configurações</button>
+      </div>
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-4 mb-6">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="w-16 h-16 rounded-full object-cover" />
+          <div>
+            <h4 class="font-bold text-base" style="color:var(--text-primary);">Lucas Ferreira</h4>
+            <p class="text-xs" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+            <span class="badge badge-blue text-xs mt-1">Concurso: PF — Agente</span>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+      </div>
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION POPUP -->
+  <div id="toast" class="toast-popup">
+    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0" style="background: var(--color-green);">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <div>
+      <p id="toast-title" class="font-bold text-xs" style="color: var(--text-primary);">Sucesso!</p>
+      <p id="toast-msg" class="text-xs" style="color: var(--text-secondary);">Inscrição confirmada com sucesso.</p>
+    </div>
+  </div>
+
+  <script src="../js/script.js"></script>
+  <script>
+    function showToast(title, msg) {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-msg');
+      if (toastTitle) toastTitle.textContent = title;
+      if (toastMsg) toastMsg.textContent = msg;
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('notify-form-config');
+      const emailInput = document.getElementById('notify-email-config');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const email = emailInput.value.trim();
+          if (email) {
+            localStorage.setItem('agon-notify-config', email);
+            showToast('Inscrição Realizada! ⚙️', `Avisaremos em ${email} assim que o painel completo for lançado!`);
+            emailInput.value = '';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

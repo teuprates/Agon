@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulados | Agon - Preparatório para Concursos</title>
+
+  <!-- Dependências Externas -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Custom styles specific to Simulados page */
+    .ia-card-gradient {
+      background: linear-gradient(135deg, rgba(35, 54, 110,0.07) 0%, rgba(6,182,212,0.05) 100%);
+      border: 1px solid var(--border-active);
+    }
+    [data-theme="dark"] .ia-card-gradient {
+      background: linear-gradient(135deg, rgba(35, 54, 110,0.18) 0%, rgba(6,182,212,0.1) 100%);
+      border-color: rgba(59,130,246,0.4);
+    }
+    .simulado-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .simulado-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-active);
+    }
+    .btn-light-blue {
+      background-color: var(--color-blue-light);
+      color: var(--color-blue-text);
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-light-blue:hover {
+      background-color: var(--color-blue);
+      color: #ffffff;
+    }
+    .btn-secondary-sim {
+      background-color: var(--bg-hover);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-default);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary-sim:hover {
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border-default);
+      background-color: var(--bg-card);
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+    }
+    .filter-chip:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .filter-chip.active {
+      background-color: var(--color-blue);
+      color: #ffffff;
+      border-color: var(--color-blue);
+      font-weight: 600;
+    }
+    .toast-popup {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-xl);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(120%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast-popup.show {
+      transform: translateY(0);
+    }
+  </style>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item active"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" id="global-search-input" placeholder="Buscar simulados, bancas, disciplinas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novo simulado da <strong>Polícia Federal</strong> disponível!</p><span class="text-xs" style="color:var(--text-muted);">Há 10 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 animate-fade-in space-y-6">
+
+      <!-- 1. HEADER ROW -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">Simulados</h1>
+            <span class="badge badge-blue">3 disponíveis</span>
+          </div>
+          <p class="text-sm mt-1" style="color: var(--text-secondary);">
+            Teste seus conhecimentos em condições reais de prova.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btn-toggle-ia" class="btn-primary flex items-center gap-2 whitespace-nowrap shadow-md hover:shadow-lg transition-all">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            <span>Gerar simulado com IA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- QUICK STATS ROW -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="card p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background-color: var(--color-blue-light); color: var(--color-blue);">
+            <i class="fa-solid fa-file-pen"></i>
+          </div>
+          <div>
+            <p class="text-xs" style="color: var(--text-muted);">Realizados</p>
+            <p class="text-lg font-bold" style="color: var(--text-primary);">14 simulados</p>
+          </div>
+        </div>
+
+        <div class="card p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background-color: var(--color-green-light); color: var(--color-green);">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <div>
+            <p class="text-xs" style="color: var(--text-muted);">Média de Acertos</p>
+            <p class="text-lg font-bold" style="color: var(--color-green);">78.5%</p>
+          </div>
+        </div>
+
+        <div class="card p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background-color: var(--color-orange-light); color: var(--color-orange);">
+            <i class="fa-solid fa-stopwatch"></i>
+          </div>
+          <div>
+            <p class="text-xs" style="color: var(--text-muted);">Tempo Médio</p>
+            <p class="text-lg font-bold" style="color: var(--text-primary);">3h 20m</p>
+          </div>
+        </div>
+
+        <div class="card p-4 flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0" style="background-color: var(--color-purple-light); color: var(--color-purple);">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div>
+            <p class="text-xs" style="color: var(--text-muted);">Melhor Nota</p>
+            <p class="text-lg font-bold" style="color: var(--color-purple);">85% (RFB)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. IA FORM CARD (Visible & interactive with toggle support) -->
+      <div id="ia-form-card" class="card ia-card-gradient p-6 rounded-2xl relative overflow-hidden transition-all duration-300">
+        <!-- Accent decorative icon -->
+        <div class="absolute -right-6 -bottom-6 text-8xl pointer-events-none opacity-5" style="color: var(--color-blue);">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5 border-b pb-4" style="border-color: var(--border-active);">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-bold" style="color: var(--text-primary);">Gerar Simulado Personalizado</h2>
+                <span class="badge badge-green text-[10px] font-semibold uppercase tracking-wider">IA Integrada</span>
+              </div>
+              <p class="text-xs mt-0.5" style="color: var(--text-secondary);">
+                A inteligência artificial do Agon monta um caderno exclusivo focado no padrão da banca e no seu histórico de erros.
+              </p>
+            </div>
+          </div>
+          <button id="btn-minimize-ia" class="text-xs font-medium px-3 py-1.5 rounded-lg self-start md:self-auto hover:opacity-80 transition-opacity" style="color: var(--color-blue-text); background-color: var(--color-blue-light);">
+            <i class="fa-solid fa-chevron-up mr-1 text-[10px]"></i> Minimizar
+          </button>
+        </div>
+
+        <form id="ia-generator-form" class="space-y-5">
+          <!-- 3 COLUMNS GRID -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Coluna 1: Concurso -->
+            <div>
+              <label for="select-concurso" class="form-label font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-building-columns text-xs" style="color: var(--color-blue);"></i>
+                Concurso
+              </label>
+              <div class="relative">
+                <select id="select-concurso" class="form-select w-full cursor-pointer pr-10 font-medium" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);">
+                  <option value="pf" selected>Polícia Federal</option>
+                  <option value="rf">Receita Federal</option>
+                  <option value="tjsp">TJSP (Escrevente)</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style="color: var(--text-muted);"></i>
+              </div>
+              <p class="text-[11px] mt-1.5" style="color: var(--text-muted);">Bancas mapeadas: Cebraspe, FGV e Vunesp</p>
+            </div>
+
+            <!-- Coluna 2: Disciplina -->
+            <div>
+              <label for="select-disciplina" class="form-label font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-book-bookmark text-xs" style="color: var(--color-blue);"></i>
+                Disciplina
+              </label>
+              <div class="relative">
+                <select id="select-disciplina" class="form-select w-full cursor-pointer pr-10 font-medium" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);">
+                  <option value="const" selected>Direito Constitucional</option>
+                  <option value="port">Português</option>
+                  <option value="admin">Direito Administrativo</option>
+                  <option value="todas">Todas as Disciplinas (Geral)</option>
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-xs pointer-events-none" style="color: var(--text-muted);"></i>
+              </div>
+              <p class="text-[11px] mt-1.5" style="color: var(--text-muted);">Equilibrado com os tópicos mais cobrados</p>
+            </div>
+
+            <!-- Coluna 3: Qtd. de Questões -->
+            <div>
+              <label for="input-qtd-questoes" class="form-label font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-list-ol text-xs" style="color: var(--color-blue);"></i>
+                Qtd. de Questões
+              </label>
+              <div class="relative">
+                <input 
+                  type="number" 
+                  id="input-qtd-questoes" 
+                  min="5" 
+                  max="120" 
+                  value="20" 
+                  class="form-input w-full font-semibold" 
+                  style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);" 
+                  placeholder="Ex: 20" 
+                />
+                <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold" style="color: var(--text-muted);">itens</span>
+              </div>
+              <p class="text-[11px] mt-1.5" style="color: var(--text-muted);">Mínimo 5 e máximo 120 itens por caderno</p>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Additional Options & Action Button -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t" style="border-color: var(--border-active);">
+            <div class="flex items-center gap-3 text-xs" style="color: var(--text-secondary);">
+              <span class="inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check text-[11px]" style="color: var(--color-green);"></i> Gabarito comentado por IA
+              </span>
+              <span class="hidden md:inline">•</span>
+              <span class="hidden md:inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-stopwatch text-[11px]" style="color: var(--color-blue);"></i> Cronômetro oficial
+              </span>
+            </div>
+
+            <button type="submit" id="btn-gerar-ia" class="btn-primary w-full sm:w-auto justify-center shadow-md">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Gerar Agora</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- FILTER & SEARCH TOOLBAR -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+        <!-- Concurso Chips -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0" id="filter-chips">
+          <button class="filter-chip active" data-filter="todos">Todos</button>
+          <button class="filter-chip" data-filter="pf">Polícia Federal</button>
+          <button class="filter-chip" data-filter="rf">Receita Federal</button>
+          <button class="filter-chip" data-filter="tjsp">TJSP</button>
+        </div>
+
+        <!-- Status Filter Select & Search -->
+        <div class="flex items-center gap-3">
+          <div class="relative w-full sm:w-48">
+            <select id="filter-status-select" class="form-select w-full cursor-pointer text-xs font-medium py-2" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);">
+              <option value="todos">Todos os status</option>
+              <option value="em-andamento">Em andamento</option>
+              <option value="concluido">Concluído</option>
+              <option value="nao-iniciado">Não iniciado</option>
+            </select>
+          </div>
+
+          <div class="relative w-full sm:w-60">
+            <i class="fa-solid fa-filter absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
+            <input 
+              type="text" 
+              id="search-simulados" 
+              placeholder="Filtrar por nome..." 
+              class="form-input text-xs py-2 pl-9 pr-3" 
+              style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);" 
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. GRID OF 3 SIMULADO CARDS -->
+      <div id="simulados-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- CARD 1: PF (Agente) -->
+        <div class="card simulado-card p-6 flex flex-col justify-between" data-concurso="pf" data-status="em-andamento">
+          <!-- Card Header & Badges -->
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="badge badge-blue font-semibold">PF</span>
+              <span class="badge badge-gray font-medium">Em andamento</span>
+            </div>
+
+            <!-- Title & Details -->
+            <h3 class="card-title text-lg mb-1 leading-snug">Simulado Geral - PF Agente</h3>
+            <p class="text-xs mb-4" style="color: var(--text-secondary);">
+              Banca Cebraspe • Estilo Certo/Errado (1 item errado anula 1 certo)
+            </p>
+
+            <!-- Metrics / Info Pills -->
+            <div class="flex items-center gap-4 text-xs py-2.5 px-3.5 rounded-xl mb-5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+              <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-circle-question text-sm" style="color: var(--color-blue);"></i>
+                <span class="font-medium">120 questões</span>
+              </div>
+              <div class="w-1 h-1 rounded-full" style="background: var(--text-muted);"></div>
+              <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-sm" style="color: var(--color-orange);"></i>
+                <span class="font-medium">4h 30m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer: Progress Bar & Action Button -->
+          <div class="mt-2">
+            <div class="mb-4">
+              <div class="flex justify-between items-center text-xs mb-1.5 font-medium">
+                <span style="color: var(--text-secondary);">Progresso: <strong>54/120 respondidas</strong></span>
+                <span class="font-bold" style="color: var(--color-blue);">45%</span>
+              </div>
+              <div class="progress-track h-2 w-full">
+                <div class="progress-fill-blue h-2 transition-all duration-500" style="width: 45%;"></div>
+              </div>
+            </div>
+
+            <button class="btn-light-blue w-full justify-center text-sm font-semibold py-2.5 action-continuar-sim" data-title="Simulado Geral - PF Agente" data-questions="120" data-time="4h 30m" data-current="54">
+              <i class="fa-solid fa-play text-xs"></i>
+              <span>Continuar Simulado</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD 2: Receita Federal (Auditor) -->
+        <div class="card simulado-card p-6 flex flex-col justify-between" data-concurso="rf" data-status="concluido">
+          <!-- Card Header & Badges -->
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="badge badge-blue font-semibold">Receita Federal</span>
+              <span class="badge badge-green font-medium">Concluído</span>
+            </div>
+
+            <!-- Title & Details -->
+            <h3 class="card-title text-lg mb-1 leading-snug">Simulado Específico - Auditor</h3>
+            <p class="text-xs mb-4" style="color: var(--text-secondary);">
+              Banca FGV • Conhecimentos Específicos e Legislação Tributária
+            </p>
+
+            <!-- Metrics / Info Pills -->
+            <div class="flex items-center gap-4 text-xs py-2.5 px-3.5 rounded-xl mb-5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+              <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-circle-question text-sm" style="color: var(--color-blue);"></i>
+                <span class="font-medium">80 questões</span>
+              </div>
+              <div class="w-1 h-1 rounded-full" style="background: var(--text-muted);"></div>
+              <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-sm" style="color: var(--color-orange);"></i>
+                <span class="font-medium">3h 00m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer: Score, Progress Bar & Action Button -->
+          <div class="mt-2">
+            <div class="mb-4">
+              <div class="flex justify-between items-center text-xs mb-1.5 font-medium">
+                <span style="color: var(--text-secondary);">Nota: <strong class="font-bold" style="color: var(--color-green);">68/80</strong></span>
+                <span class="font-bold flex items-center gap-1" style="color: var(--color-green);">
+                  <i class="fa-solid fa-check text-[11px]"></i> 85% de aproveitamento
+                </span>
+              </div>
+              <div class="progress-track h-2 w-full">
+                <div class="progress-fill-green h-2 transition-all duration-500" style="width: 85%;"></div>
+              </div>
+            </div>
+
+            <button class="btn-secondary-sim w-full justify-center text-sm font-semibold py-2.5 action-ver-gabarito" data-title="Simulado Específico - Auditor" data-score="68/80" data-percent="85%">
+              <i class="fa-solid fa-clipboard-check text-xs"></i>
+              <span>Ver Gabarito</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD 3: TJSP (Escrevente) -->
+        <div class="card simulado-card p-6 flex flex-col justify-between" data-concurso="tjsp" data-status="nao-iniciado">
+          <!-- Card Header & Badges -->
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="badge badge-blue font-semibold">TJSP</span>
+              <span class="badge badge-gray font-medium">Não iniciado</span>
+            </div>
+
+            <!-- Title & Details -->
+            <h3 class="card-title text-lg mb-1 leading-snug">Simulado TJSP - Escrevente</h3>
+            <p class="text-xs mb-4" style="color: var(--text-secondary);">
+              Banca Vunesp • Bloco I, II e III (Português, Direito e Gerais)
+            </p>
+
+            <!-- Metrics / Info Pills -->
+            <div class="flex items-center gap-4 text-xs py-2.5 px-3.5 rounded-xl mb-5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+              <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-circle-question text-sm" style="color: var(--color-blue);"></i>
+                <span class="font-medium">100 questões</span>
+              </div>
+              <div class="w-1 h-1 rounded-full" style="background: var(--text-muted);"></div>
+              <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-sm" style="color: var(--color-orange);"></i>
+                <span class="font-medium">4h 00m</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer: Status Bar & Primary Action Button -->
+          <div class="mt-2">
+            <div class="mb-4">
+              <div class="flex justify-between items-center text-xs mb-1.5 font-medium">
+                <span style="color: var(--text-muted);">Aguardando início</span>
+                <span class="font-semibold" style="color: var(--text-muted);">0%</span>
+              </div>
+              <div class="progress-track h-2 w-full">
+                <div class="h-2 rounded-full" style="width: 0%; background-color: var(--border-default);"></div>
+              </div>
+            </div>
+
+            <button class="btn-primary w-full justify-center text-sm font-semibold py-2.5 shadow-sm action-iniciar-sim" data-title="Simulado TJSP - Escrevente" data-questions="100" data-time="4h 00m">
+              <i class="fa-solid fa-play text-xs"></i>
+              <span>Iniciar Simulado</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- EMPTY STATE (Shown when no cards match filter) -->
+      <div id="simulados-empty-state" class="hidden card p-12 text-center">
+        <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-2xl mb-4" style="background-color: var(--color-blue-light); color: var(--color-blue);">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <h3 class="text-base font-bold mb-1" style="color: var(--text-primary);">Nenhum simulado encontrado</h3>
+        <p class="text-xs max-w-sm mx-auto mb-4" style="color: var(--text-secondary);">
+          Não encontramos nenhum simulado com os filtros selecionados. Tente redefinir os filtros ou gere um novo simulado com IA.
+        </p>
+        <button id="btn-reset-filters" class="btn-secondary text-xs font-semibold py-2 px-4">
+          Limpar filtros
+        </button>
+      </div>
+
+      <!-- BOTTOM BANNER / TIPS CARD -->
+      <div class="card p-6 flex flex-col md:flex-row items-center justify-between gap-6" style="background-color: var(--bg-card); border-left: 4px solid var(--color-blue);">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0" style="background-color: var(--color-blue-light); color: var(--color-blue);">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-sm mb-1" style="color: var(--text-primary);">Dica de Ouro para o Dia da Prova</h4>
+            <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+              Realize os simulados em um ambiente calmo, sem interrupções e respeitando o tempo cronometrado. Simule pausas reais para água e preenchimento da folha de respostas para treinar sua resistência física e mental.
+            </p>
+          </div>
+        </div>
+        <a href="questoes.html" class="btn-secondary whitespace-nowrap text-xs font-semibold flex items-center gap-2">
+          <span>Treinar questões avulsas</span>
+          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button class="modal-tab active" data-tab="dados">Dados</button>
+        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar-lg" />
+            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Lucas Ferreira</h3>
+            <p class="text-sm" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GABARITO & ANÁLISE -->
+  <div id="gabarito-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="flex items-center justify-between p-6 pb-4 border-b" style="border-color: var(--border-light);">
+        <div>
+          <span class="badge badge-green mb-1">Resultado Oficial</span>
+          <h2 class="text-xl font-bold" style="color:var(--text-primary);">Simulado Específico - Auditor</h2>
+        </div>
+        <button id="close-gabarito-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+        <!-- Score Summary Header -->
+        <div class="p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4" style="background-color: var(--color-green-light);">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--color-green-text);">Desempenho Geral</p>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-extrabold" style="color: var(--color-green-text);">68</span>
+              <span class="text-lg font-medium" style="color: var(--color-green-text);">/ 80 questões</span>
+              <span class="text-sm font-bold ml-2 px-2 py-0.5 rounded-full" style="background-color: var(--color-green); color: #fff;">85%</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 text-xs font-semibold" style="color: var(--color-green-text);">
+            <div><i class="fa-solid fa-clock mr-1"></i> Tempo: <strong>2h 45m</strong></div>
+            <div><i class="fa-solid fa-chart-line mr-1"></i> Percentil: <strong>Top 5%</strong></div>
+          </div>
+        </div>
+
+        <!-- Breakdown by Subject -->
+        <div>
+          <h4 class="font-bold text-sm mb-3" style="color: var(--text-primary);">Desempenho por Disciplina</h4>
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl card">
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span style="color: var(--text-primary);">Direito Tributário</span>
+                <span class="font-bold" style="color: var(--color-green);">18 / 20 (90%)</span>
+              </div>
+              <div class="progress-track h-2"><div class="progress-fill-green h-2" style="width: 90%;"></div></div>
+            </div>
+
+            <div class="p-3 rounded-xl card">
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span style="color: var(--text-primary);">Legislação Aduaneira</span>
+                <span class="font-bold" style="color: var(--color-green);">17 / 20 (85%)</span>
+              </div>
+              <div class="progress-track h-2"><div class="progress-fill-green h-2" style="width: 85%;"></div></div>
+            </div>
+
+            <div class="p-3 rounded-xl card">
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span style="color: var(--text-primary);">Contabilidade Geral</span>
+                <span class="font-bold" style="color: var(--color-blue);">18 / 20 (90%)</span>
+              </div>
+              <div class="progress-track h-2"><div class="progress-fill-blue h-2" style="width: 90%;"></div></div>
+            </div>
+
+            <div class="p-3 rounded-xl card">
+              <div class="flex justify-between text-xs font-medium mb-1.5">
+                <span style="color: var(--text-primary);">Língua Portuguesa</span>
+                <span class="font-bold" style="color: var(--color-orange);">15 / 20 (75%)</span>
+              </div>
+              <div class="progress-track h-2"><div class="progress-fill-orange h-2" style="width: 75%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fast Question Matrix -->
+        <div>
+          <div class="flex items-center justify-between mb-2.5">
+            <h4 class="font-bold text-sm" style="color: var(--text-primary);">Mapa de Respostas (80 Questões)</h4>
+            <div class="flex items-center gap-3 text-xs">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--color-green);"></span> 68 Acertos</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--color-red);"></span> 12 Erros</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-10 gap-1.5 p-3 rounded-xl" style="background-color: var(--bg-hover);">
+            <!-- Matrix of 40 preview dots -->
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">1</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">2</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-red-500">3</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">4</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">5</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">6</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">7</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-red-500">8</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">9</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">10</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">11</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">12</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">13</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-red-500">14</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">15</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">16</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">17</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">18</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-red-500">19</span>
+            <span class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold text-white bg-green-500">20</span>
+          </div>
+          <p class="text-[11px] mt-1 text-center" style="color: var(--text-muted);">Exibindo amostra inicial • Clique para ver comentário de cada item</p>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button class="btn-primary flex-1 justify-center py-2.5" onclick="showToast('Abrindo caderno comentado completo...')">
+            <i class="fa-solid fa-file-pdf mr-1"></i> Caderno Completo Comentado
+          </button>
+          <button class="btn-secondary-sim px-4 py-2.5" id="btn-close-gabarito-bottom">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EXECUÇÃO DO SIMULADO (Simulador de Prova) -->
+  <div id="simulado-play-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
+      <div class="flex items-center justify-between p-6 pb-4 border-b" style="border-color: var(--border-light);">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background-color: var(--color-blue-light); color: var(--color-blue);">
+            <i class="fa-solid fa-stopwatch"></i>
+          </div>
+          <div>
+            <h2 id="modal-sim-title" class="text-lg font-bold leading-tight" style="color:var(--text-primary);">Simulado em Andamento</h2>
+            <p class="text-xs" style="color:var(--text-secondary);">Ambiente Oficial de Avaliação</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="px-3 py-1.5 rounded-xl font-mono text-sm font-bold flex items-center gap-2" style="background-color: var(--color-orange-light); color: var(--color-orange-text);">
+            <i class="fa-regular fa-clock"></i>
+            <span id="exam-timer">03:44:12</span>
+          </div>
+          <button id="close-sim-play-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-6 space-y-6 overflow-y-auto" style="max-height: calc(90vh - 150px);">
+        <!-- Question Header -->
+        <div class="flex items-center justify-between text-xs pb-3 border-b" style="border-color: var(--border-light); color: var(--text-secondary);">
+          <span class="font-bold text-sm" style="color: var(--color-blue);" id="modal-sim-question-badge">Questão 55 de 120</span>
+          <span>Disciplina: <strong>Direito Constitucional</strong></span>
+        </div>
+
+        <!-- Statement -->
+        <div class="text-sm leading-relaxed" style="color: var(--text-primary);">
+          <p class="mb-3">
+            Em relação aos direitos e garantias fundamentais previstos na Constituição Federal de 1988 e à jurisprudência pacificada do Supremo Tribunal Federal (STF), julgue o item subsequente:
+          </p>
+          <div class="p-4 rounded-xl border font-medium text-sm my-4" style="background-color: var(--bg-hover); border-color: var(--border-default);">
+            "É constitucional a exigência legal de inscrição prévia em órgão de classe para o exercício da atividade de músico, não havendo ofensa à liberdade de exercício profissional garantida pelo texto constitucional."
+          </div>
+        </div>
+
+        <!-- Options / Alternatives -->
+        <div class="space-y-3">
+          <label class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all hover:border-blue-500" style="background-color: var(--bg-card); border-color: var(--border-default);">
+            <input type="radio" name="sim-answer" value="C" class="w-4 h-4 text-blue-600 focus:ring-blue-500" />
+            <span class="text-sm font-semibold" style="color: var(--text-primary);"><strong class="text-blue-600 mr-2">C</strong> CERTO</span>
+          </label>
+
+          <label class="flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all hover:border-blue-500" style="background-color: var(--bg-card); border-color: var(--border-default);">
+            <input type="radio" name="sim-answer" value="E" class="w-4 h-4 text-blue-600 focus:ring-blue-500" />
+            <span class="text-sm font-semibold" style="color: var(--text-primary);"><strong class="text-blue-600 mr-2">E</strong> ERRADO</span>
+          </label>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex items-center justify-between pt-4 border-t" style="border-color: var(--border-light);">
+          <button class="btn-secondary-sim text-xs" onclick="showToast('Retornando para a questão anterior...')">
+            <i class="fa-solid fa-chevron-left mr-1"></i> Questão Anterior
+          </button>
+          
+          <div class="flex items-center gap-2">
+            <button class="btn-secondary-sim text-xs" onclick="showToast('Questão marcada para revisão.')">
+              <i class="fa-regular fa-bookmark mr-1"></i> Marcar p/ Revisão
+            </button>
+            <button class="btn-primary text-xs" onclick="showToast('Resposta gravada com sucesso! Avançando...')">
+              Próxima Questão <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-notification" class="toast-popup card border shadow-xl" style="background-color: var(--bg-card); border-color: var(--border-active);">
+    <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0" style="background-color: var(--color-blue-light); color: var(--color-blue);">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <span id="toast-message" class="text-xs font-semibold" style="color: var(--text-primary);">Ação executada com sucesso!</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/script.js"></script>
+  <script>
+    // ─── Toast System ─────────────────────────────────────────
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toast-notification');
+      const toastMsg = document.getElementById('toast-message');
+      if (toast && toastMsg) {
+        toastMsg.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3200);
+      }
+    }
+
+    // ─── IA Form Toggle & Generate Behavior ───────────────────
+    const btnToggleIa = document.getElementById('btn-toggle-ia');
+    const iaFormCard = document.getElementById('ia-form-card');
+    const btnMinimizeIa = document.getElementById('btn-minimize-ia');
+    const iaGeneratorForm = document.getElementById('ia-generator-form');
+    const btnGerarIa = document.getElementById('btn-gerar-ia');
+
+    if (btnToggleIa && iaFormCard) {
+      btnToggleIa.addEventListener('click', () => {
+        iaFormCard.classList.remove('hidden');
+        iaFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        iaFormCard.classList.add('ring-2', 'ring-blue-500');
+        setTimeout(() => {
+          iaFormCard.classList.remove('ring-2', 'ring-blue-500');
+        }, 1500);
+      });
+    }
+
+    if (btnMinimizeIa && iaFormCard) {
+      btnMinimizeIa.addEventListener('click', () => {
+        const isCollapsed = iaGeneratorForm.classList.contains('hidden');
+        if (isCollapsed) {
+          iaGeneratorForm.classList.remove('hidden');
+          btnMinimizeIa.innerHTML = '<i class="fa-solid fa-chevron-up mr-1 text-[10px]"></i> Minimizar';
+        } else {
+          iaGeneratorForm.classList.add('hidden');
+          btnMinimizeIa.innerHTML = '<i class="fa-solid fa-chevron-down mr-1 text-[10px]"></i> Expandir';
+        }
+      });
+    }
+
+    if (iaGeneratorForm) {
+      iaGeneratorForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const concursoSelect = document.getElementById('select-concurso');
+        const disciplinaSelect = document.getElementById('select-disciplina');
+        const qtdInput = document.getElementById('input-qtd-questoes');
+
+        const concursoNome = concursoSelect.options[concursoSelect.selectedIndex].text;
+        const concursoVal = concursoSelect.value;
+        const disciplinaNome = disciplinaSelect.options[disciplinaSelect.selectedIndex].text;
+        const qtdQuestoes = qtdInput.value || '20';
+
+        // Animação no botão
+        const originalBtnContent = btnGerarIa.innerHTML;
+        btnGerarIa.disabled = true;
+        btnGerarIa.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Gerando com IA...</span>';
+
+        setTimeout(() => {
+          btnGerarIa.disabled = false;
+          btnGerarIa.innerHTML = originalBtnContent;
+
+          // Cria e adiciona um novo card dinâmico no grid
+          const grid = document.getElementById('simulados-grid');
+          if (grid) {
+            const newCard = document.createElement('div');
+            newCard.className = 'card simulado-card p-6 flex flex-col justify-between animate-fade-in ring-2 ring-blue-500';
+            newCard.setAttribute('data-concurso', concursoVal);
+            newCard.setAttribute('data-status', 'nao-iniciado');
+
+            newCard.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                  <span class="badge badge-purple font-semibold"><i class="fa-solid fa-wand-magic-sparkles text-[10px] mr-1"></i> ${concursoNome.split(' ')[0]}</span>
+                  <span class="badge badge-green font-medium">Novo</span>
+                </div>
+                <h3 class="card-title text-lg mb-1 leading-snug">Simulado IA - ${disciplinaNome}</h3>
+                <p class="text-xs mb-4" style="color: var(--text-secondary);">
+                  Caderno exclusivo gerado com Inteligência Artificial • Foco em alta incidência
+                </p>
+                <div class="flex items-center gap-4 text-xs py-2.5 px-3.5 rounded-xl mb-5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-circle-question text-sm" style="color: var(--color-blue);"></i>
+                    <span class="font-medium">${qtdQuestoes} questões</span>
+                  </div>
+                  <div class="w-1 h-1 rounded-full" style="background: var(--text-muted);"></div>
+                  <div class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-sm" style="color: var(--color-orange);"></i>
+                    <span class="font-medium">1h 00m</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-2">
+                <div class="mb-4">
+                  <div class="flex justify-between items-center text-xs mb-1.5 font-medium">
+                    <span style="color: var(--text-muted);">Aguardando início</span>
+                    <span class="font-semibold" style="color: var(--text-muted);">0%</span>
+                  </div>
+                  <div class="progress-track h-2 w-full">
+                    <div class="h-2 rounded-full" style="width: 0%; background-color: var(--border-default);"></div>
+                  </div>
+                </div>
+                <button class="btn-primary w-full justify-center text-sm font-semibold py-2.5 shadow-sm action-iniciar-sim" data-title="Simulado IA - ${disciplinaNome}" data-questions="${qtdQuestoes}" data-time="1h 00m">
+                  <i class="fa-solid fa-play text-xs"></i>
+                  <span>Iniciar Simulado</span>
+                </button>
+              </div>
+            `;
+
+            grid.insertBefore(newCard, grid.firstChild);
+
+            // Anexa eventos ao novo botão
+            const newBtn = newCard.querySelector('.action-iniciar-sim');
+            if (newBtn) {
+              newBtn.addEventListener('click', () => openSimPlay(newBtn.dataset.title, newBtn.dataset.questions, '1'));
+            }
+
+            setTimeout(() => {
+              newCard.classList.remove('ring-2', 'ring-blue-500');
+            }, 2500);
+
+            newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+
+          showToast(`Simulado IA de ${disciplinaNome} gerado com sucesso!`);
+        }, 1200);
+      });
+    }
+
+    // ─── Filter & Search Logic ────────────────────────────────
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const filterStatusSelect = document.getElementById('filter-status-select');
+    const searchInput = document.getElementById('search-simulados');
+    const emptyState = document.getElementById('simulados-empty-state');
+    const btnResetFilters = document.getElementById('btn-reset-filters');
+
+    let currentConcursoFilter = 'todos';
+    let currentStatusFilter = 'todos';
+    let currentSearchTerm = '';
+
+    function applyFilters() {
+      const cards = document.querySelectorAll('#simulados-grid .simulado-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const concurso = card.getAttribute('data-concurso') || '';
+        const status = card.getAttribute('data-status') || '';
+        const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+
+        const matchConcurso = (currentConcursoFilter === 'todos') || (concurso === currentConcursoFilter);
+        const matchStatus = (currentStatusFilter === 'todos') || (status === currentStatusFilter);
+        const matchSearch = currentSearchTerm === '' || title.includes(currentSearchTerm);
+
+        if (matchConcurso && matchStatus && matchSearch) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      if (emptyState) {
+        if (visibleCount === 0) {
+          emptyState.classList.remove('hidden');
+        } else {
+          emptyState.classList.add('hidden');
+        }
+      }
+    }
+
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        filterChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentConcursoFilter = chip.getAttribute('data-filter');
+        applyFilters();
+      });
+    });
+
+    if (filterStatusSelect) {
+      filterStatusSelect.addEventListener('change', (e) => {
+        currentStatusFilter = e.target.value;
+        applyFilters();
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value.toLowerCase().trim();
+        applyFilters();
+      });
+    }
+
+    if (btnResetFilters) {
+      btnResetFilters.addEventListener('click', () => {
+        filterChips.forEach(c => c.classList.remove('active'));
+        const allChip = document.querySelector('.filter-chip[data-filter="todos"]');
+        if (allChip) allChip.classList.add('active');
+
+        if (filterStatusSelect) filterStatusSelect.value = 'todos';
+        if (searchInput) searchInput.value = '';
+
+        currentConcursoFilter = 'todos';
+        currentStatusFilter = 'todos';
+        currentSearchTerm = '';
+        applyFilters();
+      });
+    }
+
+    // ─── Modal Gabarito ───────────────────────────────────────
+    const gabaritoModal = document.getElementById('gabarito-modal');
+    const closeGabaritoBtn = document.getElementById('close-gabarito-btn');
+    const closeGabaritoBottom = document.getElementById('btn-close-gabarito-bottom');
+
+    function openGabarito() {
+      if (gabaritoModal) {
+        gabaritoModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeGabarito() {
+      if (gabaritoModal) {
+        gabaritoModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.querySelectorAll('.action-ver-gabarito').forEach(btn => {
+      btn.addEventListener('click', openGabarito);
+    });
+
+    if (closeGabaritoBtn) closeGabaritoBtn.addEventListener('click', closeGabarito);
+    if (closeGabaritoBottom) closeGabaritoBottom.addEventListener('click', closeGabarito);
+    if (gabaritoModal) {
+      gabaritoModal.addEventListener('click', (e) => {
+        if (e.target === gabaritoModal) closeGabarito();
+      });
+    }
+
+    // ─── Modal Simulado Play (Iniciar / Continuar) ─────────────
+    const simPlayModal = document.getElementById('simulado-play-modal');
+    const closeSimPlayBtn = document.getElementById('close-sim-play-btn');
+    const modalSimTitle = document.getElementById('modal-sim-title');
+    const modalSimBadge = document.getElementById('modal-sim-question-badge');
+
+    function openSimPlay(title, totalQuestions, currentQuestion) {
+      if (modalSimTitle) modalSimTitle.textContent = title;
+      if (modalSimBadge) modalSimBadge.textContent = `Questão ${currentQuestion} de ${totalQuestions}`;
+      if (simPlayModal) {
+        simPlayModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeSimPlay() {
+      if (simPlayModal) {
+        simPlayModal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    document.querySelectorAll('.action-continuar-sim').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const title = btn.dataset.title || 'Simulado em Andamento';
+        const questions = btn.dataset.questions || '120';
+        const current = btn.dataset.current || '55';
+        openSimPlay(title, questions, current);
+      });
+    });
+
+    document.querySelectorAll('.action-iniciar-sim').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const title = btn.dataset.title || 'Novo Simulado';
+        const questions = btn.dataset.questions || '100';
+        openSimPlay(title, questions, '1');
+      });
+    });
+
+    if (closeSimPlayBtn) closeSimPlayBtn.addEventListener('click', closeSimPlay);
+    if (simPlayModal) {
+      simPlayModal.addEventListener('click', (e) => {
+        if (e.target === simPlayModal) closeSimPlay();
+      });
+    }
+  </script>
+</body>
+</html>

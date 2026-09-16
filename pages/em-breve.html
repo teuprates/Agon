@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Em Breve | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Agon Design System Styles -->
+  <link rel="stylesheet" href="../css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="../assets/img/AGON png.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="../assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span> <span class="badge badge-orange ml-auto text-[10px]">Em breve</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Recursos exclusivos para acelerar seus estudos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90 transition-opacity" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar conteúdos, questões, aulas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-bell text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Novos módulos em fase final de preparação!</p><span class="text-xs" style="color:var(--text-muted);">Há 5 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você conquistou o badge <strong>Foco Total</strong>! 🎉</p><span class="text-xs" style="color:var(--text-muted);">Há 1 hora</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-clock text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Sua meta diária está <strong>80%</strong> completa.</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Lucas Ferreira</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 animate-fade-in space-y-8">
+      <div class="max-w-5xl mx-auto space-y-8">
+
+        <!-- BREADCRUMB & HEADER -->
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
+            <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span style="color: var(--text-primary);" class="font-medium">Novidades & Lançamentos</span>
+          </div>
+          <a href="index.html" class="btn-secondary text-xs flex items-center gap-2 py-2 px-4">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+          </a>
+        </div>
+
+        <!-- HERO SECTION -->
+        <div class="coming-soon-hero p-8 md:p-12 text-center relative">
+          <!-- Background decorative circles -->
+          <div class="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
+            <!-- Icon with pulse glow -->
+            <div id="hero-icon-container" class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl mb-5 pulse-glow" style="background: linear-gradient(135deg, var(--color-blue), var(--color-cyan)); color: #fff;">
+              <i id="hero-icon" class="fa-solid fa-rocket"></i>
+            </div>
+
+            <!-- Badges -->
+            <div class="flex items-center gap-2 mb-4">
+              <span class="badge badge-orange text-xs font-semibold px-3 py-1 flex items-center gap-1.5">
+                <i class="fa-solid fa-hammer"></i> Em Construção
+              </span>
+              <span id="hero-timeline-badge" class="badge badge-blue text-xs font-semibold px-3 py-1">
+                Lançamento Próximo
+              </span>
+            </div>
+
+            <h1 id="hero-title" class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3" style="color: var(--text-primary);">
+              Novidades Incríveis em Breve!
+            </h1>
+            <p id="hero-subtitle" class="text-base md:text-lg leading-relaxed mb-6" style="color: var(--text-secondary);">
+              Nossa equipe de engenharia pedagógica está preparando novos módulos de alto impacto para elevar sua preparação a outro nível.
+            </p>
+
+            <!-- Progress Bar -->
+            <div class="w-full max-w-md bg-white/40 dark:bg-slate-800/60 p-4 rounded-2xl border border-default shadow-sm mb-6">
+              <div class="flex justify-between items-center text-xs font-semibold mb-2">
+                <span id="progress-label" style="color: var(--text-primary);">Progresso do Desenvolvimento</span>
+                <span id="progress-value" style="color: var(--color-blue);" class="font-bold">78% concluído</span>
+              </div>
+              <div class="w-full h-3 rounded-full overflow-hidden" style="background-color: var(--border-default);">
+                <div id="progress-bar-fill" class="h-full rounded-full transition-all duration-700" style="width: 78%; background: linear-gradient(90deg, var(--color-blue), var(--color-cyan));"></div>
+              </div>
+              <div class="flex justify-between text-[11px] mt-2" style="color: var(--text-muted);">
+                <span>Pesquisa Pedagógica ✓</span>
+                <span>Design UI/UX ✓</span>
+                <span>Fase de Testes ⏳</span>
+              </div>
+            </div>
+
+            <!-- Email Notification Form -->
+            <form id="notify-form" class="w-full max-w-md flex flex-col sm:flex-row gap-2.5">
+              <input 
+                type="email" 
+                id="notify-email" 
+                required
+                placeholder="Seu melhor e-mail para acesso antecipado" 
+                class="search-input flex-1 px-4 py-3 rounded-xl text-sm border focus:outline-none"
+                style="background-color: var(--bg-card); border-color: var(--border-default);"
+              />
+              <button type="submit" class="btn-primary py-3 px-6 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shrink-0 shadow-md hover:shadow-lg">
+                <i class="fa-regular fa-bell"></i> Avise-me
+              </button>
+            </form>
+            <p class="text-xs mt-2.5" style="color: var(--text-muted);">
+              <i class="fa-solid fa-lock text-[10px] mr-1"></i> Sem spam. Apenas avisos de lançamento e convites para betas.
+            </p>
+          </div>
+        </div>
+
+        <!-- MODULE SELECTOR TABS -->
+        <div>
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h2 class="text-lg font-bold" style="color: var(--text-primary);">
+              Selecione o Módulo para Ver Detalhes:
+            </h2>
+            <span class="text-xs" style="color: var(--text-muted);">
+              Clique para explorar o que está por vir em cada área
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="module-tabs">
+            <!-- Tab Aulas -->
+            <button class="module-tab-btn card p-4 rounded-xl flex items-center gap-3 transition-all text-left border" data-target="aulas">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style="background: var(--color-blue-light); color: var(--color-blue);">
+                <i class="fa-solid fa-play"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" style="color: var(--text-primary);">Aulas</p>
+                <p class="text-xs" style="color: var(--text-muted);">Videoaulas em HD</p>
+              </div>
+            </button>
+
+            <!-- Tab Planos de Estudo -->
+            <button class="module-tab-btn card p-4 rounded-xl flex items-center gap-3 transition-all text-left border" data-target="planos-estudo">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style="background: var(--color-purple-light); color: var(--color-purple);">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" style="color: var(--text-primary);">Planos de Estudo</p>
+                <p class="text-xs" style="color: var(--text-muted);">Ciclos adaptativos</p>
+              </div>
+            </button>
+
+            <!-- Tab Materiais -->
+            <button class="module-tab-btn card p-4 rounded-xl flex items-center gap-3 transition-all text-left border" data-target="materiais">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style="background: var(--color-green-light); color: var(--color-green);">
+                <i class="fa-solid fa-folder-open"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" style="color: var(--text-primary);">Materiais</p>
+                <p class="text-xs" style="color: var(--text-muted);">PDFs e Mapas</p>
+              </div>
+            </button>
+
+            <!-- Tab Configurações -->
+            <button class="module-tab-btn card p-4 rounded-xl flex items-center gap-3 transition-all text-left border" data-target="configuracoes">
+              <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style="background: var(--color-orange-light); color: var(--color-orange);">
+                <i class="fa-solid fa-gear"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm" style="color: var(--text-primary);">Configurações</p>
+                <p class="text-xs" style="color: var(--text-muted);">Perfil & Conta</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- SNEAK PEEK SECTION (DYNAMIC PER TAB) -->
+        <div id="sneak-peek-container" class="space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 id="peek-title" class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">
+                O Que Esperar Deste Módulo
+              </h3>
+              <p id="peek-subtitle" class="text-sm mt-0.5" style="color: var(--text-secondary);">
+                Recursos pensados nos mínimos detalhes para acelerar sua aprovação.
+              </p>
+            </div>
+            <a id="peek-direct-link" href="aulas.html" class="text-xs font-semibold flex items-center gap-1.5 hover:underline" style="color: var(--color-blue);">
+              <span>Abrir página do módulo</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+          </div>
+
+          <!-- Feature Cards Grid (Injected via JS) -->
+          <div id="peek-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- ROADMAP TIMELINE -->
+        <div class="card p-6 md:p-8 rounded-2xl border" style="background-color: var(--bg-card); border-color: var(--border-default);">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background: var(--color-blue-light); color: var(--color-blue);">
+              <i class="fa-solid fa-timeline"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-base md:text-lg" style="color: var(--text-primary);">Cronograma de Lançamento da Plataforma</h3>
+              <p class="text-xs" style="color: var(--text-muted);">Acompanhe o roadmap das próximas atualizações do Agon</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div class="p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-body); border-color: var(--border-default);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-green);"><i class="fa-solid fa-check-circle mr-1"></i> Fase 1</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full badge-green">Concluído</span>
+              </div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-primary);">Banco de Questões & IA</p>
+              <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Mais de 100k questões com IA Tutor e métricas de desempenho ao vivo.</p>
+            </div>
+
+            <div class="p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-body); border-color: var(--border-default);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-blue);"><i class="fa-solid fa-check-circle mr-1"></i> Fase 2</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full badge-blue">Disponível</span>
+              </div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-primary);">Simulados & Rankings</p>
+              <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Simulados com cronômetro real, nota de corte e estatísticas por banca.</p>
+            </div>
+
+            <div class="p-4 rounded-xl border ring-2 ring-blue-500/50 flex flex-col justify-between" style="background-color: var(--bg-body); border-color: var(--border-default);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--color-orange);"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Fase 3</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full badge-orange">Atual</span>
+              </div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-primary);">Videoaulas & Materiais</p>
+              <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Integração de streaming em alta definição, resumos e mapas mentais.</p>
+            </div>
+
+            <div class="p-4 rounded-xl border flex flex-col justify-between" style="background-color: var(--bg-body); border-color: var(--border-default);">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);"><i class="fa-solid fa-clock mr-1"></i> Fase 4</span>
+                <span class="text-[11px] px-2 py-0.5 rounded-full badge-gray">Próxima</span>
+              </div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-primary);">Ciclos Inteligentes</p>
+              <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Planos de estudo dinâmicos orientados pelo algoritmo preditivo de aprovação.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK SHORTCUTS TO ACTIVE AREAS -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg" style="color: var(--text-primary);">
+              Enquanto Isso, Mantenha o Foco nos Módulos Ativos:
+            </h3>
+            <span class="text-xs" style="color: var(--text-muted);">
+              Mais de 5.000 questões disponíveis hoje
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="questoes.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-blue-light); color: var(--color-blue);">
+                  <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1 group-hover:text-blue-600 transition-colors" style="color: var(--text-primary);">Resolver Questões</h4>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Filtre por banca, cargo e ano com comentários de especialistas.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-blue);">
+                <span>Praticar agora</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+
+            <a href="simulados.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-green-light); color: var(--color-green);">
+                  <i class="fa-solid fa-file-signature"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1 group-hover:text-green-600 transition-colors" style="color: var(--text-primary);">Fazer Simulados</h4>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Prove seus conhecimentos sob pressão e compare sua nota no ranking.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-green);">
+                <span>Iniciar simulado</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+
+            <a href="ia-tutor.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-purple-light); color: var(--color-purple);">
+                  <i class="fa-solid fa-robot"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1 group-hover:text-purple-600 transition-colors" style="color: var(--text-primary);">Tirar Dúvidas com IA</h4>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Explicações instantâneas de pegadinhas, legislação e teoria.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-purple);">
+                <span>Abrir chat com IA</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+
+            <a href="desempenho.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+              <div>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-orange-light); color: var(--color-orange);">
+                  <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <h4 class="font-bold text-sm mb-1 group-hover:text-orange-600 transition-colors" style="color: var(--text-primary);">Ver Desempenho</h4>
+                <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">Gráficos de evolução, taxa de acerto por matéria e pontos fracos.</p>
+              </div>
+              <div class="mt-4 flex items-center text-xs font-semibold" style="color: var(--color-orange);">
+                <span>Ver métricas</span> <i class="fa-solid fa-arrow-right ml-1.5 text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- FEEDBACK BOX -->
+        <div class="card p-6 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4" style="background-color: var(--bg-card); border-color: var(--border-default);">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: var(--color-cyan-light, rgba(6,182,212,0.15)); color: var(--color-cyan);">
+              <i class="fa-regular fa-lightbulb"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-sm" style="color: var(--text-primary);">Quer sugerir uma funcionalidade para este módulo?</h4>
+              <p class="text-xs" style="color: var(--text-muted);">Sua sugestão vai direto para o quadro de prioridades do time de produto.</p>
+            </div>
+          </div>
+          <button id="open-feedback-btn" class="btn-secondary py-2.5 px-5 text-xs font-semibold whitespace-nowrap shrink-0 flex items-center gap-2">
+            <i class="fa-regular fa-comment-dots"></i> Enviar Sugestão
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FEEDBACK MODAL -->
+  <div id="feedback-modal" class="modal-overlay">
+    <div class="modal-card max-w-md w-full p-6">
+      <div class="flex items-center justify-between pb-4 border-b" style="border-color: var(--border-default);">
+        <h3 class="font-bold text-base" style="color: var(--text-primary);"><i class="fa-solid fa-lightbulb mr-2" style="color: var(--color-orange);"></i>Enviar Sugestão</h3>
+        <button id="feedback-close-btn" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="feedback-form" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">Módulo Relacionado</label>
+          <select id="feedback-module" class="w-full px-3 py-2.5 rounded-xl text-sm border" style="background-color: var(--bg-input); border-color: var(--border-default); color: var(--text-primary);">
+            <option value="aulas">Aulas & Videoaulas</option>
+            <option value="planos-estudo">Planos de Estudo</option>
+            <option value="materiais">Materiais & PDFs</option>
+            <option value="configuracoes">Configurações & Perfil</option>
+            <option value="geral">Geral / Outros</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5" style="color: var(--text-secondary);">O que você gostaria de ver aqui?</label>
+          <textarea id="feedback-text" required rows="4" placeholder="Ex: Adoraria ter a opção de acelerar vídeos a 2.5x e salvar resumos em markdown..." class="w-full px-3 py-2.5 rounded-xl text-sm border focus:outline-none" style="background-color: var(--bg-input); border-color: var(--border-default); color: var(--text-primary);"></textarea>
+        </div>
+        <button type="submit" class="btn-primary w-full py-2.5 text-sm font-semibold justify-center">
+          Enviar Ideia ao Time Agon
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-card max-w-lg w-full">
+      <div class="p-6 pb-0 flex items-center justify-between">
+        <h3 class="font-bold text-lg" style="color:var(--text-primary);">Meu Perfil</h3>
+        <button id="modal-close-btn" style="color:var(--text-muted);" class="hover:opacity-75"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div class="flex border-b px-6 mt-4 gap-6" style="border-color:var(--border-light);">
+        <button class="modal-tab active pb-3 text-sm font-medium" data-tab="dados">Dados</button>
+        <button class="modal-tab pb-3 text-sm font-medium" data-tab="conquistas">Conquistas</button>
+        <button class="modal-tab pb-3 text-sm font-medium" data-tab="config">Configurações</button>
+      </div>
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-4 mb-6">
+          <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="w-16 h-16 rounded-full object-cover" />
+          <div>
+            <h4 class="font-bold text-base" style="color:var(--text-primary);">Lucas Ferreira</h4>
+            <p class="text-xs" style="color:var(--text-secondary);">lucas.ferreira@email.com</p>
+            <span class="badge badge-blue text-xs mt-1">Concurso: PF — Agente</span>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+      </div>
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
+        </div>
+      </div>
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p><p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p></div>
+            <label class="toggle-switch"><input type="checkbox" id="theme-switch" /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p><p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Notificações push</p><p class="text-xs" style="color:var(--text-muted);">Alertas no navegador</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div><p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p><p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p></div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <button class="btn-secondary w-full justify-center text-sm">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION POPUP -->
+  <div id="toast" class="toast-popup">
+    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shrink-0" style="background: var(--color-green);">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <div>
+      <p id="toast-title" class="font-bold text-xs" style="color: var(--text-primary);">Sucesso!</p>
+      <p id="toast-msg" class="text-xs" style="color: var(--text-secondary);">Inscrição confirmada com sucesso.</p>
+    </div>
+  </div>
+
+  <!-- Shared Scripts -->
+  <script src="../js/script.js"></script>
+
+  <!-- Page-Specific Script -->
+  <script>
+    const MODULES_DATA = {
+      'aulas': {
+        name: 'Aulas & Videoaulas',
+        url: 'aulas.html',
+        icon: 'fa-play',
+        bgGradient: 'linear-gradient(135deg, #2563EB, #06B6D4)',
+        badge: 'Gravação & Streaming',
+        timeline: 'Previsão: Próximo Mês',
+        progress: '75%',
+        progressText: 'Fase 3: Gravação dos cursos e player HD adaptativo',
+        title: 'Módulo de Aulas em Desenvolvimento',
+        subtitle: 'Estamos montando um acervo moderno de videoaulas com os melhores professores de concursos públicos, focadas 100% no edital e sem enrolação.',
+        features: [
+          {
+            icon: 'fa-gauge-high',
+            color: 'blue',
+            title: 'Player Inteligente com até 2.5x',
+            desc: 'Acelere o vídeo sem distorção na voz, pule trechos de silêncio e defina marcadores automáticos em temas complexos.'
+          },
+          {
+            icon: 'fa-cloud-arrow-down',
+            color: 'green',
+            title: 'Downloads para Estudo Offline',
+            desc: 'Baixe as aulas pelo navegador ou app e continue estudando durante trajetos ou viagens mesmo sem internet.'
+          },
+          {
+            icon: 'fa-pen-to-square',
+            color: 'purple',
+            title: 'Caderno Sincronizado ao Vídeo',
+            desc: 'Faça suas anotações lado a lado com o vídeo. Ao clicar em uma nota, o player pula direto para o exato minuto correspondente.'
+          },
+          {
+            icon: 'fa-comments',
+            color: 'orange',
+            title: 'Transmissões ao Vivo e Dúvidas',
+            desc: 'Participe de mentorias semanais ao vivo com chat moderado e tire suas dúvidas direto com os professores convidados.'
+          }
+        ]
+      },
+      'planos-estudo': {
+        name: 'Planos de Estudo & Ciclos',
+        url: 'planos-estudo.html',
+        icon: 'fa-calendar-days',
+        bgGradient: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+        badge: 'Algoritmo Adaptativo',
+        timeline: 'Previsão: 4 Semanas',
+        progress: '80%',
+        progressText: 'Fase 3: Calibragem do algoritmo de ciclos e revisões espaçadas',
+        title: 'Planos de Estudo Inteligentes em Breve',
+        subtitle: 'Diga adeus a cronogramas engessados em PDF. O Agon vai calcular a melhor rota diária de estudos considerando sua rotina e seu concurso alvo.',
+        features: [
+          {
+            icon: 'fa-brain',
+            color: 'purple',
+            title: 'Cronograma Recalculado por IA',
+            desc: 'Atrasou a meta de terça-feira? O sistema reorganiza automaticamente os dias seguintes sem acumular matérias ou causar sobrecarga.'
+          },
+          {
+            icon: 'fa-arrows-spin',
+            color: 'blue',
+            title: 'Ciclos de Estudo por Edital',
+            desc: 'Matérias dosadas pelo peso no edital e pela sua taxa histórica de acertos, priorizando onde você mais precisa pontuar.'
+          },
+          {
+            icon: 'fa-stopwatch',
+            color: 'green',
+            title: 'Controle de Horas Líquidas',
+            desc: 'Temporizador Pomodoro integrado com registro automático de horas líquidas e paradas para descanso programadas.'
+          },
+          {
+            icon: 'fa-repeat',
+            color: 'orange',
+            title: 'Curva de Esquecimento (Spaced Repetition)',
+            desc: 'Alertas automáticos para revisões em 24h, 7 dias e 30 dias para garantir retenção permanente na memória de longo prazo.'
+          }
+        ]
+      },
+      'materiais': {
+        name: 'Materiais & PDFs de Apoio',
+        url: 'materiais.html',
+        icon: 'fa-folder-open',
+        bgGradient: 'linear-gradient(135deg, #10B981, #06B6D4)',
+        badge: 'Diagramação & Conteúdo',
+        timeline: 'Previsão: 3 Semanas',
+        progress: '70%',
+        progressText: 'Fase 2: Finalização dos mapas mentais interativos e Vade Mecum',
+        title: 'Biblioteca de Materiais em Breve',
+        subtitle: 'Resumos esquematizados, mapas mentais de alta resolução, lei seca grifada e cadernos completos para você baixar ou ler direto na plataforma.',
+        features: [
+          {
+            icon: 'fa-diagram-project',
+            color: 'green',
+            title: 'Mapas Mentais Interativos',
+            desc: 'Navegue visualmente por tópicos de Direito e Informática com zoom infinito, modo noturno e nós expansíveis.'
+          },
+          {
+            icon: 'fa-file-lines',
+            color: 'blue',
+            title: 'Resumos Esquematizados (PDFs)',
+            desc: 'Documentos sintetizados com tabelas de jurisprudência comparada e alertas de "pegadinhas mais comuns de bancas".'
+          },
+          {
+            icon: 'fa-scale-balanced',
+            color: 'purple',
+            title: 'Vade Mecum Digital com Histórico',
+            desc: 'Legislação federal com indicação visual dos artigos com maior incidência de cobrança nas provas dos últimos 5 anos.'
+          },
+          {
+            icon: 'fa-print',
+            color: 'orange',
+            title: 'Exportação Otimizada para Impressão',
+            desc: 'Imprima em folhas padronizadas para fichários ou importe para aplicativos de anotação de tablet (Notability / GoodNotes).'
+          }
+        ]
+      },
+      'configuracoes': {
+        name: 'Configurações & Painel da Conta',
+        url: 'configuracoes.html',
+        icon: 'fa-gear',
+        bgGradient: 'linear-gradient(135deg, #F59E0B, #EF4444)',
+        badge: 'Segurança & Preferências',
+        timeline: 'Previsão: 2 Semanas',
+        progress: '85%',
+        progressText: 'Fase 4: Testes de autenticação de dois fatores e faturas',
+        title: 'Central de Configurações em Breve',
+        subtitle: 'Personalize completamente sua jornada de estudos: controle de notificações por WhatsApp/Push, segurança em dois fatores e gestão de faturas.',
+        features: [
+          {
+            icon: 'fa-shield-halved',
+            color: 'orange',
+            title: 'Segurança Avançada e 2FA',
+            desc: 'Proteja seu progresso e anotações ativando autenticação em duas etapas via aplicativo autenticador (Google / Authy).'
+          },
+          {
+            icon: 'fa-bell',
+            color: 'blue',
+            title: 'Canais de Notificações',
+            desc: 'Escolha se deseja receber metas diárias por e-mail, navegador ou direto no WhatsApp no horário que você estuda.'
+          },
+          {
+            icon: 'fa-credit-card',
+            color: 'green',
+            title: 'Assinatura e Recibos Fiscais',
+            desc: 'Acesse faturas, altere método de pagamento e faça upgrade para o Agon Premium de forma 100% autônoma.'
+          },
+          {
+            icon: 'fa-laptop-code',
+            color: 'purple',
+            title: 'Dispositivos e Sessões Ativas',
+            desc: 'Visualize quais celulares e computadores estão conectados à sua conta e encerre sessões remotas com 1 clique.'
+          }
+        ]
+      }
+    };
+
+    function renderModule(modKey) {
+      const data = MODULES_DATA[modKey] || MODULES_DATA['aulas'];
+
+      // Update Hero
+      const iconContainer = document.getElementById('hero-icon-container');
+      const icon = document.getElementById('hero-icon');
+      const title = document.getElementById('hero-title');
+      const subtitle = document.getElementById('hero-subtitle');
+      const timeBadge = document.getElementById('hero-timeline-badge');
+      const progLabel = document.getElementById('progress-label');
+      const progVal = document.getElementById('progress-value');
+      const progFill = document.getElementById('progress-bar-fill');
+      const peekTitle = document.getElementById('peek-title');
+      const peekSubtitle = document.getElementById('peek-subtitle');
+      const peekLink = document.getElementById('peek-direct-link');
+      const peekCards = document.getElementById('peek-cards');
+
+      if (iconContainer) iconContainer.style.background = data.bgGradient;
+      if (icon) icon.className = `fa-solid ${data.icon}`;
+      if (title) title.textContent = data.title;
+      if (subtitle) subtitle.textContent = data.subtitle;
+      if (timeBadge) timeBadge.textContent = data.timeline;
+      if (progLabel) progLabel.textContent = data.progressText;
+      if (progVal) progVal.textContent = `${data.progress} concluído`;
+      if (progFill) {
+        progFill.style.width = data.progress;
+        progFill.style.background = data.bgGradient;
+      }
+      if (peekTitle) peekTitle.textContent = `O Que Esperar de ${data.name}`;
+      if (peekSubtitle) peekSubtitle.textContent = `Funcionalidades exclusivas projetadas para o módulo de ${data.name}.`;
+      if (peekLink) {
+        peekLink.href = data.url;
+        peekLink.innerHTML = `<span>Acessar página de ${data.name}</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>`;
+      }
+
+      // Render Cards
+      if (peekCards) {
+        peekCards.innerHTML = data.features.map(f => `
+          <div class="feature-preview-card p-5 rounded-2xl flex gap-4 items-start">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0" style="background: var(--color-${f.color}-light); color: var(--color-${f.color});">
+              <i class="fa-solid ${f.icon}"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-base mb-1" style="color: var(--text-primary);">${f.title}</h4>
+              <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">${f.desc}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Update Active Tab Button
+      document.querySelectorAll('.module-tab-btn').forEach(btn => {
+        if (btn.dataset.target === modKey) {
+          btn.style.borderColor = 'var(--color-blue)';
+          btn.style.boxShadow = 'var(--shadow-md)';
+          btn.style.backgroundColor = 'var(--bg-card)';
+        } else {
+          btn.style.borderColor = 'var(--border-default)';
+          btn.style.boxShadow = 'none';
+        }
+      });
+    }
+
+    // Toast helper
+    function showToast(title, msg) {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-msg');
+      if (toastTitle) toastTitle.textContent = title;
+      if (toastMsg) toastMsg.textContent = msg;
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 4000);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check query param
+      const urlParams = new URLSearchParams(window.location.search);
+      const modParam = urlParams.get('modulo') || urlParams.get('page') || 'aulas';
+      renderModule(modParam in MODULES_DATA ? modParam : 'aulas');
+
+      // Tab clicks
+      document.querySelectorAll('.module-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.target;
+          renderModule(target);
+          window.history.replaceState(null, '', `?modulo=${target}`);
+        });
+      });
+
+      // Notification Form Submit
+      const notifyForm = document.getElementById('notify-form');
+      const notifyEmail = document.getElementById('notify-email');
+      if (notifyForm) {
+        notifyForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const email = notifyEmail.value.trim();
+          if (email) {
+            localStorage.setItem('agon-notify-email', email);
+            showToast('Inscrição Realizada! 🎉', `Avisaremos você em ${email} assim que este módulo for lançado.`);
+            notifyEmail.value = '';
+          }
+        });
+      }
+
+      // Feedback Modal
+      const openFeedbackBtn = document.getElementById('open-feedback-btn');
+      const feedbackModal = document.getElementById('feedback-modal');
+      const feedbackCloseBtn = document.getElementById('feedback-close-btn');
+      const feedbackForm = document.getElementById('feedback-form');
+
+      if (openFeedbackBtn && feedbackModal) {
+        openFeedbackBtn.addEventListener('click', () => {
+          feedbackModal.classList.add('active');
+        });
+      }
+      if (feedbackCloseBtn && feedbackModal) {
+        feedbackCloseBtn.addEventListener('click', () => {
+          feedbackModal.classList.remove('active');
+        });
+      }
+      if (feedbackModal) {
+        feedbackModal.addEventListener('click', (e) => {
+          if (e.target === feedbackModal) feedbackModal.classList.remove('active');
+        });
+      }
+      if (feedbackForm) {
+        feedbackForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const mod = document.getElementById('feedback-module').value;
+          const txt = document.getElementById('feedback-text').value;
+          feedbackModal.classList.remove('active');
+          document.getElementById('feedback-text').value = '';
+          showToast('Sugestão Enviada! 💡', 'Obrigado por ajudar a construir o melhor ecossistema de estudos!');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
