@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agon — Plataforma de Estudos Inteligente para Concursos</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & Volkhov -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Volkhov:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Agon Design System -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            serif: ['Volkhov', 'Georgia', 'serif'],
+          },
+          colors: {
+            agonBlue: '#23366e',
+            agonBlueDark: '#172347',
+            agonBlueDeep: '#0f1833',
+            agonBlueMedium: '#2e468d',
+            agonBlueLight: '#3956ad',
+            agonBlueAccent: '#4a6ecf',
+            agonBlueSoft: '#eef3fc',
+            agonBluePale: '#e2ebf9',
+          },
+          borderRadius: { '2xl': '16px', '3xl': '24px', '4xl': '32px' },
+          boxShadow: {
+            'agon-btn': '0 16px 32px -4px rgba(35, 54, 110, 0.35)',
+            'agon-card': '0 25px 50px -12px rgba(35, 54, 110, 0.12)',
+            'agon-hover': '0 30px 60px 0 rgba(35, 54, 110, 0.16)',
+          }
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="assets/img/AGON png.png" />
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #ffffff;
+      color: #172347;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Hero Blob exclusively in Agon Blue variations */
+    .hero-blob-bg {
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 720px;
+      height: 720px;
+      background: radial-gradient(circle, #e2ebf9 0%, #eef3fc 45%, rgba(238, 243, 252, 0) 70%);
+      border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-blue-glow {
+      position: absolute;
+      top: 0;
+      left: -120px;
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(35, 54, 110, 0.09) 0%, rgba(255, 255, 255, 0) 70%);
+      filter: blur(60px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Decorative Brush Underline exclusively in Agon Blue */
+    .brush-underline-blue {
+      position: relative;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .brush-underline-blue::after {
+      content: '';
+      position: absolute;
+      left: -6px;
+      right: -6px;
+      bottom: -4px;
+      height: 12px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 385 30' fill='none'%3E%3Cpath d='M3.5 16.5C85.5 5.5 245.5 -1.5 381.5 23.5' stroke='%2323366e' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+
+    /* Service Card Highlight in Agon Blue */
+    .service-card {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      background: #ffffff;
+      border: 1px solid #eef3fc;
+    }
+    .service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px 0 rgba(35, 54, 110, 0.12);
+      border-color: #dce5f7;
+    }
+    .service-card:hover .service-blob {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .service-blob {
+      position: absolute;
+      bottom: -22px;
+      left: -22px;
+      width: 80px;
+      height: 80px;
+      background-color: #23366e;
+      border-radius: 30px 0 10px 0;
+      z-index: -1;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s ease;
+    }
+
+    /* Floating Card Animations */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(1deg); }
+    }
+    @keyframes floatPaperPlane {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-12px) translateX(5px); }
+    }
+    .floating-card-1 {
+      animation: floatSlow 6s ease-in-out infinite;
+    }
+    .floating-card-2 {
+      animation: floatSlow 7s ease-in-out infinite 1.5s;
+    }
+    .floating-plane {
+      animation: floatPaperPlane 5s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="relative antialiased">
+
+  <!-- BACKGROUND DECORATIONS (AGON BLUE TINTS) -->
+  <div class="hero-blue-glow"></div>
+  <div class="hero-blob-bg"></div>
+
+  <!-- NAVIGATION BAR (JADOO STYLE IN AGON BLUE) -->
+  <header class="relative z-50 w-full max-w-7xl mx-auto px-6 lg:px-12 pt-8 pb-4 flex items-center justify-between">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2.5 group cursor-pointer">
+      <div class="w-10 h-10 relative transition-transform group-hover:scale-105">
+        <img src="assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+      </div>
+      <span class="text-3xl font-extrabold tracking-tight text-[#23366e] agon-brand-text">Agon</span>
+    </a>
+
+    <!-- Center Navigation Links -->
+    <nav class="hidden md:flex items-center gap-9 text-[15px] font-medium text-[#172347]">
+      <a href="#recursos" class="hover:text-[#23366e] transition-colors">Recursos</a>
+      <a href="#trilhas" class="hover:text-[#23366e] transition-colors">Carreiras</a>
+      <a href="#metodologia" class="hover:text-[#23366e] transition-colors">Como Funciona</a>
+      <a href="#depoimentos" class="hover:text-[#23366e] transition-colors">Aprovados</a>
+      <a href="#planos" class="hover:text-[#23366e] transition-colors">Planos</a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-4">
+      <button class="theme-toggle w-10 h-10 rounded-xl border flex items-center justify-center text-slate-500 hover:text-blue-500 transition-colors" style="background-color: var(--bg-card); border-color: var(--border-default);" title="Alternar tema">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <a href="/login" class="text-[15px] font-semibold text-[#23366e] hover:text-[#172347] transition-colors hidden sm:inline">
+        Entrar
+      </a>
+      <a href="/cadastro" class="text-[14px] font-bold text-white bg-[#23366e] hover:bg-[#172347] px-6 py-2.5 rounded-xl transition-all shadow-agon-btn hover:shadow-agon-hover">
+        Cadastre-se
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO SECTION (JADOO COMPOSITION WITH AGON BLUE IDENTITY) -->
+  <section class="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-24 lg:pt-16 lg:pb-32">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      
+      <!-- LEFT HERO CONTENT (7 cols) -->
+      <div class="lg:col-span-7 space-y-7 text-left">
+        
+        <!-- Overline in Agon Blue Medium -->
+        <p class="text-sm md:text-base font-extrabold tracking-wider uppercase text-[#2e468d]">
+          O MELHOR MÉTODO PARA A SUA APROVAÇÃO
+        </p>
+
+        <!-- Main Headline with Serif Typography & Agon Blue Brush Underline -->
+        <h1 class="text-4xl sm:text-5xl lg:text-[70px] font-serif font-bold text-[#172347] leading-[1.12] tracking-tight">
+          Estude, <span class="brush-underline-blue">evolua</span> e viva o sonho da posse pública
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-base sm:text-lg text-[#23366e]/75 max-w-xl font-normal leading-relaxed">
+          Chega de estudar sem rumo. O Agon organiza seu cronograma, tira suas dúvidas com <strong>IA Tutor 24/7</strong> e entrega mais de 50.000 questões comentadas para sua nomeação.
+        </p>
+
+        <!-- CTAs in Agon Blue variations -->
+        <div class="flex flex-wrap items-center gap-7 pt-3">
+          <!-- Primary CTA Button (Agon Blue Solid) -->
+          <a href="/cadastro" class="px-8 py-4 rounded-xl font-bold text-white bg-[#23366e] hover:bg-[#172347] shadow-agon-btn hover:shadow-agon-hover transition-all transform hover:-translate-y-0.5 text-[15px] flex items-center justify-center gap-2">
+            <span>Comece agora</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+
+          <!-- Play Demo Button in Agon Blue -->
+          <a href="/dashboard" class="flex items-center gap-3.5 group cursor-pointer text-[#23366e] hover:text-[#172347] transition-colors">
+            <span class="w-12 h-12 rounded-full bg-[#23366e] text-white flex items-center justify-center shadow-lg shadow-blue-900/30 group-hover:scale-110 group-hover:bg-[#172347] transition-all">
+              <i class="fa-solid fa-play ml-0.5 text-sm"></i>
+            </span>
+            <span class="text-[15px] font-bold text-[#23366e] group-hover:text-[#172347]">Ver demonstração</span>
+          </a>
+        </div>
+
+        <!-- Social Proof Stats in Agon Blue Palette -->
+        <div class="pt-6 flex items-center gap-8 border-t border-[#e2ebf9] max-w-md">
+          <div>
+            <p class="text-2xl font-extrabold text-[#23366e]">+50.000</p>
+            <p class="text-xs text-[#23366e]/70">Questões Resolvidas</p>
+          </div>
+          <div class="w-px h-8 bg-[#dce5f7]"></div>
+          <div>
+            <p class="text-2xl font-extrabold text-[#23366e]">92,4%</p>
+            <p class="text-xs text-[#23366e]/70">Taxa de Acertos</p>
+          </div>
+          <div class="w-px h-8 bg-[#dce5f7]"></div>
+          <div>
+            <p class="text-2xl font-extrabold text-[#23366e]">4.9 ★</p>
+            <p class="text-xs text-[#23366e]/70">Avaliação Geral</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT HERO VISUAL (5 cols) -->
+      <div class="lg:col-span-5 relative flex items-center justify-center lg:justify-end">
+        
+        <!-- Floating Paper Airplanes in Agon Blue -->
+        <div class="absolute -top-10 left-6 floating-plane text-[#23366e] text-2xl opacity-90 z-20">
+          <i class="fa-solid fa-paper-plane -rotate-12"></i>
+        </div>
+        <div class="absolute top-1/2 -right-6 floating-plane text-[#3956ad] text-xl opacity-80 z-20" style="animation-delay: 2s;">
+          <i class="fa-solid fa-paper-plane rotate-45"></i>
+        </div>
+
+        <!-- Main Character & Card Composition in Agon Blue -->
+        <div class="relative w-full max-w-[440px] z-10">
+          
+          <!-- Large Feature Showcase Card -->
+          <div class="bg-white rounded-3xl p-6 shadow-agon-card border border-[#e2ebf9] space-y-5 relative">
+            
+            <!-- Hero Top Badge (Dark Agon Navy Background) -->
+            <div class="relative rounded-2xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-[#0f1833] via-[#172347] to-[#23366e] p-5 flex flex-col justify-between text-white shadow-md">
+              <div class="flex items-center justify-between text-xs">
+                <span class="bg-white/15 text-white border border-white/20 px-3 py-1 rounded-full font-semibold flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Turma 2026 Ativa
+                </span>
+                <span class="text-blue-200 font-mono text-[11px]">Agon AI Engine</span>
+              </div>
+
+              <!-- Student Avatar Showcase -->
+              <div class="text-center space-y-2 my-auto">
+                <div class="w-20 h-20 mx-auto rounded-full border-4 border-white/20 p-1 shadow-lg bg-white/10 backdrop-blur-md">
+                  <img src="assets/img/perfil.jpg" alt="Concurseiro" class="w-full h-full object-cover rounded-full" />
+                </div>
+                <h3 class="text-lg font-bold">Rumo à Polícia Federal</h3>
+                <p class="text-xs text-blue-200">Trilha de Alta Performance • Agente & Escrivão</p>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-blue-200 pt-2 border-t border-white/10">
+                <span><i class="fa-solid fa-book-open mr-1 text-white"></i> 48 Módulos</span>
+                <span><i class="fa-solid fa-fire mr-1 text-orange-400"></i> 14 Dias Consecutivos</span>
+              </div>
+            </div>
+
+            <!-- Card Info Bottom in Agon Blue -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-base text-[#172347]">Meta Diária de Questões</h4>
+                  <p class="text-xs text-[#23366e]/70">Direito Constitucional & Informática</p>
+                </div>
+                <span class="text-xs font-extrabold text-[#23366e] bg-[#eef3fc] px-2.5 py-1 rounded-lg">92% Acerto</span>
+              </div>
+
+              <!-- Progress bar in Agon Blue variations -->
+              <div class="w-full bg-[#eef3fc] h-2.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-[#23366e] to-[#4a6ecf] h-full w-[82%] rounded-full"></div>
+              </div>
+              <div class="flex justify-between text-[11px] text-[#23366e]/70">
+                <span>38 de 45 questões concluídas</span>
+                <span class="font-bold text-[#172347]">82%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Floating Pill 1: IA Tutor Notification -->
+          <div class="absolute -bottom-6 -left-8 bg-white rounded-2xl p-4 shadow-agon-card border border-[#e2ebf9] flex items-center gap-3 floating-card-1 z-30">
+            <div class="w-11 h-11 rounded-xl bg-[#eef3fc] text-[#23366e] flex items-center justify-center text-lg shadow-sm">
+              <i class="fa-solid fa-robot text-purple-600"></i>
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-[#172347]">Dúvida Sanada!</p>
+              <p class="text-[10px] text-[#23366e]/70">IA Tutor explicou o Art. 5º da CF</p>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          </div>
+
+          <!-- Floating Pill 2: Gamification XP -->
+          <div class="absolute -top-4 -right-6 bg-white rounded-2xl px-4 py-3 shadow-agon-card border border-[#e2ebf9] flex items-center gap-2.5 floating-card-2 z-30">
+            <span class="text-amber-500 text-base"><i class="fa-solid fa-trophy"></i></span>
+            <div>
+              <p class="text-xs font-bold text-[#172347]">+250 XP Hoje</p>
+              <p class="text-[9px] text-[#23366e]/70">Top 5% da Turma</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CATEGORY / SERVICES SECTION IN AGON BLUE -->
+  <section id="recursos" class="relative py-20 max-w-7xl mx-auto px-6 lg:px-12 text-center space-y-16">
+    <div class="space-y-3">
+      <p class="text-sm md:text-base font-extrabold tracking-wider uppercase text-[#2e468d]">
+        CATEGORIA
+      </p>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#172347]">
+        Oferecemos os Melhores Recursos
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      
+      <!-- Card 1 -->
+      <div class="service-card p-8 rounded-3xl text-center space-y-4">
+        <div class="service-blob"></div>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-[#eef3fc] flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-circle-question text-blue-600"></i>
+        </div>
+        <h3 class="text-lg font-bold text-[#172347]">Banco de Questões</h3>
+        <p class="text-xs sm:text-sm text-[#23366e]/75 leading-relaxed">
+          Mais de 50 mil questões de Cebraspe, FGV e FCC comentadas alternativa por alternativa.
+        </p>
+      </div>
+
+      <!-- Card 2 (Active Highlight with Agon Blue Blob) -->
+      <div class="service-card p-8 rounded-3xl text-center space-y-4 shadow-agon-card">
+        <div class="service-blob" style="opacity: 1; transform: scale(1);"></div>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-[#eef3fc] flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-robot text-purple-600"></i>
+        </div>
+        <h3 class="text-lg font-bold text-[#172347]">IA Tutor Integrado</h3>
+        <p class="text-xs sm:text-sm text-[#23366e]/75 leading-relaxed">
+          Tire dúvidas 24/7 sobre qualquer enunciado, súmula ou teoria jurídica com resposta imediata.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="service-card p-8 rounded-3xl text-center space-y-4">
+        <div class="service-blob"></div>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-[#eef3fc] flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-calendar-days text-amber-500"></i>
+        </div>
+        <h3 class="text-lg font-bold text-[#172347]">Cronograma Adaptativo</h3>
+        <p class="text-xs sm:text-sm text-[#23366e]/75 leading-relaxed">
+          Distribua as matérias automaticamente conforme o peso do seu edital e seu tempo disponível.
+        </p>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="service-card p-8 rounded-3xl text-center space-y-4">
+        <div class="service-blob"></div>
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-[#eef3fc] flex items-center justify-center text-2xl">
+          <i class="fa-solid fa-file-pdf text-emerald-600"></i>
+        </div>
+        <h3 class="text-lg font-bold text-[#172347]">Mapas & Resumos</h3>
+        <p class="text-xs sm:text-sm text-[#23366e]/75 leading-relaxed">
+          Apostilas digitais em PDF, legislação esquematizada e mapas mentais para revisão rápida.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TOP TRILHAS SECTION IN AGON BLUE -->
+  <section id="trilhas" class="py-20 max-w-7xl mx-auto px-6 lg:px-12 space-y-16">
+    <div class="text-center space-y-3">
+      <p class="text-sm md:text-base font-extrabold tracking-wider uppercase text-[#2e468d]">
+        MAIS PROCURADAS
+      </p>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#172347]">
+        Principais Carreiras Públicas
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Card 1 -->
+      <div class="rounded-3xl bg-white shadow-agon-card border border-[#e2ebf9] overflow-hidden hover:-translate-y-2 transition-transform cursor-pointer">
+        <div class="h-56 bg-gradient-to-br from-[#0f1833] via-[#172347] to-[#23366e] p-6 flex flex-col justify-between text-white relative">
+          <span class="badge bg-white/20 backdrop-blur-md text-white text-xs w-fit px-3 py-1 rounded-full">Carreira Policial</span>
+          <div>
+            <h3 class="text-xl font-bold">Polícia Federal</h3>
+            <p class="text-xs text-blue-200">Agente, Escrivão & Papiloscopista</p>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between text-sm font-bold text-[#172347]">
+            <span>Edital Esquematizado</span>
+            <span class="text-[#23366e]">Completo</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-[#23366e]/70">
+            <i class="fa-solid fa-location-arrow text-[#23366e]"></i>
+            <span>Ciclo de 120 dias com Simulados Cebraspe</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="rounded-3xl bg-white shadow-agon-card border border-[#e2ebf9] overflow-hidden hover:-translate-y-2 transition-transform cursor-pointer">
+        <div class="h-56 bg-gradient-to-br from-[#172347] via-[#23366e] to-[#2e468d] p-6 flex flex-col justify-between text-white relative">
+          <span class="badge bg-white/20 backdrop-blur-md text-white text-xs w-fit px-3 py-1 rounded-full">Carreira Fiscal</span>
+          <div>
+            <h3 class="text-xl font-bold">Receita Federal</h3>
+            <p class="text-xs text-blue-200">Auditor Fiscal & Analista Tributário</p>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between text-sm font-bold text-[#172347]">
+            <span>Trilha de Alta Densidade</span>
+            <span class="text-[#23366e]">Completo</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-[#23366e]/70">
+            <i class="fa-solid fa-location-arrow text-[#23366e]"></i>
+            <span>Contabilidade, Direito Tributário & TI</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="rounded-3xl bg-white shadow-agon-card border border-[#e2ebf9] overflow-hidden hover:-translate-y-2 transition-transform cursor-pointer">
+        <div class="h-56 bg-gradient-to-br from-[#0b1226] via-[#172347] to-[#3956ad] p-6 flex flex-col justify-between text-white relative">
+          <span class="badge bg-white/20 backdrop-blur-md text-white text-xs w-fit px-3 py-1 rounded-full">Carreira de Tribunais</span>
+          <div>
+            <h3 class="text-xl font-bold">TJ-SP & Tribunais Federais</h3>
+            <p class="text-xs text-blue-200">Escrevente Técnico Judiciário</p>
+          </div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between text-sm font-bold text-[#172347]">
+            <span>Foco em Legislação Vunesp/FCC</span>
+            <span class="text-[#23366e]">Completo</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-[#23366e]/70">
+            <i class="fa-solid fa-location-arrow text-[#23366e]"></i>
+            <span>Mais de 8.000 questões com gabarito comentado</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS IN 3 STEPS IN AGON BLUE -->
+  <section id="metodologia" class="py-20 max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+      
+      <!-- LEFT: 3 STEPS (7 cols) -->
+      <div class="lg:col-span-7 space-y-8">
+        <div>
+          <p class="text-sm md:text-base font-extrabold tracking-wider uppercase text-[#2e468d]">
+            FÁCIL E RÁPIDO
+          </p>
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#172347] leading-tight">
+            Conquiste sua Aprovação em 3 Passos Simples
+          </h2>
+        </div>
+
+        <div class="space-y-7">
+          <!-- Step 1 (Agon Blue Box) -->
+          <div class="flex items-start gap-5">
+            <div class="w-12 h-12 rounded-2xl bg-[#23366e] text-white flex items-center justify-center text-xl shrink-0 shadow-md">
+              <i class="fa-solid fa-compass text-amber-300"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-[#172347]">1. Escolha sua Carreira Objetivo</h3>
+              <p class="text-xs sm:text-sm text-[#23366e]/75 mt-1 leading-relaxed">
+                Selecione o concurso que você deseja prestar e informe suas horas disponíveis na semana.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 2 (Agon Blue Medium Box) -->
+          <div class="flex items-start gap-5">
+            <div class="w-12 h-12 rounded-2xl bg-[#2e468d] text-white flex items-center justify-center text-xl shrink-0 shadow-md">
+              <i class="fa-solid fa-laptop-code text-cyan-300"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-[#172347]">2. Pratique com Questões & IA Tutor</h3>
+              <p class="text-xs sm:text-sm text-[#23366e]/75 mt-1 leading-relaxed">
+                Resolva questões diariamente. Se tiver qualquer dúvida teórica, o IA Tutor explica na mesma hora.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 3 (Agon Blue Deep Box) -->
+          <div class="flex items-start gap-5">
+            <div class="w-12 h-12 rounded-2xl bg-[#172347] text-white flex items-center justify-center text-xl shrink-0 shadow-md">
+              <i class="fa-solid fa-award text-emerald-400"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-[#172347]">3. Meça sua Evolução até o Diário Oficial</h3>
+              <p class="text-xs sm:text-sm text-[#23366e]/75 mt-1 leading-relaxed">
+                Acompanhe seus gráficos de taxa de acerto por assunto até alcançar o nível de pontuação de corte.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: FLOATING PROGRESS CARD -->
+      <div class="lg:col-span-5 relative flex justify-center">
+        <!-- Glow behind in Agon Blue -->
+        <div class="absolute inset-0 bg-[#eef3fc] rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Main Card in Agon Blue theme -->
+        <div class="relative bg-white rounded-3xl p-6 shadow-agon-card border border-[#e2ebf9] max-w-[370px] w-full space-y-4">
+          <div class="rounded-2xl overflow-hidden aspect-[16/10] bg-[#172347] relative">
+            <img src="assets/img/perfil.jpg" alt="Simulado" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f1833]/90 via-[#172347]/30 to-transparent p-4 flex flex-col justify-end text-white">
+              <span class="text-xs font-bold uppercase tracking-wider text-blue-200">Simulado Ranqueado</span>
+              <h4 class="text-base font-bold">Polícia Federal — Simulado Geral #08</h4>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h4 class="text-base font-bold text-[#172347]">Meta de Estudo de Outubro</h4>
+            <p class="text-xs text-[#23366e]/70">14 a 28 de Outubro • por Davi Brito</p>
+          </div>
+
+          <div class="flex items-center gap-3 text-[#23366e]/80 text-sm">
+            <span class="w-8 h-8 rounded-full bg-[#eef3fc] flex items-center justify-center"><i class="fa-solid fa-book-bookmark text-xs text-blue-600"></i></span>
+            <span class="w-8 h-8 rounded-full bg-[#eef3fc] flex items-center justify-center"><i class="fa-solid fa-play text-xs text-purple-600"></i></span>
+            <span class="w-8 h-8 rounded-full bg-[#eef3fc] flex items-center justify-center"><i class="fa-solid fa-robot text-xs text-emerald-600"></i></span>
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-[#23366e]/70 pt-2 border-t border-[#eef3fc]">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-users text-[#23366e]"></i>
+              <span>3.480 alunos fazendo</span>
+            </div>
+            <i class="fa-solid fa-heart text-red-500 text-base cursor-pointer"></i>
+          </div>
+
+          <!-- Floating mini status card on the side -->
+          <div class="absolute -bottom-8 -right-8 bg-white rounded-2xl p-4 shadow-agon-card border border-[#e2ebf9] flex items-center gap-3.5 z-20">
+            <img src="assets/img/AGON png.png" alt="AGON" class="w-10 h-10 object-contain" />
+            <div>
+              <p class="text-[10px] font-bold text-[#23366e]/70 uppercase tracking-wider">Status Atual</p>
+              <h5 class="text-xs font-bold text-[#172347]">Trilha 85% Concluída</h5>
+              <div class="w-24 bg-[#eef3fc] h-1.5 rounded-full overflow-hidden mt-1.5">
+                <div class="bg-[#23366e] h-full w-[85%] rounded-full"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS IN AGON BLUE -->
+  <section id="depoimentos" class="py-24 max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      
+      <!-- Left info (5 cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        <p class="text-sm md:text-base font-extrabold tracking-wider uppercase text-[#2e468d]">
+          DEPOIMENTOS
+        </p>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#172347] leading-tight">
+          O que dizem os concurseiros que estudam no Agon
+        </h2>
+      </div>
+
+      <!-- Right Testimonial Card (7 cols) -->
+      <div class="lg:col-span-7 relative flex justify-center lg:justify-end">
+        <div class="relative bg-white rounded-3xl p-8 sm:p-10 shadow-agon-card border border-[#e2ebf9] max-w-lg space-y-5">
+          <!-- Floating Avatar -->
+          <div class="absolute -top-7 -left-7 w-16 h-16 rounded-full border-4 border-white shadow-md overflow-hidden bg-[#eef3fc]">
+            <img src="assets/img/perfil.jpg" alt="Davi" class="w-full h-full object-cover" />
+          </div>
+
+          <p class="text-sm sm:text-base text-[#23366e]/85 leading-relaxed italic pt-2">
+            "O IA Tutor me fez economizar horas de pesquisa em fóruns confusos. Quando errei uma pegadinha sobre remédios constitucionais, perguntei à IA e ela me deu o mnemônico exato que caiu na prova da Polícia Federal!"
+          </p>
+
+          <div>
+            <h4 class="text-base font-bold text-[#172347]">Lucas Vasconcelos</h4>
+            <p class="text-xs text-[#23366e]/70">Aprovado Polícia Federal • Brasília, DF</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FINAL BANNER IN AGON BLUE (CLEAN AND SOPHISTICATED) -->
+  <section id="planos" class="py-16 max-w-7xl mx-auto px-6 lg:px-12">
+    <div class="rounded-4xl p-10 md:p-16 text-center relative overflow-hidden bg-[#eef3fc] border border-[#dce5f7]">
+      
+      <!-- Floating icons in Agon Blue -->
+      <div class="absolute top-6 right-6 text-2xl text-[#23366e] opacity-40">
+        <i class="fa-solid fa-paper-plane -rotate-12"></i>
+      </div>
+
+      <div class="max-w-2xl mx-auto space-y-6 relative z-10">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#172347] leading-snug">
+          Comece agora gratuitamente e acelere sua preparação até o topo
+        </h2>
+        <p class="text-xs sm:text-sm text-[#23366e]/75">
+          Crie sua conta em 30 segundos. Sem taxa de adesão, sem cartão de crédito obrigatório.
+        </p>
+
+        <!-- Action buttons strictly in Agon Blue palette -->
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+          <a href="/cadastro" class="w-full sm:w-auto px-9 py-4 rounded-xl font-bold text-white bg-[#23366e] hover:bg-[#172347] shadow-agon-btn hover:shadow-agon-hover transition-all text-sm">
+            Criar Minha Conta Grátis
+          </a>
+          <a href="/login" class="w-full sm:w-auto px-7 py-4 rounded-xl font-bold text-[#23366e] bg-white hover:bg-[#e2ebf9] border border-[#dce5f7] transition-all text-sm">
+            Já Tenho Conta
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER IN AGON BLUE -->
+  <footer class="pt-16 pb-12 border-t border-[#eef3fc] max-w-7xl mx-auto px-6 lg:px-12 text-[#23366e]/75 text-xs">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div class="space-y-3 md:col-span-1">
+        <a href="/" class="flex items-center gap-2">
+          <img src="assets/img/AGON png.png" alt="AGON" class="w-7 h-7 object-contain agon-logo-img" />
+          <span class="text-2xl font-extrabold text-[#23366e] agon-brand-text">Agon</span>
+        </a>
+        <p class="text-xs leading-relaxed text-[#23366e]/70">
+          A plataforma inteligente que transforma estudo em aprovação.
+        </p>
+      </div>
+
+      <div>
+        <h5 class="font-bold text-[#172347] text-sm mb-3">Plataforma</h5>
+        <ul class="space-y-2">
+          <li><a href="/dashboard" class="hover:underline">Dashboard</a></li>
+          <li><a href="/aulas" class="hover:underline">Videoaulas</a></li>
+          <li><a href="/questoes" class="hover:underline">Questões</a></li>
+          <li><a href="/simulados" class="hover:underline">Simulados</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="font-bold text-[#172347] text-sm mb-3">Recursos</h5>
+        <ul class="space-y-2">
+          <li><a href="/ia-tutor" class="hover:underline">IA Tutor</a></li>
+          <li><a href="/planos-estudo" class="hover:underline">Cronogramas</a></li>
+          <li><a href="/materiais" class="hover:underline">Apostilas & PDFs</a></li>
+          <li><a href="/desempenho" class="hover:underline">Estatísticas</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="font-bold text-[#172347] text-sm mb-3">Acesso</h5>
+        <div class="space-y-2">
+          <a href="/login" class="block font-semibold text-[#23366e] hover:underline">Fazer Login</a>
+          <a href="/cadastro" class="block font-bold text-[#23366e] hover:underline">Cadastre-se Gratuitamente</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-8 border-t border-[#eef3fc] flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 Agon Estudos. Todos os direitos reservados.</p>
+      <div class="flex items-center gap-5">
+        <a href="#" class="hover:underline">Termos</a>
+        <a href="#" class="hover:underline">Privacidade</a>
+        <a href="#" class="hover:underline">Segurança</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -60,36 +60,43 @@
   --bg-header: #1E293B;
   --bg-input: #334155;
   --bg-hover: #334155;
-  --bg-active: rgba(35, 54, 110,0.15);
+  --bg-active: rgba(96, 165, 250, 0.14);
   --bg-chat-bot: #334155;
-  --bg-chat-user: #23366e;
+  --bg-chat-user: #2563EB;
   --bg-overlay: rgba(0,0,0,0.6);
   --bg-modal: #1E293B;
   --bg-code: #334155;
 
   --border-light: #334155;
   --border-default: #475569;
-  --border-active: #3B82F6;
+  --border-active: #60A5FA;
 
-  --text-primary: #E2E8F0;
+  --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
   --text-inverse: #FFFFFF;
 
-  --color-blue-light: rgba(35, 54, 110,0.2);
-  --color-blue-text: #93C5FD;
-  --color-green-light: rgba(16,185,129,0.15);
+  --color-blue: #60A5FA;
+  --color-blue-hover: #93C5FD;
+  --color-blue-light: rgba(96, 165, 250, 0.16);
+  --color-blue-text: #BFDBFE;
+  --color-green: #34D399;
+  --color-green-light: rgba(52, 211, 153, 0.16);
   --color-green-text: #6EE7B7;
-  --color-orange-light: rgba(245,158,11,0.15);
-  --color-orange-text: #FCD34D;
-  --color-purple-light: rgba(139,92,246,0.15);
-  --color-purple-text: #C4B5FD;
-  --color-red-light: rgba(239,68,68,0.15);
+  --color-orange: #FBBF24;
+  --color-orange-light: rgba(251, 191, 36, 0.16);
+  --color-orange-text: #FDE68A;
+  --color-purple: #A78BFA;
+  --color-purple-light: rgba(167, 139, 250, 0.16);
+  --color-purple-text: #DDD6FE;
+  --color-cyan: #38BDF8;
+  --color-red: #F87171;
+  --color-red-light: rgba(248, 113, 113, 0.16);
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.35);
-  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.4);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.45);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.5);
 
   --chart-grid: #334155;
   --chart-text: #94A3B8;
@@ -646,3 +653,147 @@ body {
   pointer-events: auto;
 }
 
+
+
+/* ============================================================
+   AGON — Enhanced Dark Theme Contrast & Brand Identity
+   ============================================================ */
+
+/* 1. Brand Logo & Name in Dark Mode: White text as requested */
+[data-theme="dark"] .agon-brand-text,
+[data-theme="dark"] .logo-text,
+[data-theme="dark"] .sidebar a span.tracking-wider,
+[data-theme="dark"] header a span.tracking-wider,
+[data-theme="dark"] header a span.font-extrabold,
+[data-theme="dark"] footer a span.font-extrabold,
+[data-theme="dark"] .auth-card a span.tracking-wider,
+[data-theme="dark"] .auth-card a span.font-extrabold,
+[data-theme="dark"] a[href="/"] span.font-extrabold,
+[data-theme="dark"] a[href="index.html"] span.font-bold,
+[data-theme="dark"] [data-agon-brand] {
+  color: #FFFFFF !important;
+}
+
+/* 2. Navigation items in Dark Mode */
+[data-theme="dark"] .nav-item.active {
+  background-color: rgba(96, 165, 250, 0.16) !important;
+  color: #93C5FD !important;
+  font-weight: 600;
+}
+[data-theme="dark"] .nav-item.active i {
+  color: #60A5FA !important;
+}
+[data-theme="dark"] .nav-item:hover:not(.active) {
+  background-color: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 3. Primary Button in Dark Mode */
+[data-theme="dark"] .btn-primary {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+[data-theme="dark"] .btn-primary:hover {
+  background-color: #1D4ED8 !important;
+}
+
+/* 4. Upsell Card in Dark Mode */
+[data-theme="dark"] .upsell-card {
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.25) !important;
+  color: #FFFFFF !important;
+}
+[data-theme="dark"] .upsell-card button {
+  background-color: #FFFFFF !important;
+  color: #1E3A8A !important;
+  font-weight: 700;
+}
+
+/* 5. Dark Blue Text Contrast Overrides */
+/* Convert low-contrast dark blue (#23366e, #172347, etc.) into high-contrast sky/light blue */
+[data-theme="dark"] .text-\[\#23366e\],
+[data-theme="dark"] .text-\[\#172347\],
+[data-theme="dark"] .text-\[\#0f1833\],
+[data-theme="dark"] .text-\[\#2e468d\],
+[data-theme="dark"] .text-\[\#181E4B\],
+[data-theme="dark"] .text-blue-900,
+[data-theme="dark"] .text-blue-950,
+[data-theme="dark"] [style*="color: #23366e"],
+[data-theme="dark"] [style*="color:#23366e"],
+[data-theme="dark"] [style*="color: #172347"],
+[data-theme="dark"] [style*="color:#172347"] {
+  color: #93C5FD !important;
+}
+
+/* Secondary muted blues */
+[data-theme="dark"] .text-\[\#23366e\]\/70,
+[data-theme="dark"] .text-\[\#23366e\]\/75,
+[data-theme="dark"] .text-\[\#23366e\]\/80,
+[data-theme="dark"] .text-\[\#23366e\]\/85,
+[data-theme="dark"] .text-\[\#172347\]\/70,
+[data-theme="dark"] .text-\[\#172347\]\/75,
+[data-theme="dark"] .text-\[\#172347\]\/80 {
+  color: #94A3B8 !important;
+}
+
+/* Light blue backgrounds in dark mode */
+[data-theme="dark"] .bg-\[\#eef3fc\],
+[data-theme="dark"] .bg-\[\#e2ebf9\] {
+  background-color: rgba(96, 165, 250, 0.14) !important;
+}
+
+/* Border overrides in dark mode */
+[data-theme="dark"] .border-\[\#eef3fc\],
+[data-theme="dark"] .border-\[\#e2ebf9\],
+[data-theme="dark"] .border-\[\#dce5f7\] {
+  border-color: var(--border-light) !important;
+}
+
+/* Landing Page (home.html) cards and hero adjustments */
+[data-theme="dark"] body {
+  background-color: var(--bg-body) !important;
+  color: var(--text-primary) !important;
+}
+[data-theme="dark"] .hero-blob-bg {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.16) 0%, rgba(15, 23, 42, 0) 70%) !important;
+}
+[data-theme="dark"] .hero-blue-glow {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(15, 23, 42, 0) 70%) !important;
+}
+[data-theme="dark"] .brush-underline-blue::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 385 30' fill='none'%3E%3Cpath d='M3.5 16.5C85.5 5.5 245.5 -1.5 381.5 23.5' stroke='%2360A5FA' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+[data-theme="dark"] .service-card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-light) !important;
+}
+[data-theme="dark"] .service-card:hover {
+  border-color: var(--border-active) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5) !important;
+}
+[data-theme="dark"] .service-blob {
+  background-color: #2563EB !important;
+}
+[data-theme="dark"] .shadow-agon-card {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.45) !important;
+}
+[data-theme="dark"] nav.hidden.md\:flex a {
+  color: #94A3B8 !important;
+}
+[data-theme="dark"] nav.hidden.md\:flex a:hover {
+  color: #FFFFFF !important;
+}
+
+/* Fix pure white backgrounds on cards on landing page */
+[data-theme="dark"] .service-card,
+[data-theme="dark"] div[class*="bg-white"]:not(.auth-bg-gradient) {
+  background-color: var(--bg-card);
+}
+[data-theme="dark"] .cal-block-blue {
+  background-color: rgba(96, 165, 250, 0.14) !important;
+  border-color: rgba(96, 165, 250, 0.28) !important;
+}
+[data-theme="dark"] .cal-block-blue span:first-child {
+  color: #93C5FD !important;
+}

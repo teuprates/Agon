@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aulas & Videoaulas | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Agon Design System Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="assets/img/AGON png.png" />
+  <style>
+    .video-player-container {
+      background: #0f172a;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .video-overlay-btn {
+      transition: all 0.2s ease;
+    }
+    .video-overlay-btn:hover {
+      transform: scale(1.1);
+    }
+    .playlist-item {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .playlist-item:hover {
+      background-color: var(--bg-body);
+    }
+    .playlist-item.active {
+      background-color: var(--color-blue-light);
+      border-left: 4px solid var(--color-blue);
+    }
+  </style>
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item active"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Acesso ilimitado a todas as videoaulas em 4K e resumos.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90 transition-opacity" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" id="global-search-input" placeholder="Buscar videoaulas, professores ou tópicos..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-play text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Nova aula de <strong>Direito Constitucional</strong> postada!</p><span class="text-xs" style="color:var(--text-muted);">Há 25 min</span></div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-trophy text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você completou <strong>5 videoaulas</strong> consecutivas hoje!</p><span class="text-xs" style="color:var(--text-muted);">Há 2 horas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Davi Brito</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 animate-fade-in space-y-6">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- BREADCRUMB & HEADER -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs md:text-sm mb-1" style="color: var(--text-muted);">
+              <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <a href="estudos.html" class="hover:underline">Direito Constitucional</a>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <span style="color: var(--text-primary);" class="font-medium" id="breadcrumb-current-lesson">Aula 04: Remédios Constitucionais</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">Videoaulas & Cursos</h1>
+          </div>
+          <div class="flex items-center gap-3">
+            <select id="course-selector" class="form-select cursor-pointer font-medium text-sm py-2" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);">
+              <option value="const">Direito Constitucional (Completo)</option>
+              <option value="adm">Direito Administrativo</option>
+              <option value="port">Língua Portuguesa para Concursos</option>
+              <option value="rlm">Raciocínio Lógico e Matemático</option>
+            </select>
+            <a href="ia-tutor.html" class="btn-primary text-xs flex items-center gap-2 py-2 px-3.5">
+              <i class="fa-solid fa-robot"></i> Tirar Dúvida com IA
+            </a>
+          </div>
+        </div>
+
+        <!-- MAIN VIDEO + PLAYLIST GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <!-- LEFT: VIDEO PLAYER & DETAILS (ColSpan 2) -->
+          <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Video Container -->
+            <div class="video-player-container aspect-video relative flex flex-col justify-between p-4 group">
+              <!-- Video Mock Background with Animated Gradient -->
+              <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 flex items-center justify-center">
+                <div class="text-center p-6 space-y-3">
+                  <div class="w-16 h-16 rounded-full bg-blue-600/30 border border-blue-400/40 flex items-center justify-center mx-auto text-white text-2xl shadow-lg">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                  </div>
+                  <h3 id="player-title" class="text-white text-lg md:text-xl font-bold">Aula 04 — Remédios Constitucionais</h3>
+                  <p class="text-blue-200 text-xs md:text-sm">Prof. Roberto Vasconcelos • Polícia Federal & Tribunais</p>
+                </div>
+              </div>
+
+              <!-- Top Bar Over Video -->
+              <div class="relative z-10 flex items-center justify-between text-white/90 text-xs">
+                <span class="bg-black/60 px-3 py-1 rounded-full font-medium backdrop-blur-sm flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> HD 1080p
+                </span>
+                <span class="bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm">Agon Video Platform</span>
+              </div>
+
+              <!-- Center Big Play Button -->
+              <div class="relative z-10 flex items-center justify-center">
+                <button id="main-play-btn" class="video-overlay-btn w-20 h-20 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center text-3xl shadow-2xl pl-1">
+                  <i class="fa-solid fa-play" id="play-icon"></i>
+                </button>
+              </div>
+
+              <!-- Bottom Controls -->
+              <div class="relative z-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3 rounded-xl backdrop-blur-sm space-y-2">
+                <!-- Progress bar -->
+                <div class="w-full bg-white/20 h-1.5 rounded-full cursor-pointer overflow-hidden relative" id="video-progress-bar">
+                  <div id="video-progress-fill" class="bg-blue-500 h-full w-[42%] rounded-full transition-all duration-300"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-white text-xs">
+                  <div class="flex items-center gap-4">
+                    <button id="toggle-play-bottom" class="hover:text-blue-400 text-sm"><i class="fa-solid fa-play"></i></button>
+                    <button class="hover:text-blue-400"><i class="fa-solid fa-rotate-left text-xs"></i> 10s</button>
+                    <button class="hover:text-blue-400"><i class="fa-solid fa-rotate-right text-xs"></i> 10s</button>
+                    <span id="video-time" class="text-xs text-white/80 font-mono">18:24 / 42:15</span>
+                  </div>
+
+                  <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-1.5">
+                      <i class="fa-solid fa-volume-high text-xs"></i>
+                      <div class="w-16 bg-white/30 h-1 rounded-full overflow-hidden">
+                        <div class="bg-white h-full w-4/5"></div>
+                      </div>
+                    </div>
+                    <button id="speed-btn" class="hover:text-blue-400 font-semibold px-2 py-0.5 rounded bg-white/10 text-xs">1.25x</button>
+                    <button class="hover:text-blue-400"><i class="fa-solid fa-gear"></i></button>
+                    <button class="hover:text-blue-400"><i class="fa-solid fa-expand"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video Header Info & Actions -->
+            <div class="card p-6 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="badge badge-blue">Módulo 2</span>
+                    <span class="badge badge-purple">Aula 4 de 6</span>
+                    <span class="text-xs" style="color: var(--text-muted);"><i class="fa-regular fa-clock mr-1"></i> 42 min</span>
+                  </div>
+                  <h2 class="text-xl font-bold" id="current-lesson-name" style="color: var(--text-primary);">
+                    Remédios Constitucionais: Habeas Corpus e Habeas Data
+                  </h2>
+                  <p class="text-sm mt-1" style="color: var(--text-secondary);">
+                    Instrutor: <strong style="color: var(--text-primary);">Prof. Roberto Vasconcelos</strong> • Atualizado para os editais 2026
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-3 shrink-0 flex-wrap">
+                  <button id="complete-btn" class="btn-primary text-xs flex items-center gap-2 py-2.5 px-4">
+                    <i class="fa-regular fa-circle-check"></i>
+                    <span id="complete-btn-text">Marcar como Concluída</span>
+                  </button>
+                  <button id="fav-btn" class="btn-secondary text-xs flex items-center gap-2 py-2.5 px-3">
+                    <i class="fa-regular fa-bookmark" id="fav-icon"></i>
+                  </button>
+                  <a href="../pages/materiais.html" class="btn-secondary text-xs flex items-center gap-2 py-2.5 px-3" title="Baixar PDF de Apoio">
+                    <i class="fa-solid fa-file-pdf text-red-500"></i> PDF
+                  </a>
+                </div>
+              </div>
+
+              <!-- Tabs Navigation -->
+              <div class="flex items-center gap-6 border-b text-sm font-medium" style="border-color: var(--border-default);">
+                <button class="lesson-tab active pb-3 border-b-2 text-blue-600 font-semibold" style="border-color: var(--color-blue);" data-tab="visao-geral">
+                  <i class="fa-solid fa-circle-info mr-1.5"></i> Visão Geral
+                </button>
+                <button class="lesson-tab pb-3 text-slate-500 hover:text-slate-800 transition-colors" data-tab="anotacoes">
+                  <i class="fa-solid fa-pencil mr-1.5"></i> Minhas Anotações
+                </button>
+                <button class="lesson-tab pb-3 text-slate-500 hover:text-slate-800 transition-colors" data-tab="materiais">
+                  <i class="fa-solid fa-paperclip mr-1.5"></i> Anexos da Aula (3)
+                </button>
+                <button class="lesson-tab pb-3 text-slate-500 hover:text-slate-800 transition-colors" data-tab="duvidas">
+                  <i class="fa-solid fa-comments mr-1.5"></i> Perguntas & IA Tutor
+                </button>
+              </div>
+
+              <!-- Tab 1: Visão Geral -->
+              <div id="tab-visao-geral" class="tab-panel space-y-4 pt-2">
+                <h4 class="font-bold text-sm" style="color: var(--text-primary);">Resumo dos Tópicos Estudados:</h4>
+                <ul class="text-sm space-y-2 list-disc list-inside" style="color: var(--text-secondary);">
+                  <li>Conceito e natureza jurídica dos remédios constitucionais constitucionais judiciais.</li>
+                  <li><strong>Habeas Corpus:</strong> cabimento, legitimidade ativa e passiva, gratuidade e hipóteses de não cabimento (punições disciplinares militares com ressalvas da legalidade).</li>
+                  <li><strong>Habeas Data:</strong> direito à informação pessoal e retificação de dados. Requisito indispensável do esgotamento da via administrativa (Súmula 2 do STJ).</li>
+                  <li>Principais pegadinhas de bancas examinadoras (Cebraspe, FGV e FCC).</li>
+                </ul>
+                <div class="p-4 rounded-xl flex items-start gap-3 mt-4" style="background-color: var(--color-blue-light); border: 1px solid rgba(35, 54, 110, 0.1);">
+                  <i class="fa-solid fa-lightbulb text-base mt-0.5" style="color: var(--color-blue);"></i>
+                  <div class="text-xs leading-relaxed" style="color: var(--color-blue);">
+                    <strong>Dica de Ouro para a Prova:</strong> Lembre-se que o Habeas Corpus protege a liberdade de locomoção (direito de ir, vir e ficar), enquanto o Habeas Data protege o direito à informação personalizada do impetrante. Ambos são ações gratuitas por previsão expressa do Art. 5º, LXXVII da CF/88!
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 2: Anotações Pessoais -->
+              <div id="tab-anotacoes" class="tab-panel hidden space-y-3 pt-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-bold text-sm" style="color: var(--text-primary);">Caderno de Notas da Aula</h4>
+                  <span class="text-xs" id="notes-status" style="color: var(--text-muted);">Salvo localmente</span>
+                </div>
+                <textarea id="lesson-notes-textarea" rows="6" placeholder="Escreva aqui suas anotações, mnemônicos e pontos-chave desta aula..." class="form-input w-full p-3.5 text-sm rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"></textarea>
+                <div class="flex justify-end gap-3">
+                  <button id="save-notes-btn" class="btn-primary text-xs py-2 px-4 flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Anotações
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tab 3: Anexos da Aula -->
+              <div id="tab-materiais" class="tab-panel hidden space-y-3 pt-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="p-3.5 rounded-xl border flex items-center justify-between" style="border-color: var(--border-default); background-color: var(--bg-card);">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg bg-red-100 text-red-600">
+                        <i class="fa-solid fa-file-pdf"></i>
+                      </div>
+                      <div>
+                        <p class="text-xs font-bold" style="color: var(--text-primary);">Slides da Aula 04.pdf</p>
+                        <p class="text-[10px]" style="color: var(--text-muted);">PDF • 3.4 MB • 48 páginas</p>
+                      </div>
+                    </div>
+                    <button class="btn-secondary text-xs p-2" title="Download"><i class="fa-solid fa-download"></i></button>
+                  </div>
+
+                  <div class="p-3.5 rounded-xl border flex items-center justify-between" style="border-color: var(--border-default); background-color: var(--bg-card);">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg bg-blue-100 text-blue-600">
+                        <i class="fa-solid fa-file-lines"></i>
+                      </div>
+                      <div>
+                        <p class="text-xs font-bold" style="color: var(--text-primary);">Esquema_Remedios.pdf</p>
+                        <p class="text-[10px]" style="color: var(--text-muted);">Resumo Esquematizado • 1.1 MB</p>
+                      </div>
+                    </div>
+                    <button class="btn-secondary text-xs p-2" title="Download"><i class="fa-solid fa-download"></i></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 4: Dúvidas & Perguntas -->
+              <div id="tab-duvidas" class="tab-panel hidden space-y-4 pt-2">
+                <div class="p-4 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-3" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 text-green-700 text-lg">
+                      <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                      <p class="text-xs font-bold" style="color: var(--text-primary);">Dúvida sobre este minuto da aula?</p>
+                      <p class="text-xs" style="color: var(--text-secondary);">O IA Tutor pode te explicar qualquer termo imediatamente.</p>
+                    </div>
+                  </div>
+                  <a href="ia-tutor.html" class="btn-primary text-xs py-2 px-3 whitespace-nowrap">Perguntar ao IA Tutor</a>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="p-3.5 rounded-xl border text-xs space-y-2" style="border-color: var(--border-default); background-color: var(--bg-card);">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="font-bold" style="color: var(--text-primary);">Mariana Souza</span>
+                        <span class="badge badge-blue text-[9px]">Aluno</span>
+                      </div>
+                      <span style="color: var(--text-muted);">Há 2 dias</span>
+                    </div>
+                    <p style="color: var(--text-secondary);">Qual a diferença prática entre o Mandado de Segurança Coletivo e a Ação Popular?</p>
+                    <div class="pl-3 border-l-2 py-1 mt-2 space-y-1" style="border-color: var(--color-blue);">
+                      <p class="font-semibold text-blue-600">Prof. Roberto Vasconcelos <span class="badge badge-green text-[9px] ml-1">Professor</span></p>
+                      <p style="color: var(--text-primary);">Excelente pergunta, Mariana! A Ação Popular só pode ser ajuizada por cidadão no gozo dos direitos políticos contra ato lesivo ao patrimônio público. O MS Coletivo é ajuizado por partidos e entidades de classe para proteger direitos coletivos e individuais homogêneos.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- RIGHT: PLAYLIST & MODULES (ColSpan 1) -->
+          <div class="space-y-6">
+
+            <!-- Course Progress Card -->
+            <div class="card p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="font-bold text-base" style="color: var(--text-primary);">Direito Constitucional</h3>
+                  <p class="text-xs" style="color: var(--text-secondary);">Trilha de Alta Performance</p>
+                </div>
+                <span class="badge badge-blue font-bold text-xs">65% Concluído</span>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="progress-track h-2 w-full">
+                <div class="progress-fill-blue h-2" style="width: 65%;"></div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t" style="border-color: var(--border-default);">
+                <div>
+                  <p class="text-xs font-bold" style="color: var(--text-primary);">12 / 18</p>
+                  <p class="text-[10px]" style="color: var(--text-muted);">Aulas Assistidas</p>
+                </div>
+                <div>
+                  <p class="text-xs font-bold" style="color: var(--text-primary);">9h 40m</p>
+                  <p class="text-[10px]" style="color: var(--text-muted);">Horas de Conteúdo</p>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-emerald-600">Certificado</p>
+                  <p class="text-[10px]" style="color: var(--text-muted);">Ao concluir 100%</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Playlist Modules -->
+            <div class="card p-4 space-y-4">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <h4 class="font-bold text-sm" style="color: var(--text-primary);"><i class="fa-solid fa-list-check mr-2"></i> Conteúdo do Curso</h4>
+                <span class="text-xs" style="color: var(--text-muted);">3 Módulos</span>
+              </div>
+
+              <!-- Module 1 (Done) -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer font-semibold text-xs" style="background-color: var(--bg-body); color: var(--text-primary);">
+                  <span class="flex items-center gap-2"><i class="fa-solid fa-check-circle text-emerald-500"></i> Módulo 1: Teoria Geral</span>
+                  <span class="text-[10px] text-emerald-600 font-bold">3/3</span>
+                </div>
+              </div>
+
+              <!-- Module 2 (Current) -->
+              <div class="space-y-1">
+                <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer font-semibold text-xs" style="background-color: var(--bg-body); color: var(--text-primary);">
+                  <span class="flex items-center gap-2"><i class="fa-solid fa-folder-open text-blue-500"></i> Módulo 2: Direitos e Garantias</span>
+                  <span class="text-[10px] text-blue-600 font-bold">4/6</span>
+                </div>
+
+                <!-- Lessons in Module 2 -->
+                <div class="space-y-1 pl-2 pt-1" id="playlist-container">
+                  <div class="playlist-item p-2.5 rounded-xl flex items-center justify-between text-xs" data-lesson-id="1" data-title="Aula 01: Introdução ao Artigo 5º da CF" data-time="35 min">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                      <div>
+                        <p class="font-medium" style="color: var(--text-primary);">01. Introdução ao Artigo 5º</p>
+                        <span class="text-[10px]" style="color: var(--text-muted);">35 min • Concluída</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="playlist-item p-2.5 rounded-xl flex items-center justify-between text-xs" data-lesson-id="2" data-title="Aula 02: Direito à Vida e Integridade Física" data-time="40 min">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                      <div>
+                        <p class="font-medium" style="color: var(--text-primary);">02. Direito à Vida e Igualdade</p>
+                        <span class="text-[10px]" style="color: var(--text-muted);">40 min • Concluída</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="playlist-item p-2.5 rounded-xl flex items-center justify-between text-xs" data-lesson-id="3" data-title="Aula 03: Inviolabilidade de Domicílio e Sigilos" data-time="38 min">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                      <div>
+                        <p class="font-medium" style="color: var(--text-primary);">03. Inviolabilidade Domiciliar</p>
+                        <span class="text-[10px]" style="color: var(--text-muted);">38 min • Concluída</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ACTIVE LESSON -->
+                  <div class="playlist-item active p-2.5 rounded-xl flex items-center justify-between text-xs" data-lesson-id="4" data-title="Aula 04: Remédios Constitucionais: HC e HD" data-time="42 min">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-solid fa-circle-play text-blue-600 text-sm animate-pulse"></i>
+                      <div>
+                        <p class="font-bold text-blue-700" style="color: var(--color-blue);">04. Remédios: HC e HD</p>
+                        <span class="text-[10px] text-blue-600 font-medium">Reproduzindo agora • 42 min</span>
+                      </div>
+                    </div>
+                    <span class="badge badge-blue text-[9px]">Atual</span>
+                  </div>
+
+                  <div class="playlist-item p-2.5 rounded-xl flex items-center justify-between text-xs" data-lesson-id="5" data-title="Aula 05: Mandado de Segurança e Ação Popular" data-time="45 min">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-regular fa-circle text-slate-400 text-sm"></i>
+                      <div>
+                        <p class="font-medium" style="color: var(--text-primary);">05. Mandado de Segurança e AP</p>
+                        <span class="text-[10px]" style="color: var(--text-muted);">45 min • A seguir</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="playlist-item p-2.5 rounded-xl flex items-center justify-between text-xs" data-lesson-id="6" data-title="Aula 06: Resolução de 20 Questões Comentadas" data-time="50 min">
+                    <div class="flex items-center gap-3">
+                      <i class="fa-regular fa-circle text-slate-400 text-sm"></i>
+                      <div>
+                        <p class="font-medium" style="color: var(--text-primary);">06. Exercícios Cebraspe</p>
+                        <span class="text-[10px]" style="color: var(--text-muted);">50 min</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Module 3 (Next) -->
+              <div class="space-y-1 pt-1">
+                <div class="flex items-center justify-between p-2 rounded-lg cursor-pointer font-semibold text-xs" style="background-color: var(--bg-body); color: var(--text-secondary);">
+                  <span class="flex items-center gap-2"><i class="fa-solid fa-lock text-slate-400"></i> Módulo 3: Direitos Sociais e Nacionalidade</span>
+                  <span class="text-[10px] text-slate-400">0/4</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="p-6 border-b flex items-center justify-between" style="border-color:var(--border-default);">
+        <h3 class="font-bold text-lg" style="color:var(--text-primary);">Meu Perfil</h3>
+        <button id="modal-close-btn" class="text-sm p-2 rounded-lg hover:bg-slate-100" style="color:var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6 space-y-6">
+        <div class="flex items-center gap-4">
+          <img src="/assets/img/perfil.jpg" alt="Avatar" class="w-16 h-16 rounded-full object-cover" />
+          <div>
+            <h4 class="font-bold text-base" style="color:var(--text-primary);">Davi Brito</h4>
+            <p class="text-xs" style="color:var(--text-secondary);">davi.brito@exemplo.com</p>
+            <span class="badge badge-blue text-[10px] mt-1">Concurseiro Elite</span>
+          </div>
+        </div>
+        <div class="space-y-3 pt-2 border-t" style="border-color:var(--border-default);">
+          <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-gear"></i> Ver Todas as Configurações
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+
+  <!-- Interactive Player & Tab Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Tab switching
+      const tabs = document.querySelectorAll('.lesson-tab');
+      const panels = document.querySelectorAll('.tab-panel');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          tabs.forEach(t => {
+            t.classList.remove('active', 'border-b-2', 'text-blue-600', 'font-semibold');
+            t.classList.add('text-slate-500');
+            t.style.borderColor = 'transparent';
+          });
+          tab.classList.add('active', 'border-b-2', 'text-blue-600', 'font-semibold');
+          tab.classList.remove('text-slate-500');
+          tab.style.borderColor = 'var(--color-blue)';
+
+          panels.forEach(p => p.classList.add('hidden'));
+          const targetPanel = document.getElementById('tab-' + target);
+          if (targetPanel) targetPanel.classList.remove('hidden');
+        });
+      });
+
+      // Video Play toggle
+      let isPlaying = false;
+      const mainPlayBtn = document.getElementById('main-play-btn');
+      const togglePlayBottom = document.getElementById('toggle-play-bottom');
+      const playIcon = document.getElementById('play-icon');
+
+      function togglePlay() {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          playIcon.className = 'fa-solid fa-pause';
+          togglePlayBottom.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        } else {
+          playIcon.className = 'fa-solid fa-play';
+          togglePlayBottom.innerHTML = '<i class="fa-solid fa-play"></i>';
+        }
+      }
+
+      if (mainPlayBtn) mainPlayBtn.addEventListener('click', togglePlay);
+      if (togglePlayBottom) togglePlayBottom.addEventListener('click', togglePlay);
+
+      // Speed control toggle
+      const speedBtn = document.getElementById('speed-btn');
+      const speeds = ['1.0x', '1.25x', '1.5x', '2.0x'];
+      let speedIdx = 1;
+      if (speedBtn) {
+        speedBtn.addEventListener('click', () => {
+          speedIdx = (speedIdx + 1) % speeds.length;
+          speedBtn.innerText = speeds[speedIdx];
+        });
+      }
+
+      // Complete Lesson Button
+      const completeBtn = document.getElementById('complete-btn');
+      const completeText = document.getElementById('complete-btn-text');
+      let isCompleted = false;
+
+      if (completeBtn) {
+        completeBtn.addEventListener('click', () => {
+          isCompleted = !isCompleted;
+          if (isCompleted) {
+            completeText.innerText = 'Aula Concluída ✓';
+            completeBtn.classList.remove('btn-primary');
+            completeBtn.classList.add('btn-secondary');
+            completeBtn.style.color = '#10B981';
+            completeBtn.style.borderColor = '#10B981';
+          } else {
+            completeText.innerText = 'Marcar como Concluída';
+            completeBtn.classList.add('btn-primary');
+            completeBtn.classList.remove('btn-secondary');
+            completeBtn.style.color = '';
+            completeBtn.style.borderColor = '';
+          }
+        });
+      }
+
+      // Bookmark / Favorite
+      const favBtn = document.getElementById('fav-btn');
+      const favIcon = document.getElementById('fav-icon');
+      if (favBtn && favIcon) {
+        favBtn.addEventListener('click', () => {
+          favIcon.classList.toggle('fa-regular');
+          favIcon.classList.toggle('fa-solid');
+          favIcon.classList.toggle('text-amber-500');
+        });
+      }
+
+      // Notes save to localStorage
+      const notesTextarea = document.getElementById('lesson-notes-textarea');
+      const saveNotesBtn = document.getElementById('save-notes-btn');
+      const notesStatus = document.getElementById('notes-status');
+
+      if (notesTextarea) {
+        const savedNotes = localStorage.getItem('agon-lesson-4-notes');
+        if (savedNotes) notesTextarea.value = savedNotes;
+
+        if (saveNotesBtn) {
+          saveNotesBtn.addEventListener('click', () => {
+            localStorage.setItem('agon-lesson-4-notes', notesTextarea.value);
+            notesStatus.innerText = 'Salvo com sucesso!';
+            notesStatus.style.color = '#10B981';
+            setTimeout(() => {
+              notesStatus.innerText = 'Salvo localmente';
+              notesStatus.style.color = 'var(--text-muted)';
+            }, 2500);
+          });
+        }
+      }
+
+      // Playlist item selection
+      const playlistItems = document.querySelectorAll('.playlist-item');
+      const currentLessonTitle = document.getElementById('current-lesson-name');
+      const playerTitle = document.getElementById('player-title');
+      const breadcrumbLesson = document.getElementById('breadcrumb-current-lesson');
+
+      playlistItems.forEach(item => {
+        item.addEventListener('click', () => {
+          playlistItems.forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          const title = item.getAttribute('data-title');
+          if (currentLessonTitle) currentLessonTitle.innerText = title;
+          if (playerTitle) playerTitle.innerText = title;
+          if (breadcrumbLesson) breadcrumbLesson.innerText = title;
+        });
+      });
+    });
+  </script>
+</body>
+</html>

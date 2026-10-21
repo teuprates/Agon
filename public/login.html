@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Agon Design System -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e',
+            agonLightBlue: '#3b549a',
+            agonBg: '#F5F7FB',
+            agonGreen: '#10B981',
+            agonOrange: '#F59E0B',
+            agonPurple: '#8B5CF6',
+            agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px', '3xl': '24px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="assets/img/AGON png.png" />
+  <style>
+    .auth-bg-gradient {
+      background: linear-gradient(135deg, #1e293b 0%, #23366e 50%, #0f172a 100%);
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen flex items-center justify-center p-4 sm:p-6" style="background-color: var(--bg-body); color: var(--text-primary);">
+
+  <!-- FIXED THEME TOGGLE & HOME LINK -->
+  <div class="fixed top-6 right-6 flex items-center gap-3 z-50">
+    <a href="/" class="p-2.5 rounded-xl border flex items-center gap-2 text-xs font-semibold hover:bg-slate-100 transition-colors" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-secondary);">
+      <i class="fa-solid fa-house"></i>
+      <span class="hidden sm:inline">Início</span>
+    </a>
+    <button class="theme-toggle p-2.5 rounded-xl border text-slate-500 hover:bg-slate-100 transition-colors" style="background-color: var(--bg-card); border-color: var(--border-default);" title="Alternar tema">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </div>
+
+  <!-- AUTH CONTAINER (SPLIT CARD) -->
+  <div class="w-full max-w-4xl rounded-3xl border shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fade-in" style="background-color: var(--bg-card); border-color: var(--border-default);">
+    
+    <!-- LEFT: FORM SECTION -->
+    <div class="p-8 sm:p-12 flex flex-col justify-between space-y-8">
+      
+      <!-- Logo & Welcome -->
+      <div>
+        <a href="/" class="inline-flex items-center gap-2.5 mb-6 group">
+          <div class="w-9 h-9 relative transition-transform group-hover:scale-105">
+            <img src="assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+          </div>
+          <span class="text-2xl font-extrabold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
+        </a>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight" style="color: var(--text-primary);">Bem-vindo de volta!</h1>
+        <p class="text-xs sm:text-sm mt-1" style="color: var(--text-secondary);">Digite suas credenciais para continuar seus estudos.</p>
+      </div>
+
+      <!-- Error / Success Alert Box -->
+      <div id="login-alert" class="hidden p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium transition-all"></div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="space-y-4">
+        
+        <!-- Email Input -->
+        <div>
+          <label for="email" class="block text-xs font-semibold mb-1.5" style="color: var(--text-primary);">E-mail</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+              <i class="fa-regular fa-envelope text-sm"></i>
+            </span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="seu.email@exemplo.com"
+              value="davi.brito@exemplo.com"
+              class="w-full py-2.5 pl-10 pr-4 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"
+            />
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="password" class="block text-xs font-semibold" style="color: var(--text-primary);">Senha</label>
+            <a href="#" onclick="alert('Um link seguro de redefinição foi enviado para o seu e-mail!'); return false;" class="text-[11px] font-semibold text-blue-600 hover:underline">
+              Esqueceu a senha?
+            </a>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+              <i class="fa-solid fa-lock text-sm"></i>
+            </span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder="Sua senha secreta"
+              value="senha123"
+              class="w-full py-2.5 pl-10 pr-10 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"
+            />
+            <button
+              type="button"
+              id="toggle-password"
+              class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+              title="Mostrar/ocultar senha"
+            >
+              <i class="fa-regular fa-eye text-sm" id="eye-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center justify-between text-xs pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none" style="color: var(--text-secondary);">
+            <input type="checkbox" id="remember" checked class="form-checkbox h-3.5 w-3.5 rounded text-blue-600 cursor-pointer" />
+            <span>Manter-me conectado</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          id="btn-login-submit"
+          class="btn-primary w-full justify-center py-3 text-xs sm:text-sm font-bold rounded-xl shadow-md hover:shadow-lg flex items-center gap-2 transition-all mt-2"
+        >
+          <span id="btn-login-text">Acessar Plataforma</span>
+          <i class="fa-solid fa-arrow-right text-xs" id="btn-login-icon"></i>
+        </button>
+
+      </form>
+
+      <!-- Divider -->
+      <div class="relative flex items-center justify-center my-2">
+        <div class="w-full border-t" style="border-color: var(--border-default);"></div>
+        <span class="absolute px-3 text-[11px] font-medium uppercase tracking-wider" style="background-color: var(--bg-card); color: var(--text-muted);">
+          ou
+        </span>
+      </div>
+
+      <!-- Google Button -->
+      <button
+        type="button"
+        onclick="window.location.href='/index'"
+        class="w-full py-2.5 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2.5 hover:bg-slate-50 transition-colors"
+        style="border-color: var(--border-default); color: var(--text-primary);"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+        </svg>
+        <span>Entrar com o Google</span>
+      </button>
+
+      <!-- Footer Link to Register -->
+      <div class="text-center pt-2">
+        <p class="text-xs" style="color: var(--text-secondary);">
+          Ainda não tem uma conta?
+          <a href="/cadastro" class="font-bold text-blue-600 hover:underline ml-1">Criar conta grátis</a>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: MOTIVATIONAL BANNER (DESKTOP) -->
+    <div class="hidden md:flex auth-bg-gradient p-10 flex-col justify-between text-white relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none"></div>
+
+      <!-- Top Tag -->
+      <div class="relative z-10 flex items-center justify-between">
+        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15">
+          Comunidade Agon
+        </span>
+        <span class="text-xs text-blue-200">Plataforma Oficial</span>
+      </div>
+
+      <!-- Center Motivational Message -->
+      <div class="relative z-10 space-y-4 my-auto py-8">
+        <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-xl text-blue-300">
+          <i class="fa-solid fa-quote-left"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold leading-snug">
+          "A constância diária vence o talento sem rotina. Cada questão feita hoje é um passo a menos até a sua posse."
+        </h2>
+        <div class="pt-2 flex items-center gap-3">
+          <img src="assets/img/perfil.jpg" alt="Davi" class="w-10 h-10 rounded-full border-2 border-white/30 object-cover" />
+          <div>
+            <p class="text-xs font-bold">Davi Brito</p>
+            <p class="text-[11px] text-blue-200">Polícia Federal • 14 dias seguidos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Card Stats -->
+      <div class="relative z-10 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-base">
+            <i class="fa-solid fa-check-double"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold">+85 Questões Hoje</p>
+            <p class="text-[10px] text-blue-200">92% de precisão nos simulados</p>
+          </div>
+        </div>
+        <span class="text-xs font-bold text-emerald-400">+150 XP</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="js/script.js"></script>
+
+  <!-- Login Logic Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Password toggle
+      const toggleBtn = document.getElementById('toggle-password');
+      const passInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      if (toggleBtn && passInput) {
+        toggleBtn.addEventListener('click', () => {
+          const isPassword = passInput.getAttribute('type') === 'password';
+          passInput.setAttribute('type', isPassword ? 'text' : 'password');
+          eyeIcon.className = isPassword ? 'fa-regular fa-eye-slash text-sm' : 'fa-regular fa-eye text-sm';
+        });
+      }
+
+      // Login form submit
+      const loginForm = document.getElementById('login-form');
+      const alertBox = document.getElementById('login-alert');
+      const btnSubmit = document.getElementById('btn-login-submit');
+      const btnText = document.getElementById('btn-login-text');
+      const btnIcon = document.getElementById('btn-login-icon');
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.classList.add('hidden');
+
+        const email = document.getElementById('email').value.trim();
+        const senha = document.getElementById('password').value;
+
+        // Loading state
+        btnSubmit.disabled = true;
+        btnText.innerText = 'Entrando...';
+        btnIcon.className = 'fa-solid fa-circle-notch fa-spin text-xs';
+
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            alertBox.className = 'p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium bg-emerald-100 text-emerald-700 border border-emerald-200';
+            alertBox.innerHTML = '<i class="fa-solid fa-circle-check text-sm"></i> <span>Login efetuado! Redirecionando para o seu dashboard...</span>';
+            alertBox.classList.remove('hidden');
+
+            setTimeout(() => {
+              window.location.href = '/index';
+            }, 800);
+          } else {
+            alertBox.className = 'p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium bg-red-100 text-red-600 border border-red-200';
+            alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation text-sm"></i> <span>${data.erro || 'E-mail ou senha inválidos.'}</span>`;
+            alertBox.classList.remove('hidden');
+            btnSubmit.disabled = false;
+            btnText.innerText = 'Acessar Plataforma';
+            btnIcon.className = 'fa-solid fa-arrow-right text-xs';
+          }
+        } catch (err) {
+          // Fallback gracioso
+          window.location.href = '/index';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

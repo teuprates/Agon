@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configurações | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Agon Design System Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="assets/img/AGON png.png" />
+  <style>
+    .settings-nav-btn {
+      transition: all 0.2s ease;
+      text-align: left;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .settings-nav-btn:hover {
+      background-color: var(--bg-body);
+      color: var(--text-primary);
+    }
+    .settings-nav-btn.active {
+      background-color: var(--color-blue-light);
+      color: var(--color-blue);
+      font-weight: 600;
+    }
+    .toggle-switch-input:checked ~ .toggle-switch-bg {
+      background-color: var(--color-blue);
+    }
+    .toggle-switch-input:checked ~ .toggle-switch-bg .toggle-switch-dot {
+      transform: translateX(100%);
+    }
+  </style>
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item active"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Sua assinatura está ativa e renova em 12/2026.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90 transition-opacity" style="background: #fff; color: var(--color-blue);">Gerenciar plano</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar configurações..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-shield-check text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Configurações de segurança atualizadas.</p><span class="text-xs" style="color:var(--text-muted);">Ontem</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" id="header-user-name" style="color:var(--text-primary);">Davi Brito</p>
+            <p class="text-xs" id="header-user-role" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 animate-fade-in space-y-6">
+      <div class="max-w-6xl mx-auto space-y-6">
+
+        <!-- HEADER -->
+        <div>
+          <div class="flex items-center gap-2 text-xs md:text-sm mb-1" style="color: var(--text-muted);">
+            <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <span style="color: var(--text-primary);" class="font-medium">Configurações</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">Configurações da Conta</h1>
+          <p class="text-xs sm:text-sm mt-1" style="color: var(--text-secondary);">Personalize sua experiência, metas de estudo e preferências de conta.</p>
+        </div>
+
+        <!-- TOAST SAVE FEEDBACK -->
+        <div id="save-toast" class="hidden fixed bottom-8 right-8 z-50 card p-4 shadow-2xl flex items-center gap-3 border-l-4 border-l-emerald-500 animate-fade-in" style="border-radius: 12px; background-color: var(--bg-card);">
+          <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold" style="color: var(--text-primary);">Alterações salvas!</p>
+            <p class="text-[11px]" style="color: var(--text-secondary);">Suas preferências foram atualizadas com sucesso.</p>
+          </div>
+        </div>
+
+        <!-- SETTINGS CONTAINER (SIDEBAR TABS + CONTENT) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+
+          <!-- SETTINGS NAV LIST (ColSpan 1) -->
+          <div class="card p-3 space-y-1 h-fit">
+            <button class="settings-nav-btn active w-full" data-target="tab-perfil">
+              <i class="fa-regular fa-user w-5 text-center"></i>
+              <span>Perfil & Dados</span>
+            </button>
+            <button class="settings-nav-btn w-full" data-target="tab-metas">
+              <i class="fa-solid fa-bullseye w-5 text-center"></i>
+              <span>Metas & Estudo</span>
+            </button>
+            <button class="settings-nav-btn w-full" data-target="tab-notificacoes">
+              <i class="fa-regular fa-bell w-5 text-center"></i>
+              <span>Notificações</span>
+            </button>
+            <button class="settings-nav-btn w-full" data-target="tab-aparencia">
+              <i class="fa-solid fa-palette w-5 text-center"></i>
+              <span>Aparência</span>
+            </button>
+            <button class="settings-nav-btn w-full" data-target="tab-seguranca">
+              <i class="fa-solid fa-shield-halved w-5 text-center"></i>
+              <span>Segurança</span>
+            </button>
+            <button class="settings-nav-btn w-full" data-target="tab-plano">
+              <i class="fa-solid fa-credit-card w-5 text-center"></i>
+              <span>Plano & Assinatura</span>
+            </button>
+          </div>
+
+          <!-- SETTINGS PANELS (ColSpan 3) -->
+          <div class="md:col-span-3">
+
+            <!-- TAB 1: PERFIL & DADOS -->
+            <div id="tab-perfil" class="settings-panel card p-6 space-y-6">
+              <div class="pb-4 border-b" style="border-color: var(--border-default);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Perfil Público</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Estas informações aparecem no fórum e no ranking da comunidade.</p>
+              </div>
+
+              <!-- Avatar Section -->
+              <div class="flex items-center gap-5">
+                <div class="relative">
+                  <img src="/assets/img/perfil.jpg" alt="Avatar" class="w-20 h-20 rounded-full object-cover border-2" style="border-color: var(--color-blue);" />
+                  <button class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-md hover:bg-blue-700">
+                    <i class="fa-solid fa-camera"></i>
+                  </button>
+                </div>
+                <div>
+                  <h4 class="font-bold text-sm" style="color: var(--text-primary);">Foto de Perfil</h4>
+                  <p class="text-xs mb-2" style="color: var(--text-muted);">Formatos suportados: JPG, PNG até 5MB.</p>
+                  <div class="flex gap-2">
+                    <button class="btn-secondary text-xs py-1.5 px-3">Alterar Foto</button>
+                    <button class="text-xs text-red-500 hover:underline px-2">Remover</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form Inputs -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Nome Completo</label>
+                  <input type="text" id="input-full-name" value="Davi Brito" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">E-mail Cadastrado</label>
+                  <input type="email" value="davi.brito@exemplo.com" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Cidade / Estado</label>
+                  <input type="text" value="Brasília, DF" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Biografia / Lema de Estudo</label>
+                  <textarea rows="3" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);">Foco na missão diária. A aprovação é consequência da constância!</textarea>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t flex justify-end" style="border-color: var(--border-default);">
+                <button class="btn-primary text-xs py-2.5 px-6 save-changes-btn">Salvar Alterações</button>
+              </div>
+            </div>
+
+            <!-- TAB 2: METAS & ESTUDO -->
+            <div id="tab-metas" class="settings-panel hidden card p-6 space-y-6">
+              <div class="pb-4 border-b" style="border-color: var(--border-default);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Preferências de Estudo & Rotina</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Defina seus parâmetros para o cálculo automático do ciclo de estudos.</p>
+              </div>
+
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Meta de Horas Diárias (Líquidas)</label>
+                    <input type="number" value="4" min="1" max="14" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Meta Diária de Questões</label>
+                    <input type="number" value="50" min="5" max="200" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl border space-y-3" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h4 class="text-xs font-bold" style="color: var(--text-primary);">Algoritmo de Revisão Espaçada (SM-2)</h4>
+                      <p class="text-[11px]" style="color: var(--text-secondary);">Reagenda conteúdos nos intervalos ótimos de 24h, 7 dias e 30 dias.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" checked class="sr-only toggle-switch-input" />
+                      <div class="w-9 h-5 bg-slate-300 rounded-full transition-colors toggle-switch-bg">
+                        <div class="w-4 h-4 bg-white rounded-full transition-transform toggle-switch-dot translate-x-0.5 mt-0.5"></div>
+                      </div>
+                    </label>
+                  </div>
+                  <div class="flex items-center justify-between pt-2 border-t" style="border-color: var(--border-default);">
+                    <div>
+                      <h4 class="text-xs font-bold" style="color: var(--text-primary);">Modo Foco Extremo</h4>
+                      <p class="text-[11px]" style="color: var(--text-secondary);">Oculta notificações e abas secundárias durante resolução de questões e aulas.</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" checked class="sr-only toggle-switch-input" />
+                      <div class="w-9 h-5 bg-slate-300 rounded-full transition-colors toggle-switch-bg">
+                        <div class="w-4 h-4 bg-white rounded-full transition-transform toggle-switch-dot translate-x-0.5 mt-0.5"></div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t flex justify-end" style="border-color: var(--border-default);">
+                <button class="btn-primary text-xs py-2.5 px-6 save-changes-btn">Salvar Metas</button>
+              </div>
+            </div>
+
+            <!-- TAB 3: NOTIFICAÇÕES -->
+            <div id="tab-notificacoes" class="settings-panel hidden card p-6 space-y-6">
+              <div class="pb-4 border-b" style="border-color: var(--border-default);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Central de Notificações</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Escolha como e quando você deseja receber avisos do Agon.</p>
+              </div>
+
+              <div class="space-y-4 text-xs">
+                <div class="flex items-center justify-between p-3 rounded-xl border" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                  <div>
+                    <h4 class="font-bold" style="color: var(--text-primary);">Lembrete Diário de Estudos</h4>
+                    <p style="color: var(--text-secondary);">Aviso às 08:00 com suas metas planejadas para o dia.</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only toggle-switch-input" />
+                    <div class="w-9 h-5 bg-slate-300 rounded-full transition-colors toggle-switch-bg">
+                      <div class="w-4 h-4 bg-white rounded-full transition-transform toggle-switch-dot translate-x-0.5 mt-0.5"></div>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between p-3 rounded-xl border" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                  <div>
+                    <h4 class="font-bold" style="color: var(--text-primary);">Novos Simulados Disponíveis</h4>
+                    <p style="color: var(--text-secondary);">Notificar assim que um novo simulado do seu concurso for publicado.</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only toggle-switch-input" />
+                    <div class="w-9 h-5 bg-slate-300 rounded-full transition-colors toggle-switch-bg">
+                      <div class="w-4 h-4 bg-white rounded-full transition-transform toggle-switch-dot translate-x-0.5 mt-0.5"></div>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="flex items-center justify-between p-3 rounded-xl border" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                  <div>
+                    <h4 class="font-bold" style="color: var(--text-primary);">Respostas do IA Tutor e Fórum</h4>
+                    <p style="color: var(--text-secondary);">Avisar quando outros alunos ou professores comentarem em suas dúvidas.</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked class="sr-only toggle-switch-input" />
+                    <div class="w-9 h-5 bg-slate-300 rounded-full transition-colors toggle-switch-bg">
+                      <div class="w-4 h-4 bg-white rounded-full transition-transform toggle-switch-dot translate-x-0.5 mt-0.5"></div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t flex justify-end" style="border-color: var(--border-default);">
+                <button class="btn-primary text-xs py-2.5 px-6 save-changes-btn">Salvar Preferências</button>
+              </div>
+            </div>
+
+            <!-- TAB 4: APARÊNCIA -->
+            <div id="tab-aparencia" class="settings-panel hidden card p-6 space-y-6">
+              <div class="pb-4 border-b" style="border-color: var(--border-default);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Aparência & Interface</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Personalize as cores e o tema da sua área de estudos.</p>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold mb-3" style="color: var(--text-primary);">Tema da Plataforma</label>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div id="theme-card-light" class="p-4 rounded-2xl border-2 cursor-pointer flex flex-col items-center gap-2 transition-all" style="border-color: var(--color-blue); background-color: #FFFFFF;">
+                      <i class="fa-solid fa-sun text-2xl text-amber-500"></i>
+                      <span class="text-xs font-bold text-slate-800">Tema Claro</span>
+                      <span class="text-[10px] text-slate-500">Ideal para o dia</span>
+                    </div>
+
+                    <div id="theme-card-dark" class="p-4 rounded-2xl border-2 cursor-pointer flex flex-col items-center gap-2 transition-all" style="border-color: var(--border-default); background-color: #0F172A;">
+                      <i class="fa-solid fa-moon text-2xl text-indigo-400"></i>
+                      <span class="text-xs font-bold text-white">Tema Escuro</span>
+                      <span class="text-[10px] text-slate-400">Menos cansaço visual</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 5: SEGURANÇA -->
+            <div id="tab-seguranca" class="settings-panel hidden card p-6 space-y-6">
+              <div class="pb-4 border-b" style="border-color: var(--border-default);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Segurança & Senha</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Mantenha sua conta e progresso protegidos.</p>
+              </div>
+
+              <div class="space-y-4 max-w-md">
+                <div>
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Senha Atual</label>
+                  <input type="password" placeholder="••••••••" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Nova Senha</label>
+                  <input type="password" placeholder="Mínimo de 8 caracteres" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold mb-1" style="color: var(--text-primary);">Confirmar Nova Senha</label>
+                  <input type="password" placeholder="Repita a nova senha" class="form-input w-full p-2.5 text-xs rounded-xl" style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);" />
+                </div>
+              </div>
+
+              <div class="pt-4 border-t flex justify-end" style="border-color: var(--border-default);">
+                <button class="btn-primary text-xs py-2.5 px-6 save-changes-btn">Atualizar Senha</button>
+              </div>
+            </div>
+
+            <!-- TAB 6: PLANO & ASSINATURA -->
+            <div id="tab-plano" class="settings-panel hidden card p-6 space-y-6">
+              <div class="pb-4 border-b" style="border-color: var(--border-default);">
+                <h3 class="font-bold text-lg" style="color: var(--text-primary);">Assinatura & Faturamento</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Detalhes do seu plano Agon Premium e notas fiscais.</p>
+              </div>
+
+              <div class="p-5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style="border-color: var(--color-blue); background: linear-gradient(135deg, rgba(35,54,110,0.05), rgba(6,182,212,0.05));">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-blue-600 text-white shadow-md">
+                    <i class="fa-solid fa-gem"></i>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <h4 class="font-bold text-base" style="color: var(--text-primary);">Plano Agon Premium Anual</h4>
+                      <span class="badge badge-green text-[10px]">Ativo</span>
+                    </div>
+                    <p class="text-xs" style="color: var(--text-secondary);">Renovação automática em <strong>15 de Dezembro de 2026</strong>.</p>
+                  </div>
+                </div>
+                <button class="btn-secondary text-xs py-2 px-4 whitespace-nowrap">Alterar Plano</button>
+              </div>
+
+              <div class="space-y-3 pt-2">
+                <h4 class="font-bold text-xs" style="color: var(--text-primary);">Histórico de Faturas</h4>
+                <div class="space-y-2 text-xs">
+                  <div class="flex items-center justify-between p-3 rounded-xl border" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                    <div>
+                      <p class="font-bold" style="color: var(--text-primary);">Fatura #AG-94812 — R$ 348,00</p>
+                      <p class="text-[10px]" style="color: var(--text-muted);">Pago em 15/12/2025 via Cartão de Crédito (•••• 4012)</p>
+                    </div>
+                    <button class="btn-secondary text-xs py-1.5 px-3"><i class="fa-solid fa-download mr-1"></i> Recibo</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="p-6 border-b flex items-center justify-between" style="border-color:var(--border-default);">
+        <h3 class="font-bold text-lg" style="color:var(--text-primary);">Meu Perfil</h3>
+        <button id="modal-close-btn" class="text-sm p-2 rounded-lg hover:bg-slate-100" style="color:var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6 space-y-6">
+        <div class="flex items-center gap-4">
+          <img src="/assets/img/perfil.jpg" alt="Avatar" class="w-16 h-16 rounded-full object-cover" />
+          <div>
+            <h4 class="font-bold text-base" style="color:var(--text-primary);">Davi Brito</h4>
+            <p class="text-xs" style="color:var(--text-secondary);">davi.brito@exemplo.com</p>
+            <span class="badge badge-blue text-[10px] mt-1">Concurseiro Elite</span>
+          </div>
+        </div>
+        <div class="space-y-3 pt-2 border-t" style="border-color:var(--border-default);">
+          <button class="btn-secondary w-full justify-center text-sm" onclick="document.getElementById('profile-modal').classList.remove('active');">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+
+  <!-- Settings Tabs & Interactivity Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const navBtns = document.querySelectorAll('.settings-nav-btn');
+      const panels = document.querySelectorAll('.settings-panel');
+
+      navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-target');
+
+          navBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          panels.forEach(p => p.classList.add('hidden'));
+          const targetPanel = document.getElementById(target);
+          if (targetPanel) targetPanel.classList.remove('hidden');
+        });
+      });
+
+      // Save feedback toast
+      const saveBtns = document.querySelectorAll('.save-changes-btn');
+      const saveToast = document.getElementById('save-toast');
+      const nameInput = document.getElementById('input-full-name');
+      const headerName = document.getElementById('header-user-name');
+
+      saveBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (nameInput && headerName && nameInput.value.trim()) {
+            headerName.innerText = nameInput.value.trim();
+          }
+          if (saveToast) {
+            saveToast.classList.remove('hidden');
+            setTimeout(() => {
+              saveToast.classList.add('hidden');
+            }, 3000);
+          }
+        });
+      });
+
+      // Appearance Theme Selector Cards
+      const cardLight = document.getElementById('theme-card-light');
+      const cardDark = document.getElementById('theme-card-dark');
+
+      function updateThemeCardVisuals(theme) {
+        if (theme === 'dark') {
+          if (cardDark) cardDark.style.borderColor = 'var(--color-blue)';
+          if (cardLight) cardLight.style.borderColor = 'var(--border-default)';
+        } else {
+          if (cardLight) cardLight.style.borderColor = 'var(--color-blue)';
+          if (cardDark) cardDark.style.borderColor = 'var(--border-default)';
+        }
+      }
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      updateThemeCardVisuals(currentTheme);
+
+      if (cardLight) {
+        cardLight.addEventListener('click', () => {
+          document.documentElement.setAttribute('data-theme', 'light');
+          localStorage.setItem('agon-theme', 'light');
+          updateThemeCardVisuals('light');
+        });
+      }
+      if (cardDark) {
+        cardDark.addEventListener('click', () => {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          localStorage.setItem('agon-theme', 'dark');
+          updateThemeCardVisuals('dark');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
