@@ -3,17 +3,34 @@
  * Gerencia a inicialização, credenciais e instâncias do SDK @supabase/supabase-js
  */
 
-const { createClient } = require("@supabase/supabase-js");
+let createClient = null;
+try {
+  ({ createClient } = require("@supabase/supabase-js"));
+} catch (err) {
+  createClient = null;
+}
 
 let adminClientInstance = null;
 let publicClientInstance = null;
+
+function getSecretKey() {
+  return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+}
+
+function getPublicKey() {
+  return process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+}
 
 /**
  * Valida se as variáveis de ambiente necessárias para o Supabase estão configuradas
  */
 function isSupabaseConfigured() {
+  if (!createClient) {
+    return false;
+  }
+
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+  const key = getSecretKey() || getPublicKey();
 
   if (!url || typeof url !== "string" || !url.trim().startsWith("https://")) {
     return false;
@@ -31,7 +48,7 @@ function isSupabaseConfigured() {
 }
 
 /**
- * Retorna o cliente administrativo (Service Role) para operações no servidor
+ * Retorna o cliente administrativo (Service Role / Secret) para operações no servidor
  * Nunca deve ser exposto ao navegador
  */
 function getSupabaseAdmin() {
@@ -44,7 +61,7 @@ function getSupabaseAdmin() {
   }
 
   const supabaseUrl = process.env.SUPABASE_URL.trim();
-  const serviceRoleKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY).trim();
+  const serviceRoleKey = (getSecretKey()).trim();
 
   adminClientInstance = createClient(supabaseUrl, serviceRoleKey, {
     auth: {
@@ -69,7 +86,7 @@ function getSupabaseClient() {
   }
 
   const supabaseUrl = process.env.SUPABASE_URL.trim();
-  const anonKey = (process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY).trim();
+  const anonKey = (getPublicKey()).trim();
 
   publicClientInstance = createClient(supabaseUrl, anonKey, {
     auth: {
@@ -91,7 +108,7 @@ function getSupabaseStatus() {
     url: configured ? process.env.SUPABASE_URL.trim() : null,
     mensagem: configured
       ? "Supabase configurado e pronto para operações na nuvem."
-      : "Credenciais do Supabase não configuradas no arquivo .env (SUPABASE_URL e SUPABASE_ANON_KEY/SUPABASE_SERVICE_ROLE_KEY). O sistema está operando com banco local persistente.",
+      : "Credenciais do Supabase não configuradas no arquivo .env (SUPABASE_URL e SUPABASE_ANON_KEY/SUPABASE_SERVICE_ROLE_KEY ou SUPABASE_PUBLISHABLE_KEY/SUPABASE_SECRET_KEY). O sistema está operando com banco local persistente.",
   };
 }
 
