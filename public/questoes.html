@@ -294,7 +294,7 @@
             <p class="text-xs mt-0.5" style="color: var(--text-muted);">Estatísticas acumuladas</p>
 
             <div class="my-4">
-              <div class="text-3xl font-extrabold tracking-tight" style="color: var(--color-blue);">1.248</div>
+              <div id="perf-total-count" class="text-3xl font-extrabold tracking-tight" style="color: var(--color-blue);">0</div>
               <span class="text-xs font-medium" style="color: var(--text-secondary);">questões resolvidas</span>
             </div>
 
@@ -302,10 +302,10 @@
             <div class="space-y-2 mt-4 text-left">
               <div class="flex justify-between items-center text-xs">
                 <span class="font-medium" style="color: var(--text-secondary);">Aproveitamento</span>
-                <span class="font-bold" style="color: var(--color-green);">78% de acerto</span>
+                <span id="perf-taxa-acerto" class="font-bold" style="color: var(--color-green);">0% de acerto</span>
               </div>
               <div class="progress-track h-2.5 w-full" style="background-color: var(--bg-hover);">
-                <div class="progress-fill-green h-2.5" style="width: 78%; background-color: var(--color-green);"></div>
+                <div id="perf-progress-fill" class="progress-fill-green h-2.5" style="width: 0%; background-color: var(--color-green);"></div>
               </div>
             </div>
 
@@ -313,11 +313,11 @@
             <div class="grid grid-cols-2 gap-2 mt-5 pt-4 border-t text-left" style="border-color: var(--border-light);">
               <div class="p-2.5 rounded-xl" style="background-color: var(--bg-input);">
                 <p class="text-[11px]" style="color: var(--text-muted);">Acertos</p>
-                <p class="text-sm font-bold" style="color: var(--color-green);"><i class="fa-solid fa-check text-xs mr-1"></i>973</p>
+                <p id="perf-acertos-count" class="text-sm font-bold" style="color: var(--color-green);"><i class="fa-solid fa-check text-xs mr-1"></i>0</p>
               </div>
               <div class="p-2.5 rounded-xl" style="background-color: var(--bg-input);">
                 <p class="text-[11px]" style="color: var(--text-muted);">Erros</p>
-                <p class="text-sm font-bold" style="color: var(--color-red);"><i class="fa-solid fa-xmark text-xs mr-1"></i>275</p>
+                <p id="perf-erros-count" class="text-sm font-bold" style="color: var(--color-red);"><i class="fa-solid fa-xmark text-xs mr-1"></i>0</p>
               </div>
             </div>
           </div>
@@ -355,7 +355,7 @@
           <div class="space-y-6" id="questions-list">
 
             <!-- ================= QUESTION 1 ================= -->
-            <article class="card p-6 space-y-5 question-card transition" id="question-1" data-disciplina="direito-constitucional" data-banca="cebraspe" data-ano="2024" data-diff="media" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+            <article class="card p-6 space-y-5 question-card transition" id="question-1" data-disciplina="Direito Constitucional" data-assunto="Princípios Fundamentais" data-banca="cebraspe" data-ano="2024" data-diff="media" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
               <!-- Top Row: Badges & Actions -->
               <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-light);">
                 <div class="flex flex-wrap items-center gap-2">
@@ -421,7 +421,7 @@
                   </button>
                   <button type="button" class="btn-secondary btn-comentario text-xs py-2 px-3 flex items-center gap-1.5" data-target="comment-1">
                     <i class="fa-regular fa-comment-dots text-xs"></i> Comentário do Professor
-                  </button>
+                  </button> <button type="button" class="btn-secondary btn-zuka-duvida text-xs py-2 px-3 flex items-center gap-1.5 font-semibold text-blue-600 dark:text-blue-400" data-target="question-1"><i class="fa-solid fa-robot text-xs"></i> Explicar com Zuka IA</button>
                 </div>
                 <div class="flex items-center gap-4 text-xs font-medium" style="color: var(--text-muted);">
                   <span><i class="fa-solid fa-users text-xs mr-1"></i> 74% de acertos</span>
@@ -446,7 +446,7 @@
             </article>
 
             <!-- ================= QUESTION 2 ================= -->
-            <article class="card p-6 space-y-5 question-card transition" id="question-2" data-disciplina="portugues" data-banca="fgv" data-ano="2023" data-diff="facil" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+            <article class="card p-6 space-y-5 question-card transition" id="question-2" data-disciplina="Língua Portuguesa" data-assunto="Emprego da Crase" data-banca="fgv" data-ano="2023" data-diff="facil" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
               <!-- Top Row: Badges & Actions -->
               <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-light);">
                 <div class="flex flex-wrap items-center gap-2">
@@ -512,7 +512,7 @@
                   </button>
                   <button type="button" class="btn-secondary btn-comentario text-xs py-2 px-3 flex items-center gap-1.5" data-target="comment-2">
                     <i class="fa-regular fa-comment-dots text-xs"></i> Comentário do Professor
-                  </button>
+                  </button> <button type="button" class="btn-secondary btn-zuka-duvida text-xs py-2 px-3 flex items-center gap-1.5 font-semibold text-blue-600 dark:text-blue-400" data-target="question-2"><i class="fa-solid fa-robot text-xs"></i> Explicar com Zuka IA</button>
                 </div>
                 <div class="flex items-center gap-4 text-xs font-medium" style="color: var(--text-muted);">
                   <span><i class="fa-solid fa-users text-xs mr-1"></i> 86% de acertos</span>
@@ -538,7 +538,7 @@
             </article>
 
             <!-- ================= QUESTION 3 ================= -->
-            <article class="card p-6 space-y-5 question-card transition" id="question-3" data-disciplina="raciocinio-logico" data-banca="vunesp" data-ano="2022" data-diff="dificil" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
+            <article class="card p-6 space-y-5 question-card transition" id="question-3" data-disciplina="Raciocínio Lógico" data-assunto="Equivalências e Negação Lógica" data-banca="vunesp" data-ano="2022" data-diff="dificil" style="background-color: var(--bg-card); border: 1px solid var(--border-light);">
               <!-- Top Row: Badges & Actions -->
               <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-light);">
                 <div class="flex flex-wrap items-center gap-2">
@@ -672,43 +672,64 @@
     </div>
   </main>
 
-  <!-- PROFILE MODAL -->
+    <!-- PROFILE MODAL -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal-content">
       <!-- Header -->
       <div class="flex items-center justify-between p-6 pb-0">
         <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
-        <button id="modal-close-btn" class="w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80" style="color:var(--text-muted);background:var(--bg-hover);"><i class="fa-solid fa-xmark"></i></button>
+        <button id="modal-close-btn" type="button" class="modal-close-btn w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80 transition" style="color:var(--text-muted);background:var(--bg-hover);" title="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
+
       <!-- Tabs -->
       <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
-        <button class="modal-tab active" data-tab="dados">Dados</button>
-        <button class="modal-tab" data-tab="conquistas">Conquistas</button>
-        <button class="modal-tab" data-tab="config">Configurações</button>
+        <button type="button" class="modal-tab active" data-tab="dados">Dados</button>
+        <button type="button" class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button type="button" class="modal-tab" data-tab="config">Configurações</button>
       </div>
+
       <!-- Tab: Dados -->
       <div id="tab-dados" class="modal-tab-content active p-6">
         <div class="flex items-center gap-5 mb-6">
           <div class="relative">
             <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar-lg" />
-            <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs" style="background:var(--color-blue);color:#fff;"><i class="fa-solid fa-camera"></i></button>
+            <button type="button" class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-sm hover:opacity-90 transition" style="background:var(--color-blue);color:#fff;" title="Alterar foto">
+              <i class="fa-solid fa-camera"></i>
+            </button>
           </div>
           <div>
-            <h3 class="text-lg font-bold" style="color:var(--text-primary);">Davi Brito</h3>
-            <p class="text-sm" style="color:var(--text-secondary);">davi.brito_agon@gmail.com</p>
+            <h3 class="text-lg font-bold user-name-display" style="color:var(--text-primary);">Davi Brito</h3>
+            <p class="text-sm user-email-display" style="color:var(--text-secondary);">davi.brito_agon@gmail.com</p>
+            <span class="badge badge-blue text-[10px] mt-1">Concurseiro Elite</span>
           </div>
         </div>
+
         <div class="space-y-4">
           <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
           <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
           <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
         </div>
-        <button class="btn-primary w-full mt-6 justify-center">Editar dados</button>
+
+        <div class="pt-6 border-t mt-6 space-y-3" style="border-color:var(--border-light);">
+          <a href="configuracoes.html" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-user-pen"></i>
+            <span>Editar perfil</span>
+          </a>
+          <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sair da conta</span>
+          </button>
+        </div>
       </div>
+
       <!-- Tab: Conquistas -->
       <div id="tab-conquistas" class="modal-tab-content p-6">
         <div class="flex items-center gap-4 mb-5">
-          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;"><i class="fa-solid fa-medal"></i></div>
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-sm" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;">
+            <i class="fa-solid fa-medal"></i>
+          </div>
           <div class="flex-1">
             <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
             <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
@@ -740,7 +761,67 @@
           <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
           <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: 23 dias</span>
         </div>
+        <div class="pt-5 border-t mt-5">
+          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Ver todas as conquistas</span>
+          </a>
+        </div>
       </div>
+
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p>
+              <p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="theme-switch" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p>
+              <p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p>
+              <p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Renova em 15/10/2025</p>
+              </div>
+              <button type="button" class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <div class="pt-2 space-y-3">
+            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+              <i class="fa-solid fa-gear"></i>
+              <span>Configurações completas</span>
+            </a>
+            <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair da conta</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
       <!-- Tab: Configurações -->
       <div id="tab-config" class="modal-tab-content p-6">
         <div class="space-y-5">
@@ -874,6 +955,77 @@
             parent.querySelectorAll('.option-item').forEach(opt => opt.classList.remove('selected'));
             this.classList.add('selected');
           }
+        });
+      });
+
+      // ─── Atualização em Tempo Real do Card de Desempenho ───
+      async function refreshPerformanceWidget() {
+        try {
+          const res = await fetch('/api/desempenho/estatisticas');
+          const data = await res.json();
+          if (data.indicadoresGerais) {
+            const ig = data.indicadoresGerais;
+            const elTotal = document.getElementById('perf-total-count');
+            const elTaxa = document.getElementById('perf-taxa-acerto');
+            const elFill = document.getElementById('perf-progress-fill');
+            const elAcertos = document.getElementById('perf-acertos-count');
+            const elErros = document.getElementById('perf-erros-count');
+
+            if (elTotal) elTotal.textContent = ig.totalRespondidas;
+            if (elTaxa) elTaxa.textContent = (ig.totalRespondidas > 0 ? ig.taxaAcertoGeral : 0) + '% de acerto';
+            if (elFill) elFill.style.width = (ig.totalRespondidas > 0 ? ig.taxaAcertoGeral : 0) + '%';
+            if (elAcertos) elAcertos.innerHTML = '<i class="fa-solid fa-check text-xs mr-1"></i>' + ig.totalAcertos;
+            if (elErros) elErros.innerHTML = '<i class="fa-solid fa-xmark text-xs mr-1"></i>' + ig.totalErros;
+          }
+        } catch (err) {
+          console.warn('Aviso ao sincronizar estatísticas:', err);
+        }
+      }
+      refreshPerformanceWidget();
+
+      // ─── Botão: Explicar com Zuka IA ────────────────────────
+      document.querySelectorAll('.btn-zuka-duvida').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const cardId = this.dataset.target;
+          const card = document.getElementById(cardId);
+          if (!card) return;
+
+          const qid = card.querySelector('.font-mono')?.textContent.trim() || cardId;
+          const disciplina = card.dataset.disciplina || 'Concursos';
+          const assunto = card.dataset.assunto || 'Geral';
+          const banca = card.dataset.banca || '';
+          const ano = card.dataset.ano || '';
+          const enunciado = card.querySelector('.space-y-3 p')?.textContent.trim() || '';
+
+          const alternativas = Array.from(card.querySelectorAll('.option-item')).map(opt => ({
+            letra: opt.querySelector('.option-letter')?.textContent.trim() || '',
+            texto: opt.querySelector('.text-sm')?.textContent.trim() || '',
+          }));
+
+          const correctOpt = card.querySelector('.option-item[data-correct="true"]');
+          const gabaritoOficial = correctOpt?.querySelector('.option-letter')?.textContent.trim() || '';
+
+          const commentBoxId = cardId.replace('question-', 'comment-');
+          const comentarioOficial = document.getElementById(commentBoxId)?.querySelector('p')?.textContent.trim() || '';
+
+          const selectedOption = card.querySelector('input[type="radio"]:checked');
+          const respostaSelecionada = selectedOption?.value || '';
+
+          const questionContext = {
+            questionId: qid,
+            disciplina,
+            assunto,
+            banca,
+            ano,
+            enunciado,
+            alternativas,
+            gabaritoOficial,
+            comentarioOficial,
+            respostaSelecionada
+          };
+
+          const encoded = encodeURIComponent(JSON.stringify(questionContext));
+          window.location.href = 'ia-tutor.html?qctx=' + encoded;
         });
       });
 

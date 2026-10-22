@@ -109,46 +109,101 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ─── Profile Modal ────────────────────────────────────────
-  const modalOverlay = document.getElementById('profile-modal');
-  const modalOpenBtns = document.querySelectorAll('.open-profile-modal');
-  const modalCloseBtn = document.getElementById('modal-close-btn');
-
+  // ─── Profile Modal & Logout ──────────────────────────────
   function openModal() {
-    if (modalOverlay) {
-      modalOverlay.classList.add('active');
+    const modal = document.getElementById('profile-modal');
+    if (modal) {
+      modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      // Sync theme switch state if present in modal
+      const curTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const sw = document.getElementById('theme-switch');
+      if (sw) sw.checked = (curTheme === 'dark');
     }
   }
+
   function closeModal() {
-    if (modalOverlay) {
-      modalOverlay.classList.remove('active');
+    const modal = document.getElementById('profile-modal');
+    if (modal) {
+      modal.classList.remove('active');
       document.body.style.overflow = '';
     }
   }
 
-  modalOpenBtns.forEach(btn => btn.addEventListener('click', openModal));
-  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) closeModal();
-    });
-  }
+  // Delegação de eventos para robustez total (funciona mesmo se o modal for renderizado depois)
+  document.addEventListener('click', (e) => {
+    // Abrir Modal de Perfil
+    const openBtn = e.target.closest('.open-profile-modal');
+    if (openBtn) {
+      e.preventDefault();
+      openModal();
+      return;
+    }
+
+    // Fechar Modal (botão X)
+    const closeBtn = e.target.closest('#modal-close-btn, .modal-close-btn');
+    if (closeBtn) {
+      e.preventDefault();
+      closeModal();
+      return;
+    }
+
+    // Fechar Modal clicando no backdrop escuro
+    const modal = document.getElementById('profile-modal');
+    if (modal && e.target === modal) {
+      closeModal();
+      return;
+    }
+
+    // Navegação pelas abas do modal
+    const tabBtn = e.target.closest('.modal-tab');
+    if (tabBtn) {
+      e.preventDefault();
+      const target = tabBtn.dataset.tab;
+      document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
+      tabBtn.classList.add('active');
+      const content = document.getElementById('tab-' + target);
+      if (content) content.classList.add('active');
+      return;
+    }
+
+    // Ação de Logout (Sair da Conta)
+    const logoutBtn = e.target.closest('.btn-logout, #modal-logout-btn, [data-action="logout"]');
+    if (logoutBtn) {
+      e.preventDefault();
+      if (confirm('Deseja realmente sair da sua conta Agon?')) {
+        fetch('/api/logout', { method: 'POST' })
+          .finally(() => {
+            window.location.href = '/login.html';
+          });
+      }
+      return;
+    }
+  });
+
+  // Fechar modal com tecla ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
   });
 
-  // Modal Tabs
-  document.querySelectorAll('.modal-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.tab;
-      document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.modal-tab-content').forEach(c => c.classList.remove('active'));
-      tab.classList.add('active');
-      const content = document.getElementById('tab-' + target);
-      if (content) content.classList.add('active');
-    });
-  });
+  // Sincronizar nome e e-mail do usuário logado no header e no modal
+  fetch('/api/check-auth')
+    .then(r => r.json())
+    .then(data => {
+      const user = data.usuario || data.usuarioConvidado;
+      if (user && user.nome) {
+        document.querySelectorAll('.user-name-display, .student-name-display').forEach(el => {
+          el.textContent = user.nome;
+        });
+        if (user.email) {
+          document.querySelectorAll('.user-email-display').forEach(el => {
+            el.textContent = user.email;
+          });
+        }
+      }
+    })
+    .catch(() => {});
 
   // ─── Notification Dropdown (Simple) ──────────────────────
   const notifBtn = document.getElementById('notif-btn');
