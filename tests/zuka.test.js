@@ -235,7 +235,10 @@ test("Private pages and data APIs require authentication without a guest identit
       assert.strictEqual(response.status, 302, `${path} must require login`);
       assert.strictEqual(response.headers.get("location"), "/login");
     }
-    for (const path of ["/api/zuka/status", "/api/zuka/conversas", "/api/questoes/historico", "/api/desempenho/estatisticas", "/api/planos-estudo/recomendacoes", "/api/dashboard/resumo"]) {
+    const zukaStatus = await fetch(`${baseUrl}/api/zuka/status`);
+    assert.equal(zukaStatus.status, 200, "Zuka configuration status is public");
+    assert.equal(typeof (await zukaStatus.json()).configurada, "boolean");
+    for (const path of ["/api/zuka/conversas", "/api/questoes/historico", "/api/desempenho/estatisticas", "/api/planos-estudo/recomendacoes", "/api/dashboard/resumo"]) {
       const response = await fetch(`${baseUrl}${path}`);
       assert.strictEqual(response.status, 401, `${path} must require login`);
     }
@@ -309,18 +312,18 @@ test("Private pages and data APIs require authentication without a guest identit
       method: "POST", headers: { "Content-Type": "application/json", cookie: firstCookie },
       body: JSON.stringify({ questionId: "private-question", disciplina: "Português", respostaSelecionada: "A", respostaCorreta: "A" }),
     });
-    assert.strictEqual(answered.status, 201);
+    assert.strictEqual(answered.status, 410, "Legacy response endpoint must reject client-supplied answer keys");
     const ownHistory = await fetch(baseUrl + "/api/questoes/historico?questionId=private-question", { headers: { cookie: firstCookie } });
     const otherHistory = await fetch(baseUrl + "/api/questoes/historico?questionId=private-question", { headers: { cookie: secondCookie } });
-    assert.strictEqual((await ownHistory.json()).total, 1);
+    assert.strictEqual((await ownHistory.json()).total, 0);
     assert.strictEqual((await otherHistory.json()).total, 0);
 
     const dashboardSummary = await fetch(baseUrl + "/api/dashboard/resumo", { headers: { cookie: firstCookie } });
     assert.strictEqual(dashboardSummary.status, 200);
     const dashboardData = await dashboardSummary.json();
     assert.strictEqual(dashboardData.estudanteId, registered.id);
-    assert.strictEqual(dashboardData.indicadoresGerais.totalRespondidas, 1);
-    assert.equal(dashboardData.atividadesRecentes[0].subtitulo, "Português • Geral");
+    assert.strictEqual(dashboardData.indicadoresGerais.totalRespondidas, 0);
+    assert.equal(dashboardData.atividadesRecentes.length, 0);
 
     const createdConversation = await fetch(baseUrl + "/api/zuka/conversas", {
       method: "POST", headers: { "Content-Type": "application/json", cookie: firstCookie },

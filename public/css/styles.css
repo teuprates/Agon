@@ -669,7 +669,7 @@ body {
 [data-theme="dark"] .auth-card a span.tracking-wider,
 [data-theme="dark"] .auth-card a span.font-extrabold,
 [data-theme="dark"] a[href="/"] span.font-extrabold,
-[data-theme="dark"] a[href="index.html"] span.font-bold,
+[data-theme="dark"] a[href="/dashboard"] span.font-bold,
 [data-theme="dark"] [data-agon-brand] {
   color: #FFFFFF !important;
 }

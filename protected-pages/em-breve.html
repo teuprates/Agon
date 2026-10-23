@@ -8,9 +8,9 @@
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind.css"><script src="/js/tailwind-runtime.js"></script>
   <!-- Agon Design System Styles -->
   <link rel="stylesheet" href="css/styles.css" />
 
@@ -38,7 +38,7 @@
   <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
     <!-- Logo -->
     <div class="p-6 flex items-center gap-2 cursor-pointer">
-      <a href="index.html" class="flex items-center gap-2">
+      <a href="/dashboard" class="flex items-center gap-2">
         <div class="w-8 h-8 relative">
           <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
         </div>
@@ -48,18 +48,18 @@
 
     <!-- Nav -->
     <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
-      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
-      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
-      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
-      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
-      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
-      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
-      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
-      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
-      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
-      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
-      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
-      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+      <a href="/dashboard" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="/estudos" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="/questoes" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="/simulados" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="/aulas" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="/planos-estudo" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="/desempenho" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="/ia-tutor" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="/materiais" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="/comunidade" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="/conquistas" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="/configuracoes" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
     </nav>
 
     <!-- Upsell -->
@@ -130,11 +130,11 @@
         <!-- BREADCRUMB & HEADER -->
         <div class="flex items-center justify-between flex-wrap gap-4">
           <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
-            <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+            <a href="/dashboard" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
             <span style="color: var(--text-primary);" class="font-medium">Novidades & Lançamentos</span>
           </div>
-          <a href="index.html" class="btn-secondary text-xs flex items-center gap-2 py-2 px-4">
+          <a href="/dashboard" class="btn-secondary text-xs flex items-center gap-2 py-2 px-4">
             <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
           </a>
         </div>
@@ -273,7 +273,7 @@
                 Recursos pensados nos mínimos detalhes para acelerar sua aprovação.
               </p>
             </div>
-            <a id="peek-direct-link" href="aulas.html" class="text-xs font-semibold flex items-center gap-1.5 hover:underline" style="color: var(--color-blue);">
+            <a id="peek-direct-link" href="/aulas" class="text-xs font-semibold flex items-center gap-1.5 hover:underline" style="color: var(--color-blue);">
               <span>Abrir página do módulo</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
             </a>
           </div>
@@ -347,7 +347,7 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="questoes.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+            <a href="/questoes" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
               <div>
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-blue-light); color: var(--color-blue);">
                   <i class="fa-solid fa-circle-question"></i>
@@ -360,7 +360,7 @@
               </div>
             </a>
 
-            <a href="simulados.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+            <a href="/simulados" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
               <div>
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-green-light); color: var(--color-green);">
                   <i class="fa-solid fa-file-signature"></i>
@@ -373,7 +373,7 @@
               </div>
             </a>
 
-            <a href="ia-tutor.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+            <a href="/ia-tutor" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
               <div>
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-purple-light); color: var(--color-purple);">
                   <i class="fa-solid fa-robot"></i>
@@ -386,7 +386,7 @@
               </div>
             </a>
 
-            <a href="desempenho.html" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
+            <a href="/desempenho" class="feature-preview-card p-5 rounded-2xl flex flex-col justify-between group">
               <div>
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg mb-3" style="background: var(--color-orange-light); color: var(--color-orange);">
                   <i class="fa-solid fa-chart-line"></i>
@@ -491,7 +491,7 @@
         </div>
 
         <div class="pt-6 border-t mt-6 space-y-3" style="border-color:var(--border-light);">
-          <a href="configuracoes.html" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
+          <a href="/configuracoes" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
             <i class="fa-solid fa-user-pen"></i>
             <span>Editar perfil</span>
           </a>
@@ -540,7 +540,7 @@
           <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: Nao registrado</span>
         </div>
         <div class="pt-5 border-t mt-5">
-          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+          <a href="/conquistas" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
             <i class="fa-solid fa-trophy"></i>
             <span>Ver todas as conquistas</span>
           </a>
@@ -586,7 +586,7 @@
             </div>
           </div>
           <div class="pt-2 space-y-3">
-            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <a href="/configuracoes" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
               <i class="fa-solid fa-gear"></i>
               <span>Configurações completas</span>
             </a>
@@ -655,7 +655,7 @@
     const MODULES_DATA = {
       'aulas': {
         name: 'Aulas & Videoaulas',
-        url: 'aulas.html',
+        url: '/aulas',
         icon: 'fa-play',
         bgGradient: 'linear-gradient(135deg, #2563EB, #06B6D4)',
         badge: 'Gravação & Streaming',
@@ -693,7 +693,7 @@
       },
       'planos-estudo': {
         name: 'Planos de Estudo & Ciclos',
-        url: 'planos-estudo.html',
+        url: '/planos-estudo',
         icon: 'fa-calendar-days',
         bgGradient: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
         badge: 'Algoritmo Adaptativo',
@@ -731,7 +731,7 @@
       },
       'materiais': {
         name: 'Materiais & PDFs de Apoio',
-        url: 'materiais.html',
+        url: '/materiais',
         icon: 'fa-folder-open',
         bgGradient: 'linear-gradient(135deg, #10B981, #06B6D4)',
         badge: 'Diagramação & Conteúdo',
@@ -769,7 +769,7 @@
       },
       'configuracoes': {
         name: 'Configurações & Painel da Conta',
-        url: 'configuracoes.html',
+        url: '/configuracoes',
         icon: 'fa-gear',
         bgGradient: 'linear-gradient(135deg, #F59E0B, #EF4444)',
         badge: 'Segurança & Preferências',

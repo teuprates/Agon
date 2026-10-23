@@ -185,7 +185,7 @@ class GeminiProvider extends AIProvider {
         let parsedError = {};
         try {
           parsedError = JSON.parse(errorText);
-        } catch (_) {}
+        } catch (_) { /* The provider may return plain text instead of JSON. */ }
 
         const errorMessage = parsedError.error?.message || errorText;
         const statusCode = response.status;

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administração de questões | Agon</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/tailwind.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>body{font-family:Inter,system-ui,sans-serif;background:var(--bg-body,#f7f9fc);color:var(--text-primary,#172033)}.field{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;color:#172033}.card{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:20px}</style>
+</head>
+<body class="p-5 md:p-10">
+  <main class="mx-auto max-w-5xl space-y-6">
+    <header class="flex flex-wrap items-center justify-between gap-4">
+      <div><a class="text-sm text-blue-700" href="/dashboard">← Dashboard</a><h1 class="mt-2 text-3xl font-extrabold">Administração de questões</h1><p class="mt-1 text-sm text-slate-600">Questões adicionadas manualmente podem ser publicadas após revisão.</p></div>
+      <button type="button" class="btn-logout btn-secondary rounded-xl px-4 py-2">Sair</button>
+    </header>
+    <section class="card">
+      <h2 class="mb-4 text-xl font-bold">Cadastrar questão</h2>
+      <form id="question-form" class="grid gap-4 md:grid-cols-2">
+        <label class="text-sm">Disciplina<input class="field mt-1" name="disciplina" required maxlength="120"></label>
+        <label class="text-sm">Assunto<input class="field mt-1" name="assunto" required maxlength="160"></label>
+        <label class="text-sm">Banca<input class="field mt-1" name="banca" required maxlength="60"></label>
+        <label class="text-sm">Ano<input class="field mt-1" name="ano" type="number" min="1900" max="2100" required></label>
+        <label class="text-sm">Órgão/cargo<input class="field mt-1" name="orgao_cargo" maxlength="200"></label>
+        <label class="text-sm">Modalidade<select class="field mt-1" name="modalidade"><option value="multipla_escolha">Múltipla escolha</option><option value="certo_errado">Certo/Errado</option></select></label>
+        <label class="text-sm">Dificuldade<select class="field mt-1" name="dificuldade"><option value="facil">Fácil</option><option value="media" selected>Média</option><option value="dificil">Difícil</option></select></label>
+        <label class="text-sm">Fonte URL<input class="field mt-1" name="fonte_url" type="url" maxlength="2048"></label>
+        <label class="text-sm md:col-span-2">Texto associado<textarea class="field mt-1" name="texto_associado" rows="3" maxlength="30000"></textarea></label>
+        <label class="text-sm md:col-span-2">Enunciado<textarea class="field mt-1" name="enunciado" rows="5" maxlength="50000" required></textarea></label>
+        <fieldset class="md:col-span-2"><legend class="mb-2 text-sm font-semibold">Alternativas</legend><div class="grid gap-3 md:grid-cols-2" id="alternatives"></div></fieldset>
+        <label class="text-sm">Gabarito<select class="field mt-1" name="gabarito"><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select></label>
+        <label class="text-sm">Comentário do professor<textarea class="field mt-1" name="comentario_professor" rows="3" maxlength="20000"></textarea></label>
+        <button class="btn-primary rounded-xl px-5 py-3 font-semibold md:col-span-2" type="submit">Salvar e publicar</button>
+      </form>
+      <p id="form-status" class="mt-4 text-sm" role="status"></p>
+    </section>
+    <section class="card space-y-3">
+      <h2 class="text-xl font-bold">Importar JSON ou CSV</h2>
+      <p class="text-sm text-slate-600">JSON aceita uma lista ou a propriedade <code>questoes</code>. CSV usa cabeçalho e a coluna <code>alternativas</code> recebe um array JSON. Duplicatas são ignoradas.</p>
+      <a class="text-sm font-semibold text-blue-700 underline" href="/api/admin/questoes/modelo">Baixar modelo JSON</a>
+      <input id="json-file" class="field" type="file" accept="application/json,.json,text/csv,.csv">
+      <button id="import-json" type="button" class="btn-secondary rounded-xl px-4 py-2">Validar e importar</button>
+      <pre id="import-status" class="overflow-auto whitespace-pre-wrap text-sm" role="status"></pre>
+    </section>
+    <section class="card"><h2 class="mb-3 text-xl font-bold">Questões cadastradas</h2><div id="question-table" class="space-y-2 text-sm" aria-live="polite">Carregando…</div></section>
+  </main>
+  <script src="/js/script.js" defer></script>
+  <script src="/js/pages/admin-questoes.js" defer></script>
+</body>
+</html>

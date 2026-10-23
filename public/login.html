@@ -8,9 +8,9 @@
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind.css"><script src="/js/tailwind-runtime.js"></script>
   <!-- Agon Design System -->
   <link rel="stylesheet" href="css/styles.css" />
 
@@ -280,14 +280,7 @@
             alertBox.innerHTML = '<i class="fa-solid fa-circle-check text-sm"></i> <span>Login efetuado! Redirecionando para o seu dashboard...</span>';
             alertBox.classList.remove('hidden');
 
-            setTimeout(() => {
-              alertBox.className = "p-3.5 rounded-xl text-xs font-medium bg-red-100 text-red-700 border border-red-200";
-          alertBox.textContent = "Falha na conexao. Confira sua internet e tente novamente.";
-          alertBox.classList.remove("hidden");
-          btnSubmit.disabled = false;
-          btnText.innerText = "Acessar Plataforma";
-          btnIcon.className = "fa-solid fa-arrow-right text-xs";
-            }, 800);
+            setTimeout(() => { window.location.href = "/dashboard"; }, 800);
           } else {
             alertBox.className = 'p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium bg-red-100 text-red-600 border border-red-200';
             alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation text-sm"></i> <span>${data.erro || 'E-mail ou senha inválidos.'}</span>`;
@@ -299,7 +292,7 @@
         } catch (err) {
           // Fallback gracioso
           alertBox.className = "p-3.5 rounded-xl text-xs font-medium bg-red-100 text-red-700 border border-red-200";
-          alertBox.textContent = "Falha de conex?o. Confira sua internet e tente novamente.";
+          alertBox.textContent = "Falha na conexão. Confira sua internet e tente novamente.";
           alertBox.classList.remove("hidden");
           btnSubmit.disabled = false;
           btnText.innerText = "Acessar Plataforma";

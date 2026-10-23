@@ -5,9 +5,15 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch-path=server.js --watch-path=services --watch-path=public server.js",
+    "dev": "node --watch-path=server.js --watch-path=app.js --watch-path=services --watch-path=routes --watch-path=public server.js",
     "test": "node --test tests/*.test.js",
-    "seed:professor": "node scripts/seedProfessor.js"
+    "seed:professor": "node scripts/seedProfessor.js",
+    "seed:admin": "node scripts/seedAdmin.js",
+    "import:questoes": "node scripts/importQuestoes.js",
+    "build:css": "tailwindcss -i ./public/css/tailwind.input.css -o ./public/css/tailwind.css --minify",
+    "vercel-build": "npm run build:css",
+    "lint": "eslint .",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
@@ -28,10 +34,22 @@
     "@supabase/supabase-js": "^2.118.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
+    "csv-parse": "7.0.3",
     "dotenv": "^18.0.8",
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.1",
     "express-session": "^1.19.0",
     "helmet": "^8.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "autoprefixer": "10.6.1",
+    "eslint": "10.13.0",
+    "globals": "17.13.0",
+    "postcss": "8.5.31",
+    "prettier": "3.9.10",
+    "supertest": "7.3.1",
+    "tailwindcss": "3.4.19"
   }
 }

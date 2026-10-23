@@ -1,0 +1,26 @@
+{
+  "questoes": [
+    {
+      "codigo": "Q#00001",
+      "disciplina": "Português",
+      "assunto": "Interpretação de texto",
+      "banca": "Agon",
+      "ano": 2026,
+      "orgao_cargo": "Exemplo didático",
+      "modalidade": "multipla_escolha",
+      "dificuldade": "media",
+      "texto_associado": "",
+      "enunciado": "Substitua este texto por uma questão de autoria própria ou com autorização de uso.",
+      "alternativas": [
+        { "letra": "A", "texto": "Alternativa A" },
+        { "letra": "B", "texto": "Alternativa B" },
+        { "letra": "C", "texto": "Alternativa C" },
+        { "letra": "D", "texto": "Alternativa D" },
+        { "letra": "E", "texto": "Alternativa E" }
+      ],
+      "gabarito": "A",
+      "comentario_professor": "Explique a resposta com suas palavras.",
+      "fonte_url": ""
+    }
+  ]
+}

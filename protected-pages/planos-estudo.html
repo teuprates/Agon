@@ -8,9 +8,9 @@
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind.css"><script src="/js/tailwind-runtime.js"></script>
   <!-- Agon Design System Styles -->
   <link rel="stylesheet" href="css/styles.css" />
 
@@ -63,7 +63,7 @@
   <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
     <!-- Logo -->
     <div class="p-6 flex items-center gap-2 cursor-pointer">
-      <a href="index.html" class="flex items-center gap-2">
+      <a href="/dashboard" class="flex items-center gap-2">
         <div class="w-8 h-8 relative">
           <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
         </div>
@@ -73,18 +73,18 @@
 
     <!-- Nav -->
     <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
-      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
-      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
-      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
-      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
-      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
-      <a href="planos-estudo.html" class="nav-item active"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
-      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
-      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
-      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
-      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
-      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
-      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+      <a href="/dashboard" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="/estudos" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="/questoes" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="/simulados" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="/aulas" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="/planos-estudo" class="nav-item active"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="/desempenho" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="/ia-tutor" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="/materiais" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="/comunidade" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="/conquistas" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="/configuracoes" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
     </nav>
 
     <!-- Upsell -->
@@ -148,7 +148,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-2 text-xs md:text-sm mb-1" style="color: var(--text-muted);">
-              <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+              <a href="/dashboard" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
               <i class="fa-solid fa-chevron-right text-[10px]"></i>
               <span style="color: var(--text-primary);" class="font-medium">Planos de Estudo</span>
             </div>
@@ -449,7 +449,7 @@
                   </div>
                   <div class="progress-track h-2 w-full"><div class="progress-fill-blue h-2" style="width:65%;"></div></div>
                 </div>
-                <a href="aulas.html" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
+                <a href="/aulas" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
               </div>
 
               <!-- Item 2 -->
@@ -470,7 +470,7 @@
                   </div>
                   <div class="progress-track h-2 w-full"><div class="progress-fill-purple h-2" style="width:80%; background-color:#8B5CF6;"></div></div>
                 </div>
-                <a href="questoes.html" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
+                <a href="/questoes" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
               </div>
 
               <!-- Item 3 -->
@@ -491,7 +491,7 @@
                   </div>
                   <div class="progress-track h-2 w-full"><div class="progress-fill-orange h-2" style="width:45%; background-color:#F59E0B;"></div></div>
                 </div>
-                <a href="estudos.html" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
+                <a href="/estudos" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
               </div>
             </div>
           </div>
@@ -612,7 +612,7 @@
         </div>
 
         <div class="pt-6 border-t mt-6 space-y-3" style="border-color:var(--border-light);">
-          <a href="configuracoes.html" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
+          <a href="/configuracoes" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
             <i class="fa-solid fa-user-pen"></i>
             <span>Editar perfil</span>
           </a>
@@ -661,7 +661,7 @@
           <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: Nao registrado</span>
         </div>
         <div class="pt-5 border-t mt-5">
-          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+          <a href="/conquistas" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
             <i class="fa-solid fa-trophy"></i>
             <span>Ver todas as conquistas</span>
           </a>
@@ -707,7 +707,7 @@
             </div>
           </div>
           <div class="pt-2 space-y-3">
-            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <a href="/configuracoes" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
               <i class="fa-solid fa-gear"></i>
               <span>Configurações completas</span>
             </a>

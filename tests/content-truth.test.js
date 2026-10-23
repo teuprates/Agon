@@ -14,7 +14,9 @@ test("Paginas sem persistencia identificam visivelmente os dados demonstrativos"
 
   assert.match(readPage("protected-pages", "index.html"), /Dashboard parcialmente integrado/);
   assert.match(readPage("protected-pages", "planos-estudo.html"), /Integração parcial/);
-  assert.match(readPage("protected-pages", "questoes.html"), /Banco demonstrativo/);
+  const questions = readPage("protected-pages", "questoes.html");
+  assert.match(questions, /id="question-list"/);
+  assert.doesNotMatch(questions, /data-correct=|gabarito_oficial|Mostrando 3 de 3/);
 });
 
 test("Landing page não apresenta métricas ou depoimentos inventados como reais", () => {

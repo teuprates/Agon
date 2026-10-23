@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (confirm('Deseja realmente sair da sua conta Agon?')) {
         fetch('/api/logout', { method: 'POST' })
           .finally(() => {
-            window.location.href = '/login.html';
+            window.location.href = '/login';
           });
       }
       return;

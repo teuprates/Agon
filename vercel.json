@@ -4,7 +4,7 @@
   "outputDirectory": null,
   "functions": {
     "server.js": {
-      "includeFiles": "protected-pages/**/*.html",
+      "includeFiles": "{protected-pages/**/*.html,data/questoes/modelo.json,data/questoes/modelo.csv}",
       "maxDuration": 60
     }
   }

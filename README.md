@@ -1,5 +1,20 @@
 # Agon — Plataforma de Estudos com Supabase & Zuka IA
 
+## Desenvolvimento desta versão
+
+Use Node.js 20 (`.nvmrc`) e execute `npm ci`, copie `.env.example` para `.env` (se disponível) e configure as variáveis localmente. Rode `npm run build:css` e `npm run dev`. As operações administrativas de questões exigem uma conta com papel `professor` ou `admin`; crie/promova o primeiro administrador com `ADMIN_EMAIL`, `ADMIN_PASSWORD` (mínimo de 20 caracteres) e, opcionalmente, `ADMIN_NAME`, depois `npm run seed:admin`. Para importar JSON/CSV pelo terminal: `npm run import:questoes -- caminho/questoes.json` ou `.csv`. Os modelos ficam em `data/questoes/`.
+
+As rotas `/api/questoes` não retornam gabarito na listagem; respostas são corrigidas pela RPC no banco. O importador administrativo manual aceita JSON/CSV e tem formulário, mas importação de PDF com revisão assistida por IA, geração de questões inéditas e aprovação editorial ainda não estão disponíveis.
+
+| Área | Estado |
+| --- | --- |
+| Cadastro, login, dashboard, questões e Zuka | Integrados às APIs disponíveis (Zuka depende da chave Gemini). |
+| Administração de questões | Formulário manual e importação JSON/CSV; sem PDF e sem fila de revisão por IA. |
+| Desempenho | Integração existente; depende de tentativas reais no banco. |
+| Aulas, estudos, simulados, comunidade, planos, materiais, conquistas e configurações | Protótipo conforme os avisos da interface. |
+
+As verificações automatizadas são `npm run lint`, `npm test` e `npm run build:css`. Ao mudar credenciais compartilhadas, rotacione-as nos painéis dos provedores e atualize os ambientes Vercel; nunca salve segredos neste repositório.
+
 Plataforma de estudos para concursos públicos com backend Node.js (Express), autenticação com bcrypt e sessões, banco de dados Supabase, persistência local apenas para desenvolvimento e Zuka IA integrada à API oficial do Google Gemini.
 
 ---

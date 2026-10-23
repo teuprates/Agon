@@ -8,11 +8,11 @@
   <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/tailwind.css"><script src="/js/tailwind-runtime.js"></script>
   <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
   <!-- Agon Design System Styles -->
   <link rel="stylesheet" href="css/styles.css" />
 
@@ -40,7 +40,7 @@
   <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
     <!-- Logo -->
     <div class="p-6 flex items-center gap-2 cursor-pointer">
-      <a href="index.html" class="flex items-center gap-2">
+      <a href="/dashboard" class="flex items-center gap-2">
         <div class="w-8 h-8 relative">
           <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
         </div>
@@ -50,18 +50,18 @@
 
     <!-- Nav -->
     <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
-      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
-      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
-      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
-      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
-      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
-      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
-      <a href="desempenho.html" class="nav-item active"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
-      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
-      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
-      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
-      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
-      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+      <a href="/dashboard" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="/estudos" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="/questoes" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="/simulados" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="/aulas" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="/planos-estudo" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="/desempenho" class="nav-item active"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="/ia-tutor" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="/materiais" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="/comunidade" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="/conquistas" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="/configuracoes" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
     </nav>
 
     <!-- Upsell -->
@@ -307,7 +307,7 @@
                 <p class="card-subtitle text-xs sm:text-sm mt-0.5">Análise automática das suas maiores dificuldades e prioridades de estudo</p>
               </div>
             </div>
-            <a href="ia-tutor.html" class="btn-primary text-xs py-2 px-4 flex items-center gap-2 shadow-sm">
+            <a href="/ia-tutor" class="btn-primary text-xs py-2 px-4 flex items-center gap-2 shadow-sm">
               <i class="fa-solid fa-message text-xs"></i>
               <span>Conversar com a Zuka IA</span>
             </a>
@@ -332,7 +332,7 @@
               <p class="card-subtitle text-xs sm:text-sm mt-0.5">Classificação transparente: Alta (erro &ge; 60%), Moderada (35-59%), Bom Desempenho (&lt; 35%) e Dados Insuficientes (&lt; 5 questões)</p>
             </div>
             <div class="flex items-center gap-2">
-              <a href="questoes.html" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+              <a href="/questoes" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
                 <i class="fa-solid fa-circle-question text-xs"></i> Praticar Questões
               </a>
             </div>
@@ -370,7 +370,7 @@
             </div>
             <div class="flex items-center gap-2">
               <span class="badge badge-blue">3 simulados concluídos</span>
-              <a href="simulados.html" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
+              <a href="/simulados" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5">
                 <i class="fa-solid fa-plus text-xs"></i> Fazer Novo Simulado
               </a>
             </div>
@@ -500,7 +500,7 @@
               <i class="fa-solid fa-circle-info text-sm" style="color: var(--color-blue);"></i>
               <span>Os rankings são calculados com base em todos os alunos que submeteram o simulado no prazo.</span>
             </div>
-            <a href="simulados.html" class="font-medium hover:underline flex items-center gap-1" style="color: var(--color-blue);">
+            <a href="/simulados" class="font-medium hover:underline flex items-center gap-1" style="color: var(--color-blue);">
               Ver histórico completo de simulados <i class="fa-solid fa-chevron-right text-[10px]"></i>
             </a>
           </div>
@@ -551,7 +551,7 @@
         </div>
 
         <div class="pt-6 border-t mt-6 space-y-3" style="border-color:var(--border-light);">
-          <a href="configuracoes.html" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
+          <a href="/configuracoes" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
             <i class="fa-solid fa-user-pen"></i>
             <span>Editar perfil</span>
           </a>
@@ -600,7 +600,7 @@
           <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: Nao registrado</span>
         </div>
         <div class="pt-5 border-t mt-5">
-          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+          <a href="/conquistas" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
             <i class="fa-solid fa-trophy"></i>
             <span>Ver todas as conquistas</span>
           </a>
@@ -646,7 +646,7 @@
             </div>
           </div>
           <div class="pt-2 space-y-3">
-            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <a href="/configuracoes" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
               <i class="fa-solid fa-gear"></i>
               <span>Configurações completas</span>
             </a>
@@ -730,7 +730,7 @@
             recsContainer.innerHTML = `
               <div class="col-span-3 p-4 rounded-xl border text-center text-xs" style="background-color: var(--bg-input); border-color: var(--border-default); color: var(--text-muted);">
                 <i class="fa-solid fa-sparkles mr-1.5 text-blue-500"></i>
-                Resolva pelo menos 5 questões no <a href="questoes.html" class="underline font-semibold text-blue-600">Banco de Questões</a> para que a Zuka IA gere recomendações personalizadas.
+                Resolva pelo menos 5 questões no <a href="/questoes" class="underline font-semibold text-blue-600">Banco de Questões</a> para que a Zuka IA gere recomendações personalizadas.
               </div>
             `;
           } else {
@@ -748,7 +748,7 @@
                   <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">${r.mensagem.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
                 </div>
                 <div class="mt-3 pt-2 border-t" style="border-color: var(--border-light);">
-                  <a href="questoes.html" class="text-[11px] font-semibold flex items-center justify-between" style="color: var(--color-blue);">
+                  <a href="/questoes" class="text-[11px] font-semibold flex items-center justify-between" style="color: var(--color-blue);">
                     <span>${r.acao}</span>
                     <i class="fa-solid fa-arrow-right text-[10px]"></i>
                   </a>
@@ -768,7 +768,7 @@
             tbody.innerHTML = `
               <tr>
                 <td colspan="6" class="py-6 text-center text-xs" style="color: var(--text-muted);">
-                  Nenhuma questão respondida ainda. Inicie no <a href="questoes.html" class="underline font-semibold text-blue-600">Banco de Questões</a>.
+                  Nenhuma questão respondida ainda. Inicie no <a href="/questoes" class="underline font-semibold text-blue-600">Banco de Questões</a>.
                 </td>
               </tr>
             `;
@@ -925,197 +925,6 @@
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   </script>
 
-  <script>
-    let lineChartDesempenhoInstance = null;
-    let radarChartInstance = null;
 
-    function initDesempenhoCharts() {
-      if (typeof getChartColors !== 'function') return;
-      const colors = getChartColors();
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-
-      // 1. Line Chart: Evolução de Acertos
-      const ctxLine = document.getElementById('lineChartDesempenho');
-      if (ctxLine) {
-        if (lineChartDesempenhoInstance) lineChartDesempenhoInstance.destroy();
-        lineChartDesempenhoInstance = new Chart(ctxLine, {
-          type: 'line',
-          data: {
-            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-            datasets: [{
-              label: 'Taxa de Acertos',
-              data: [55, 62, 68, 72, 78, 82],
-              borderColor: colors.green,
-              backgroundColor: colors.bgGreen,
-              borderWidth: 2.5,
-              fill: true,
-              tension: 0.35,
-              pointBackgroundColor: colors.pointBg,
-              pointBorderColor: colors.green,
-              pointBorderWidth: 2.5,
-              pointRadius: 5,
-              pointHoverRadius: 7,
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-                titleColor: isDark ? '#F8FAFC' : '#1E293B',
-                bodyColor: isDark ? '#E2E8F0' : '#475569',
-                borderColor: colors.grid,
-                borderWidth: 1,
-                padding: 10,
-                displayColors: false,
-                callbacks: {
-                  label: function(context) {
-                    return ` ${context.raw}% de acertos`;
-                  }
-                }
-              }
-            },
-            scales: {
-              x: {
-                grid: {
-                  color: colors.grid,
-                  drawBorder: false,
-                },
-                ticks: {
-                  color: colors.text,
-                  font: { family: 'Inter', size: 12 },
-                },
-              },
-              y: {
-                grid: {
-                  color: colors.grid,
-                  drawBorder: false,
-                },
-                ticks: {
-                  color: colors.text,
-                  font: { family: 'Inter', size: 12 },
-                  callback: function(value) {
-                    return value + '%';
-                  },
-                },
-                min: 40,
-                max: 100,
-                stepSize: 10,
-              }
-            }
-          }
-        });
-      }
-
-      // 2. Radar Chart: Comparativo por Disciplina
-      const ctxRadar = document.getElementById('radarChart');
-      if (ctxRadar) {
-        if (radarChartInstance) radarChartInstance.destroy();
-        radarChartInstance = new Chart(ctxRadar, {
-          type: 'radar',
-          data: {
-            labels: ['Português', 'Dir. Const.', 'Dir. Adm.', 'Rac. Lógico', 'Informática'],
-            datasets: [
-              {
-                label: 'Seu Desempenho',
-                data: [85, 78, 65, 60, 90],
-                borderColor: colors.blue,
-                backgroundColor: colors.bgBlue,
-                borderWidth: 2.5,
-                pointBackgroundColor: colors.blue,
-                pointBorderColor: colors.pointBg,
-                pointBorderWidth: 2,
-                pointRadius: 4.5,
-                pointHoverRadius: 6.5,
-              },
-              {
-                label: 'Média Geral',
-                data: [70, 65, 60, 55, 75],
-                borderColor: colors.grayLine,
-                backgroundColor: isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(107, 114, 128, 0.12)',
-                borderWidth: 2,
-                borderDash: [4, 4],
-                pointBackgroundColor: colors.grayLine,
-                pointBorderColor: colors.pointBg,
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'top',
-                labels: {
-                  color: colors.text,
-                  font: { family: 'Inter', size: 12, weight: '500' },
-                  boxWidth: 14,
-                  padding: 16,
-                  usePointStyle: true,
-                }
-              },
-              tooltip: {
-                backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-                titleColor: isDark ? '#F8FAFC' : '#1E293B',
-                bodyColor: isDark ? '#E2E8F0' : '#475569',
-                borderColor: colors.grid,
-                borderWidth: 1,
-                padding: 10,
-                callbacks: {
-                  label: function(context) {
-                    return ` ${context.dataset.label}: ${context.raw}%`;
-                  }
-                }
-              }
-            },
-            scales: {
-              r: {
-                min: 0,
-                max: 100,
-                ticks: {
-                  stepSize: 20,
-                  display: false,
-                  color: colors.text,
-                  backdropColor: 'transparent',
-                },
-                grid: {
-                  color: colors.grid,
-                },
-                angleLines: {
-                  color: colors.grid,
-                },
-                pointLabels: {
-                  color: colors.text,
-                  font: { family: 'Inter', size: 11, weight: '600' },
-                }
-              }
-            }
-          }
-        });
-      }
-    }
-
-    // Initialize charts safely
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initDesempenhoCharts);
-    } else {
-      initDesempenhoCharts();
-    }
-
-    // Re-render charts when theme changes to keep colors responsive
-    const themeObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
-          initDesempenhoCharts();
-        }
-      });
-    });
-    themeObserver.observe(document.documentElement, { attributes: true });
-  </script>
 </body>
 </html>
