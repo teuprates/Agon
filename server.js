@@ -155,7 +155,13 @@ agonPages.forEach((page) => {
 
 // Status da conexão com Supabase
 app.get("/api/supabase/status", (req, res) => {
-  res.json(getSupabaseStatus());
+  const status = getSupabaseStatus();
+  console.log("[ENV DIAGNOSTIC] Supabase:", {
+    url: status.urlConfigurada ? "Definida" : "NÃO DEFINIDA",
+    publicKey: status.chavePublicaConfigurada ? "Definida" : "NÃO DEFINIDA",
+    serverKey: status.chaveServidorConfigurada ? "Definida" : "NÃO DEFINIDA",
+  });
+  res.json(status);
 });
 
 // API - Cadastro
@@ -350,6 +356,7 @@ function checkZukaRateLimit(userId) {
 app.get("/api/zuka/status", (req, res) => {
   const aiProvider = getAIProvider();
   const isReady = aiProvider.isConfigured();
+  console.log("[ENV DIAGNOSTIC] GEMINI_API_KEY:", isReady ? "Definida" : "NÃO DEFINIDA");
   res.json({
     configurada: isReady,
     provedor: aiProvider.getProviderName(),

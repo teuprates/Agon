@@ -1,8 +1,10 @@
 /**
- * Cliente Centralizado Supabase para o Projeto AGON
- * Gerencia a inicialização, credenciais e instâncias do SDK @supabase/supabase-js
+ * Cliente centralizado do Supabase.
+ *
+ * As chaves públicas podem ser usadas em clientes sujeitos a RLS.
+ * Operações administrativas no servidor exigem SERVICE_ROLE/SECRET e nunca
+ * devem aceitar uma chave pública como substituta.
  */
-
 let createClient = null;
 try {
   ({ createClient } = require("@supabase/supabase-js"));
@@ -13,116 +15,99 @@ try {
 let adminClientInstance = null;
 let publicClientInstance = null;
 
+function getSupabaseUrl() {
+  return process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+}
+
 function getSecretKey() {
-  return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
+  return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 }
 
 function getPublicKey() {
-  return process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return process.env.SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    "";
 }
 
-/**
- * Valida se as variáveis de ambiente necessárias para o Supabase estão configuradas
- */
+function isValidUrl(url) {
+  return typeof url === "string" &&
+    url.trim().startsWith("https://") &&
+    !url.includes("seu-projeto") &&
+    !url.includes("sua-url");
+}
+
+function isValidKey(key) {
+  return typeof key === "string" &&
+    key.trim().length >= 20 &&
+    !key.includes("sua_chave");
+}
+
+/** A aplicação usa o cliente administrativo nas operações persistentes do servidor. */
 function isSupabaseConfigured() {
-  if (!createClient) {
-    return false;
-  }
-
-  const url = process.env.SUPABASE_URL;
-  const key = getSecretKey() || getPublicKey();
-
-  if (!url || typeof url !== "string" || !url.trim().startsWith("https://")) {
-    return false;
-  }
-
-  if (url.includes("seu-projeto") || url.includes("sua-url")) {
-    return false;
-  }
-
-  if (!key || typeof key !== "string" || key.trim().length < 20 || key.includes("sua_chave")) {
-    return false;
-  }
-
-  return true;
+  return Boolean(
+    createClient &&
+    isValidUrl(getSupabaseUrl()) &&
+    isValidKey(getSecretKey())
+  );
 }
 
-/**
- * Retorna o cliente administrativo (Service Role / Secret) para operações no servidor
- * Nunca deve ser exposto ao navegador
- */
+/** Configuração suficiente para um cliente restrito por RLS. */
+function isSupabasePublicConfigured() {
+  return Boolean(
+    createClient &&
+    isValidUrl(getSupabaseUrl()) &&
+    isValidKey(getPublicKey())
+  );
+}
+
 function getSupabaseAdmin() {
-  if (!isSupabaseConfigured()) {
-    return null;
-  }
+  if (!isSupabaseConfigured()) return null;
+  if (adminClientInstance) return adminClientInstance;
 
-  if (adminClientInstance) {
-    return adminClientInstance;
-  }
-
-  const supabaseUrl = process.env.SUPABASE_URL.trim();
-  const serviceRoleKey = (getSecretKey()).trim();
-
-  adminClientInstance = createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+  adminClientInstance = createClient(getSupabaseUrl().trim(), getSecretKey().trim(), {
+    auth: { autoRefreshToken: false, persistSession: false },
   });
-
   return adminClientInstance;
 }
 
-/**
- * Retorna o cliente público/anônimo do Supabase (com permissões restritas a RLS)
- */
 function getSupabaseClient() {
-  if (!isSupabaseConfigured()) {
-    return null;
-  }
+  if (!isSupabasePublicConfigured()) return null;
+  if (publicClientInstance) return publicClientInstance;
 
-  if (publicClientInstance) {
-    return publicClientInstance;
-  }
-
-  const supabaseUrl = process.env.SUPABASE_URL.trim();
-  const anonKey = (getPublicKey()).trim();
-
-  publicClientInstance = createClient(supabaseUrl, anonKey, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: false,
-    },
+  publicClientInstance = createClient(getSupabaseUrl().trim(), getPublicKey().trim(), {
+    auth: { autoRefreshToken: true, persistSession: false },
   });
-
   return publicClientInstance;
 }
 
-/**
- * Retorna o status detalhado da conexão com o Supabase
- */
 function getSupabaseStatus() {
-  const configured = isSupabaseConfigured();
+  const urlConfigured = isValidUrl(getSupabaseUrl());
+  const publicKeyConfigured = isValidKey(getPublicKey());
+  const serverKeyConfigured = isValidKey(getSecretKey());
+  const configured = Boolean(createClient && urlConfigured && serverKeyConfigured);
+
   return {
     configurado: configured,
-    url: configured ? process.env.SUPABASE_URL.trim() : null,
+    urlConfigurada: urlConfigured,
+    chavePublicaConfigurada: publicKeyConfigured,
+    chaveServidorConfigurada: serverKeyConfigured,
+    sdkDisponivel: Boolean(createClient),
+    url: urlConfigured ? getSupabaseUrl().trim() : null,
     mensagem: configured
-      ? "Supabase configurado e pronto para operações na nuvem."
-      : "Credenciais do Supabase não configuradas no arquivo .env (SUPABASE_URL e SUPABASE_ANON_KEY/SUPABASE_SERVICE_ROLE_KEY ou SUPABASE_PUBLISHABLE_KEY/SUPABASE_SECRET_KEY). O sistema está operando com banco local persistente.",
+      ? "Supabase configurado para operações no servidor."
+      : "Para operações do servidor, configure SUPABASE_URL (ou NEXT_PUBLIC_SUPABASE_URL) e SUPABASE_SERVICE_ROLE_KEY (ou SUPABASE_SECRET_KEY). A chave pública pode usar SUPABASE_ANON_KEY ou NEXT_PUBLIC_SUPABASE_ANON_KEY e não substitui a chave de servidor.",
   };
 }
 
-/**
- * Testa a conexão real com o Supabase executando uma consulta leve
- */
 async function testSupabaseConnection() {
   if (!isSupabaseConfigured()) {
-    return { ok: false, motivo: "Credenciais ausentes no .env" };
+    return { ok: false, motivo: "URL ou chave secreta de servidor ausente/inválida" };
   }
 
   try {
     const admin = getSupabaseAdmin();
-    // Tenta uma consulta de contagem na tabela de perfis/usuarios
     const { error } = await admin.from("usuarios").select("id", { count: "exact", head: true });
     if (error && error.code !== "PGRST116") {
       return { ok: false, erro: error.message, code: error.code };
@@ -135,6 +120,7 @@ async function testSupabaseConnection() {
 
 module.exports = {
   isSupabaseConfigured,
+  isSupabasePublicConfigured,
   getSupabaseAdmin,
   getSupabaseClient,
   getSupabaseStatus,
