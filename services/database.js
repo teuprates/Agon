@@ -656,7 +656,7 @@ async function getMessages(userId, conversationId, limitCount = 50) {
         .order("criado_em", { ascending: true })
         .limit(limitCount);
 
-      if (!error && data) {
+      if (!error && Array.isArray(data) && data.length > 0) {
         return data.map((row) => ({
           id: row.id,
           conversationId: row.conversation_id,
@@ -667,6 +667,7 @@ async function getMessages(userId, conversationId, limitCount = 50) {
           criadoEm: row.criado_em,
         }));
       }
+      // Empty query results must fall through to the in-memory request fallback.
     } catch (err) {
       console.error("[SUPABASE ERRO getMessages]:", err.message);
     }

@@ -142,6 +142,12 @@ class GeminiProvider extends AIProvider {
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName)}:generateContent?key=${encodeURIComponent(this.apiKey)}`;
 
     const formattedContents = this.formatContents(messages);
+    if (formattedContents.length === 0) {
+      const err = new Error("A mensagem para o Gemini está vazia. Envie uma pergunta e tente novamente.");
+      err.code = "EMPTY_CONTENTS";
+      err.status = 400;
+      throw err;
+    }
 
     const payload = {
       contents: formattedContents,

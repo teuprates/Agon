@@ -116,6 +116,24 @@ function buildPerformanceContext(stats) {
 }
 
 /**
+ * Garante que o prompt atual não seja perdido quando a persistência retorna histórico vazio.
+ */
+function ensureCurrentUserMessage(messages, messageText, questionContext = null) {
+  const history = Array.isArray(messages) ? [...messages] : [];
+  const last = history[history.length - 1];
+  const lastContent = last ? String(last.conteudo ?? last.content ?? "").trim() : "";
+
+  if (!last || last.role !== "user" || lastContent !== messageText) {
+    history.push({
+      role: "user",
+      conteudo: messageText,
+      contextoQuestao: questionContext,
+    });
+  }
+  return history;
+}
+
+/**
  * Processa uma mensagem enviada à Zuka IA dentro de uma conversa
  */
 async function processUserMessage({ userId, conversationId, messageText, questionContext = null }) {
@@ -158,11 +176,14 @@ async function processUserMessage({ userId, conversationId, messageText, questio
     fullSystemInstruction += "\n\n" + perfContext;
   }
 
-  // Se houver contexto de questão específico nesta mensagem, adicionamos na última pergunta
-  const formattedMessages = previousMessages.map((m, index) => {
-    let content = m.conteudo;
-    // Se for a última mensagem do usuário e houver contexto de questão
-    if (index === previousMessages.length - 1 && m.role === "user" && m.contextoQuestao) {
+  // O insert pode falhar e o Supabase pode retornar histórico vazio no mesmo request.
+  // Garante que a mensagem atual sempre seja enviada ao modelo.
+  const messagesWithCurrent = ensureCurrentUserMessage(previousMessages, sanitizedText, questionContext);
+
+  // Se houver contexto de questão, adiciona à mensagem mais recente do usuário.
+  const formattedMessages = messagesWithCurrent.map((m, index) => {
+    let content = String(m.conteudo ?? m.content ?? "");
+    if (index === messagesWithCurrent.length - 1 && m.role === "user" && m.contextoQuestao) {
       content += "\n\n" + buildQuestionContextPrompt(m.contextoQuestao);
     }
     return {
@@ -272,6 +293,7 @@ module.exports = {
   processUserMessage,
   generateIntelligentStudyGuidance,
   sanitizeInput,
+  ensureCurrentUserMessage,
   buildQuestionContextPrompt,
   ZUKA_SYSTEM_PROMPT,
 };

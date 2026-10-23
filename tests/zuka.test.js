@@ -11,6 +11,7 @@ const databaseService = require("../services/database");
 const { GeminiProvider } = require("../services/aiProvider");
 const {
   sanitizeInput,
+  ensureCurrentUserMessage,
   buildQuestionContextPrompt,
   ZUKA_SYSTEM_PROMPT,
 } = require("../services/zukaService");
@@ -178,6 +179,26 @@ test("Formatação de Contexto de Questão com Gabarito Oficial", () => {
   assert.ok(formatted.includes("[RESPOSTA MARCADA PELO ESTUDANTE]: Alternativa E"));
   assert.ok(formatted.includes("[STATUS]: O estudante ERROU"));
   assert.ok(formatted.toLowerCase().includes("comentário oficial"));
+});
+
+test("Histórico vazio ainda inclui a mensagem atual para a IA", () => {
+  const current = ensureCurrentUserMessage([], "Explique a questão.", { disciplina: "Direito" });
+  assert.strictEqual(current.length, 1);
+  assert.strictEqual(current[0].role, "user");
+  assert.strictEqual(current[0].conteudo, "Explique a questão.");
+  assert.deepStrictEqual(current[0].contextoQuestao, { disciplina: "Direito" });
+});
+
+test("Gemini rejeita histórico vazio antes de chamar a API", async () => {
+  const provider = new GeminiProvider("test-api-key");
+  await assert.rejects(
+    () => provider.generateResponse({ systemInstruction: "test", messages: [] }),
+    (err) => {
+      assert.strictEqual(err.code, "EMPTY_CONTENTS");
+      assert.strictEqual(err.status, 400);
+      return true;
+    }
+  );
 });
 
 test("Tratamento de Provedor de IA sem Chave Configurada", async () => {
