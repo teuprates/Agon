@@ -1,19 +1,22 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const path = require("path");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
-require("dotenv").config();
+const helmet = require("helmet");
+const { rateLimit } = require("express-rate-limit");
+const SupabaseSessionStore = require("./services/supabaseSessionStore");
+if (process.env.NODE_ENV !== "test") require("dotenv").config();
 
 // Serviços Zuka IA, Banco de Dados, Supabase e Analytics
 const databaseService = require("./services/database");
-const { isSupabaseConfigured, getSupabaseStatus } = require("./services/supabaseClient");
+const { isSupabaseConfigured, getSupabaseStatus, getSupabaseAdmin, getSupabasePublicConfig } = require("./services/supabaseClient");
 const { getAIProvider } = require("./services/aiProvider");
 const zukaService = require("./services/zukaService");
 const analyticsService = require("./services/analyticsService");
 
 const app = express();
+app.set("trust proxy", process.env.NODE_ENV === "production" ? 1 : false);
 
 // ==========================================
 // CONFIGURAÇÃO DO SUPABASE / PERSISTÊNCIA
@@ -29,25 +32,36 @@ if (!isSupabaseConfigured()) {
   console.log("  1. Acesse: https://supabase.com/dashboard");
   console.log("  2. Crie seu projeto e acesse 'Project Settings' > 'API'.");
   console.log("  3. Copie a Project URL, anon key e service_role key.");
-  console.log("  4. Preencha no arquivo .env: SUPABASE_URL, SUPABASE_ANON_KEY e SUPABASE_SERVICE_ROLE_KEY.");
+  console.log("  4. Preencha no arquivo .env: SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY e SUPABASE_SECRET_KEY.");
   console.log("  5. Aplique as migrações SQL disponíveis na pasta 'supabase/migrations/'.");
   console.log("==================================================================");
 }
 
 // Middlewares
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 // { index: false } impede que o static intercepte a raiz com index.html
-app.use(express.static(path.join(__dirname, "public"), { index: false }));
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+
+if (process.env.NODE_ENV === "production") {
+  if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) throw new Error("SESSION_SECRET must have at least 32 characters in production.");
+  if (!isSupabaseConfigured()) throw new Error("Supabase is required in production for persistence and sessions.");
+} else if (!process.env.SESSION_SECRET) {
+  console.warn("SESSION_SECRET is not set; the development-only fallback must never be used in production.");
+}
 
 // Configuração da sessão
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "agon-secret-key-supabase-2026",
+    name: "agon.sid",
+    secret: process.env.SESSION_SECRET || "development-only-session-secret-change-me",
+    store: isSupabaseConfigured() ? new SupabaseSessionStore({ cleanupIntervalMs: 60 * 60 * 1000 }) : undefined,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-      secure: false,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 24 horas
     },
   })
@@ -56,6 +70,7 @@ app.use(
 // Middleware para verificar autenticação de páginas
 const requireAuth = (req, res, next) => {
   if (req.session.user) {
+    res.set("Cache-Control", "private, no-store");
     next();
   } else {
     res.redirect("/login");
@@ -66,23 +81,33 @@ const requireAuth = (req, res, next) => {
  * Obtém o usuário da sessão ou estabelece um identificador de estudante isolado.
  * Garante que o histórico nunca seja misturado entre sessões diferentes.
  */
-function getActiveStudent(req) {
-  if (req.session && req.session.user) {
-    return req.session.user;
+const requireAuthApi = (req, res, next) => {
+  if (req.session?.user) return next();
+  return res.status(401).json({ erro: "Authentication required.", codigo: "UNAUTHENTICATED" });
+};
+
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: "draft-8", legacyHeaders: false });
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: "draft-8", legacyHeaders: false });
+const googleSessionLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: "draft-8", legacyHeaders: false });
+const privatePages = new Set(["index", "dashboard", "aulas", "planos-estudo", "materiais", "estudos", "questoes", "simulados", "desempenho", "ia-tutor", "comunidade", "conquistas", "configuracoes", "em-breve"]);
+const publicPages = new Set(["home", "login", "cadastro"]);
+app.use((req, res, next) => {
+  const page = req.path.match(/^\/([^/]+)\.html$/i)?.[1]?.toLowerCase();
+  if (page && privatePages.has(page)) {
+    if (!req.session?.user) return res.redirect("/login");
+    res.set("Cache-Control", "private, no-store");
   }
-  if (!req.session.guestStudent) {
-    const guestId = "guest_" + (req.sessionID || Date.now());
-    req.session.guestStudent = {
-      id: guestId,
-      nome: "Davi Brito (Estudante)",
-      email: "davi.brito_agon@gmail.com",
-      tipo_usuario: "aluno",
-      tipo_assinatura: "premium",
-      pontos_gamificacao: 150,
-    };
-  }
-  return req.session.guestStudent;
-}
+  if (page && !privatePages.has(page) && !publicPages.has(page)) return res.sendStatus(404);
+  next();
+});
+app.use(["/api/zuka", "/api/questoes", "/api/desempenho", "/api/planos-estudo", "/api/dashboard"], requireAuthApi);
+
+// Keep legacy .html links working while ensuring private HTML is never a Vercel CDN asset.
+privatePages.forEach((page) => {
+  app.get(`/${page}.html`, requireAuth, (_req, res) => {
+    res.redirect(page === "index" || page === "dashboard" ? "/dashboard" : `/${page}`);
+  });
+});
 
 // Rotas para páginas principais
 app.get("/", (req, res) => {
@@ -94,11 +119,15 @@ app.get("/home", (req, res) => {
 });
 
 app.get("/landing", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "home.html"));
+  res.redirect(301, "/");
 });
 
+app.get("/index", requireAuth, (_req, res) => res.redirect(301, "/dashboard"));
+
 app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  if (!req.session.user) return res.redirect("/login");
+  res.set("Cache-Control", "private, no-store");
+  res.sendFile(path.join(__dirname, "protected-pages", "index.html"));
 });
 
 app.get("/login", (req, res) => {
@@ -112,23 +141,15 @@ app.get("/cadastro", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "cadastro.html"));
 });
 
-app.get("/servicos", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "materiais.html"));
-});
+app.get("/servicos", requireAuth, (_req, res) => res.redirect(301, "/materiais"));
 
-app.get("/sobre", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "comunidade.html"));
-});
+app.get("/sobre", requireAuth, (_req, res) => res.redirect(301, "/comunidade"));
 
 // Rota protegida - só acessa se estiver logado
-app.get("/setores", requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "estudos.html"));
-});
+app.get("/setores", requireAuth, (_req, res) => res.redirect(301, "/estudos"));
 
 // Rotas para todas as páginas da plataforma Agon
 const agonPages = [
-  "index",
-  "home",
   "aulas",
   "planos-estudo",
   "materiais",
@@ -145,9 +166,17 @@ const agonPages = [
 
 agonPages.forEach((page) => {
   app.get(`/${page}`, (req, res) => {
-    res.sendFile(path.join(__dirname, "public", `${page}.html`));
+    if (privatePages.has(page) && !req.session.user) return res.redirect("/login");
+    if (privatePages.has(page)) res.set("Cache-Control", "private, no-store");
+    res.sendFile(path.join(__dirname, privatePages.has(page) ? "protected-pages" : "public", `${page}.html`));
   });
 });
+
+app.get("/auth/google/callback", (_req, res) => {
+  res.sendFile(path.join(__dirname, "public", "auth-google-callback.html"));
+});
+
+app.use(express.static(path.join(__dirname, "public"), { index: false, dotfiles: "deny" }));
 
 // ==========================================
 // APIS DE AUTENTICAÇÃO E SUPABASE
@@ -158,25 +187,90 @@ app.get("/api/supabase/status", (req, res) => {
   res.json(getSupabaseStatus());
 });
 
+// The publishable key is safe to expose to the browser; the secret key stays server-side.
+app.get("/api/auth/google/config", (_req, res) => {
+  const config = getSupabasePublicConfig();
+  if (!config) return res.status(503).json({ erro: "Login Google indisponível: configuração pública do Supabase ausente." });
+  res.set("Cache-Control", "no-store").json(config);
+});
+
+app.post("/api/auth/google/session", googleSessionLimiter, async (req, res) => {
+  const accessToken = req.body?.access_token;
+  if (typeof accessToken !== "string" || !accessToken) {
+    return res.status(400).json({ erro: "Token de autenticação ausente." });
+  }
+  if (!isSupabaseConfigured()) {
+    return res.status(503).json({ erro: "Login Google indisponível no servidor." });
+  }
+
+  try {
+    const { data, error } = await getSupabaseAdmin().auth.getUser(accessToken);
+    if (error || !data?.user?.email || !(data.user.email_confirmed_at || data.user.confirmed_at)) {
+      return res.status(401).json({ erro: "Não foi possível validar a conta Google." });
+    }
+
+    const email = data.user.email.toLowerCase().trim();
+    let user = await databaseService.findUserByEmail(email);
+    if (!user) {
+      const { data: created, error: saveError } = await getSupabaseAdmin()
+        .from("usuarios")
+        .insert({
+          id: data.user.id,
+          nome: data.user.user_metadata?.full_name || data.user.user_metadata?.name || email.split("@")[0],
+          email,
+          tipo_usuario: "aluno",
+          tipo_assinatura: "gratuito",
+          pontos_gamificacao: 0,
+        })
+        .select("*")
+        .single();
+      if (saveError) throw saveError;
+      user = created;
+    }
+
+    const sessionUser = {
+      id: user.id,
+      nome: user.nome,
+      email: user.email,
+      telefone: user.telefone,
+      avatar_url: user.avatar_url || null,
+      tipo_usuario: user.tipo_usuario || "aluno",
+      tipo_assinatura: user.tipo_assinatura || "gratuito",
+      pontos_gamificacao: user.pontos_gamificacao || 0,
+    };
+    await new Promise((resolve, reject) => req.session.regenerate((err) => err ? reject(err) : resolve()));
+    req.session.user = sessionUser;
+    await new Promise((resolve, reject) => req.session.save((err) => err ? reject(err) : resolve()));
+    res.set("Cache-Control", "no-store").json({ sucesso: true, usuario: sessionUser });
+  } catch (error) {
+    console.error("[GOOGLE AUTH] Falha ao validar ou persistir a conta:", error.message);
+    res.status(500).json({ erro: "Não foi possível concluir o login com Google." });
+  }
+});
+
 // API - Cadastro
-app.post("/api/cadastrar", async (req, res) => {
+app.post("/api/cadastrar", loginLimiter, async (req, res) => {
   const {
     nome,
     email,
     senha,
     telefone,
-    tipo_usuario = "aluno",
-    tipo_assinatura = "gratuito",
+    tipo_usuario: _tipoUsuarioIgnorado,
+    tipo_assinatura: _tipoAssinaturaIgnorada,
   } = req.body;
 
-  if (!nome || !email || !senha || !telefone) {
+  if (typeof nome !== "string" || typeof email !== "string" || typeof senha !== "string" || typeof telefone !== "string" || !nome.trim() || !email.trim() || !senha || !telefone.trim()) {
     console.log(`[CADASTRO FALHOU]: Campos obrigatórios faltando. Email: ${email || "N/A"}`);
     return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
   }
 
-  if (senha.length < 6) {
+  if (senha.length < 8) {
     console.log(`[CADASTRO FALHOU]: Senha muito curta. Email: ${email}`);
-    return res.status(400).json({ erro: "A senha deve ter pelo menos 6 caracteres." });
+    return res.status(400).json({ erro: "A senha deve ter pelo menos 8 caracteres." });
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ erro: "Informe um e-mail valido." });
   }
 
   try {
@@ -194,8 +288,8 @@ app.post("/api/cadastrar", async (req, res) => {
       email: email.toLowerCase().trim(),
       senha: hash,
       telefone,
-      tipo_usuario,
-      tipo_assinatura,
+      tipo_usuario: "aluno",
+      tipo_assinatura: "gratuito",
       pontos_gamificacao: 0,
     });
 
@@ -211,7 +305,7 @@ app.post("/api/cadastrar", async (req, res) => {
 });
 
 // API - Login
-app.post("/api/login", async (req, res) => {
+app.post("/api/login", loginLimiter, async (req, res) => {
   const { email, senha } = req.body;
 
   if (!email || !senha) {
@@ -232,21 +326,25 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json({ erro: "E-mail ou senha inválidos." });
     }
 
-    req.session.user = {
+    const sessionUser = {
       id: user.id,
       nome: user.nome,
       email: user.email,
       telefone: user.telefone,
+      avatar_url: user.avatar_url || null,
       tipo_usuario: user.tipo_usuario || "aluno",
       tipo_assinatura: user.tipo_assinatura || "gratuito",
       pontos_gamificacao: user.pontos_gamificacao || 0,
     };
 
+    await new Promise((resolve, reject) => req.session.regenerate((err) => err ? reject(err) : resolve()));
+    req.session.user = sessionUser;
+
     console.log(`[LOGIN SUCESSO]: Usuário logado - ID: ${user.id}, Nome: ${user.nome}`);
 
     res.status(200).json({
       sucesso: "Login efetuado com sucesso!",
-      usuario: req.session.user,
+      usuario: sessionUser,
     });
   } catch (error) {
     console.error("[ERRO LOGIN]:", error);
@@ -261,7 +359,7 @@ app.post("/api/logout", (req, res) => {
       console.error("[ERRO SESSÃO]: Erro ao fazer logout:", err);
       return res.status(500).json({ erro: "Erro ao fazer logout." });
     }
-    res.clearCookie("connect.sid");
+    res.clearCookie("agon.sid");
     res.status(200).json({ sucesso: "Logout realizado com sucesso!" });
   });
 });
@@ -269,17 +367,17 @@ app.post("/api/logout", (req, res) => {
 app.get(["/logout", "/api/logout"], (req, res) => {
   if (req.session) {
     req.session.destroy(() => {
-      res.clearCookie("connect.sid");
+      res.clearCookie("agon.sid");
       res.redirect("/login.html");
     });
   } else {
-    res.clearCookie("connect.sid");
+    res.clearCookie("agon.sid");
     res.redirect("/login.html");
   }
 });
 
 // API - Buscar dados completos do usuário
-app.get("/api/user/:id", requireAuth, async (req, res) => {
+app.get("/api/user/:id", requireAuthApi, async (req, res) => {
   const userId = req.params.id;
 
   if (userId !== req.session.user.id) {
@@ -303,7 +401,7 @@ app.get("/api/user/:id", requireAuth, async (req, res) => {
 
 // API - Verificar autenticação
 app.get("/api/check-auth", async (req, res) => {
-  const student = getActiveStudent(req);
+  if (!req.session.user) return res.status(200).json({ autenticado: false });
   if (req.session.user) {
     try {
       const refreshed = await databaseService.findUserById(req.session.user.id);
@@ -323,7 +421,7 @@ app.get("/api/check-auth", async (req, res) => {
     }
     return res.status(200).json({ autenticado: true, usuario: req.session.user });
   }
-  return res.status(200).json({ autenticado: false, usuarioConvidado: student });
+  return res.status(200).json({ autenticado: false });
 });
 
 // ==========================================
@@ -362,7 +460,7 @@ app.get("/api/zuka/status", (req, res) => {
 
 // Enviar mensagem para a Zuka IA
 app.post("/api/zuka/chat", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const { message, conversationId, questionContext } = req.body;
 
   if (!message || typeof message !== "string" || !message.trim()) {
@@ -400,7 +498,7 @@ app.post("/api/zuka/chat", async (req, res) => {
 
 // Listar conversas do estudante
 app.get("/api/zuka/conversas", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   try {
     const list = await databaseService.getConversations(student.id);
     res.json({ conversas: list });
@@ -412,7 +510,7 @@ app.get("/api/zuka/conversas", async (req, res) => {
 
 // Criar nova conversa
 app.post("/api/zuka/conversas", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const { titulo = "Nova conversa" } = req.body;
   try {
     const conv = await databaseService.createConversation(student.id, titulo);
@@ -425,7 +523,7 @@ app.post("/api/zuka/conversas", async (req, res) => {
 
 // Buscar mensagens de uma conversa
 app.get("/api/zuka/conversas/:id", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const convId = req.params.id;
   try {
     const conv = await databaseService.getConversationById(student.id, convId);
@@ -442,7 +540,7 @@ app.get("/api/zuka/conversas/:id", async (req, res) => {
 
 // Excluir conversa
 app.delete("/api/zuka/conversas/:id", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const convId = req.params.id;
   try {
     const success = await databaseService.deleteConversation(student.id, convId);
@@ -462,7 +560,7 @@ app.delete("/api/zuka/conversas/:id", async (req, res) => {
 
 // Registrar resposta de questão pelo estudante
 app.post("/api/questoes/responder", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const {
     questionId,
     disciplina,
@@ -518,7 +616,7 @@ app.post("/api/questoes/responder", async (req, res) => {
 
 // Obter histórico de tentativas do estudante
 app.get("/api/questoes/historico", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const { disciplina, questionId } = req.query;
   try {
     const list = await databaseService.getQuestionAttempts(student.id, { disciplina, questionId });
@@ -533,8 +631,77 @@ app.get("/api/questoes/historico", async (req, res) => {
 // APIS DE DESEMPENHO E ANALYTICS REAL
 // ==========================================
 
+function calculateStudyStreak(attempts) {
+  const activeDates = new Set(attempts.map((attempt) => {
+    const timestamp = new Date(attempt.criadoEm || 0);
+    return Number.isNaN(timestamp.getTime()) ? null : timestamp.toISOString().slice(0, 10);
+  }).filter(Boolean));
+  const cursor = new Date();
+  cursor.setUTCHours(0, 0, 0, 0);
+  const today = cursor.toISOString().slice(0, 10);
+  cursor.setUTCDate(cursor.getUTCDate() - 1);
+  if (!activeDates.has(today) && !activeDates.has(cursor.toISOString().slice(0, 10))) return 0;
+  if (activeDates.has(today)) cursor.setUTCDate(cursor.getUTCDate() + 1);
+
+  let streak = 0;
+  while (activeDates.has(cursor.toISOString().slice(0, 10))) {
+    streak += 1;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return streak;
+}
+
+app.get("/api/dashboard/resumo", async (req, res) => {
+  const student = req.session.user;
+  try {
+    const [metrics, attempts, user] = await Promise.all([
+      analyticsService.getStudentDashboardMetrics(student.id),
+      databaseService.getQuestionAttempts(student.id),
+      databaseService.findUserById(student.id),
+    ]);
+
+    let notifications = [];
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabaseAdmin()
+        .from("notificacoes")
+        .select("id, tipo, titulo, mensagem, icone, cor_tema, link_destino, lida, criado_em")
+        .eq("user_id", student.id)
+        .order("criado_em", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      notifications = data || [];
+    }
+
+    const atividadesRecentes = attempts.slice(0, 5).map((attempt) => ({
+      id: attempt.id,
+      tipo: "questoes",
+      titulo: "Questão respondida",
+      subtitulo: [attempt.disciplina, attempt.assunto].filter(Boolean).join(" • ") || "Banco de questões",
+      acertou: Boolean(attempt.acertou),
+      criadoEm: attempt.criadoEm,
+    }));
+    res.set("Cache-Control", "private, no-store").json({
+      estudanteId: student.id,
+      estudanteNome: student.nome,
+      indicadoresGerais: metrics.indicadoresGerais,
+      desempenhoPorDisciplina: metrics.desempenhoPorDisciplina,
+      atividadesRecentes,
+      notificacoes: {
+        naoLidas: notifications.filter((item) => !item.lida).length,
+        itens: notifications,
+      },
+      sequenciaDias: calculateStudyStreak(attempts),
+      pontosGamificacao: Number(user?.pontos_gamificacao) || 0,
+      temDadosReais: metrics.temDadosReais,
+    });
+  } catch (err) {
+    console.error("[DASHBOARD RESUMO ERRO]:", err.message);
+    res.status(500).json({ erro: "Erro ao carregar o resumo do dashboard." });
+  }
+});
+
 app.get("/api/desempenho/estatisticas", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   try {
     const metrics = await analyticsService.getStudentDashboardMetrics(student.id);
     res.json({
@@ -554,7 +721,7 @@ app.get("/api/desempenho/estatisticas", async (req, res) => {
 
 // Obter recomendações automáticas calculadas a partir dos dados reais
 app.get("/api/planos-estudo/recomendacoes", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   try {
     const metrics = await analyticsService.getStudentDashboardMetrics(student.id);
     const storedRecs = await databaseService.getStudyRecommendations(student.id);
@@ -573,7 +740,7 @@ app.get("/api/planos-estudo/recomendacoes", async (req, res) => {
 
 // Gerar orientação inteligente de estudo via Zuka IA
 app.post("/api/planos-estudo/gerar-ia", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const { concursoAlvo = "Polícia Federal", horasSemanais = 15 } = req.body;
 
   try {
@@ -591,7 +758,7 @@ app.post("/api/planos-estudo/gerar-ia", async (req, res) => {
 
 // Atualizar status de uma recomendação
 app.patch("/api/planos-estudo/recomendacoes/:id", async (req, res) => {
-  const student = getActiveStudent(req);
+  const student = req.session.user;
   const { status } = req.body;
   if (!status || !["pendente", "em_andamento", "concluido"].includes(status)) {
     return res.status(400).json({ erro: "Status inválido." });
@@ -608,16 +775,9 @@ app.patch("/api/planos-estudo/recomendacoes/:id", async (req, res) => {
   }
 });
 
-// Tratamento de exceções e rejeições não tratadas (evita encerramento inesperado do processo)
-process.on("uncaughtException", (err) => {
-  console.error("⚠️  [UNCAUGHT EXCEPTION]:", err.message);
-});
+// Health check usado pelos provedores de hospedagem.
+app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 
-process.on("unhandledRejection", (reason) => {
-  console.error("⚠️  [UNHANDLED REJECTION]:", reason);
-});
-
-// Inicialização do servidor com recuperação automática de porta ocupada
 let currentPort = Number(process.env.PORT) || 3500;
 
 function startServer(portToTry) {

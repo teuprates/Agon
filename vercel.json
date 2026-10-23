@@ -2,10 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "express",
   "outputDirectory": null,
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/home.html"
+  "functions": {
+    "server.js": {
+      "includeFiles": "protected-pages/**/*.html",
+      "maxDuration": 60
     }
-  ]
+  }
 }

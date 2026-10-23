@@ -23,10 +23,25 @@ const DEFAULT_STORE = {
 let memoryStore = { ...DEFAULT_STORE };
 let isSupabaseActive = false;
 
+function handleSupabaseIssue(operation, error) {
+  if (error?.code === "AGON_SUPABASE_FAILURE") throw error;
+  const message = error?.message || String(error || "Falha desconhecida");
+  console.error(`[SUPABASE] ${operation}:`, message);
+  if (process.env.NODE_ENV === "production") {
+    const failure = new Error("Falha ao acessar o banco de dados.");
+    failure.code = "AGON_SUPABASE_FAILURE";
+    throw failure;
+  }
+}
+
 /**
  * Carrega a base local do disco para garantir persistência mesmo em modo offline/sem Supabase
  */
 function loadLocalDb() {
+  if (process.env.NODE_ENV === "production") {
+    memoryStore = { ...DEFAULT_STORE };
+    return;
+  }
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -47,6 +62,7 @@ function loadLocalDb() {
  * Salva a base local no disco
  */
 function saveLocalDb() {
+  if (process.env.NODE_ENV === "production") return;
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -92,12 +108,12 @@ async function findUserByEmail(email) {
         .maybeSingle();
 
       if (error) {
-        console.warn("[SUPABASE] Aviso ao buscar usuário por e-mail:", error.message);
+        handleSupabaseIssue("findUserByEmail", error);
       } else if (data) {
         return data;
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO findUserByEmail]:", err.message);
+      handleSupabaseIssue("findUserByEmail", err);
     }
   }
   for (const [id, user] of Object.entries(memoryStore.usuarios)) {
@@ -121,12 +137,12 @@ async function findUserById(id) {
         .maybeSingle();
 
       if (error) {
-        console.warn("[SUPABASE] Aviso ao buscar usuário por id:", error.message);
+        handleSupabaseIssue("findUserById", error);
       } else if (data) {
         return data;
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO findUserById]:", err.message);
+      handleSupabaseIssue("findUserById", err);
     }
   }
   const user = memoryStore.usuarios[id];
@@ -165,10 +181,10 @@ async function saveUser(userData) {
         return data;
       }
       if (error) {
-        console.warn("[SUPABASE] Fallback local em saveUser:", error.message);
+        handleSupabaseIssue("saveUser", error);
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO saveUser]:", err.message);
+      handleSupabaseIssue("saveUser", err);
     }
   }
   memoryStore.usuarios[id] = record;
@@ -248,12 +264,12 @@ async function saveQuestionAttempt({
 
       const { error } = await supabase.from("question_attempts").insert(supabaseRow);
       if (error) {
-        console.warn("[SUPABASE] Falha ao inserir tentativa de questão (fallback local):", error.message);
+        handleSupabaseIssue("saveQuestionAttempt", error);
         memoryStore.question_attempts.push(attemptRecord);
         saveLocalDb();
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO saveQuestionAttempt]:", err.message);
+      handleSupabaseIssue("saveQuestionAttempt", err);
       memoryStore.question_attempts.push(attemptRecord);
       saveLocalDb();
     }
@@ -314,10 +330,10 @@ async function getQuestionAttempts(userId, filter = {}) {
         }));
       }
       if (error) {
-        console.warn("[SUPABASE] Falha ao consultar tentativas (fallback local):", error.message);
+        handleSupabaseIssue("getQuestionAttempts", error);
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO getQuestionAttempts]:", err.message);
+      handleSupabaseIssue("getQuestionAttempts", err);
     }
   }
 
@@ -406,9 +422,9 @@ async function updateStudentTopicStats({ userId, disciplina, assunto, acertou, t
           ultimaAtividade,
         };
       }
-      console.warn("[SUPABASE] Falha em updateStudentTopicStats (fallback local):", upsertError.message);
+      handleSupabaseIssue("updateStudentTopicStats", upsertError);
     } catch (err) {
-      console.error("[SUPABASE ERRO updateStudentTopicStats]:", err.message);
+      handleSupabaseIssue("updateStudentTopicStats", err);
     }
   }
 
@@ -472,10 +488,10 @@ async function getStudentTopicStats(userId) {
         }));
       }
       if (error) {
-        console.warn("[SUPABASE] Falha ao consultar estatísticas por assunto (fallback local):", error.message);
+        handleSupabaseIssue("getStudentTopicStats", error);
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO getStudentTopicStats]:", err.message);
+      handleSupabaseIssue("getStudentTopicStats", err);
     }
   }
   return Object.values(memoryStore.student_topic_stats).filter((stat) => stat.userId === userId);
@@ -505,9 +521,10 @@ async function createConversation(userId, titulo = "Nova conversa com Zuka IA") 
         criado_em: conv.criadoEm,
         atualizado_em: conv.atualizadoEm,
       });
+      if (error) handleSupabaseIssue("createConversation", error);
       if (!error) return conv;
     } catch (err) {
-      console.error("[SUPABASE ERRO createConversation]:", err.message);
+      handleSupabaseIssue("createConversation", err);
     }
   }
   memoryStore.ai_conversations[convId] = conv;
@@ -527,6 +544,7 @@ async function getConversations(userId) {
         .eq("user_id", userId)
         .order("atualizado_em", { ascending: false });
 
+      if (error) handleSupabaseIssue("getConversations", error);
       if (!error && data) {
         return data.map((row) => ({
           id: row.id,
@@ -537,7 +555,7 @@ async function getConversations(userId) {
         }));
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO getConversations]:", err.message);
+      handleSupabaseIssue("getConversations", err);
     }
   }
   return Object.values(memoryStore.ai_conversations)
@@ -558,6 +576,7 @@ async function getConversationById(userId, conversationId) {
         .eq("user_id", userId)
         .maybeSingle();
 
+      if (error) handleSupabaseIssue("getConversationById", error);
       if (!error && data) {
         return {
           id: data.id,
@@ -568,7 +587,7 @@ async function getConversationById(userId, conversationId) {
         };
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO getConversationById]:", err.message);
+      handleSupabaseIssue("getConversationById", err);
     }
   }
   const conv = memoryStore.ai_conversations[conversationId];
@@ -584,9 +603,10 @@ async function deleteConversation(userId, conversationId) {
     try {
       const supabase = getAdmin();
       const { error } = await supabase.from("ai_conversations").delete().eq("id", conversationId).eq("user_id", userId);
+      if (error) handleSupabaseIssue("deleteConversation", error);
       if (!error) return true;
     } catch (err) {
-      console.error("[SUPABASE ERRO deleteConversation]:", err.message);
+      handleSupabaseIssue("deleteConversation", err);
     }
   }
   delete memoryStore.ai_conversations[conversationId];
@@ -621,16 +641,18 @@ async function addMessage(userId, conversationId, { role, conteudo, contextoQues
         contexto_questao: msg.contextoQuestao,
         criado_em: msg.criadoEm,
       });
+      if (error) handleSupabaseIssue("addMessage", error);
 
       if (!error) {
-        await supabase
+        const { error: updateError } = await supabase
           .from("ai_conversations")
           .update({ atualizado_em: now })
           .eq("id", conversationId);
+        if (updateError) handleSupabaseIssue("addMessage.updateConversation", updateError);
         return msg;
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO addMessage]:", err.message);
+      handleSupabaseIssue("addMessage", err);
     }
   }
   memoryStore.ai_messages.push(msg);
@@ -656,7 +678,8 @@ async function getMessages(userId, conversationId, limitCount = 50) {
         .order("criado_em", { ascending: true })
         .limit(limitCount);
 
-      if (!error && Array.isArray(data) && data.length > 0) {
+      if (error) handleSupabaseIssue("getMessages", error);
+      if (!error && Array.isArray(data)) {
         return data.map((row) => ({
           id: row.id,
           conversationId: row.conversation_id,
@@ -667,9 +690,9 @@ async function getMessages(userId, conversationId, limitCount = 50) {
           criadoEm: row.criado_em,
         }));
       }
-      // Empty query results must fall through to the in-memory request fallback.
+      // A successful empty Supabase result is authoritative; it must not read request-local memory.
     } catch (err) {
-      console.error("[SUPABASE ERRO getMessages]:", err.message);
+      handleSupabaseIssue("getMessages", err);
     }
   }
   return memoryStore.ai_messages
@@ -713,9 +736,10 @@ async function saveStudyRecommendation(userId, recData) {
         gerado_por: record.geradoPor,
         criado_em: record.criadoEm,
       });
+      if (error) handleSupabaseIssue("saveStudyRecommendation", error);
       if (!error) return record;
     } catch (err) {
-      console.error("[SUPABASE ERRO saveStudyRecommendation]:", err.message);
+      handleSupabaseIssue("saveStudyRecommendation", err);
     }
   }
   memoryStore.study_recommendations.push(record);
@@ -735,6 +759,7 @@ async function getStudyRecommendations(userId) {
         .eq("user_id", userId)
         .order("criado_em", { ascending: false });
 
+      if (error) handleSupabaseIssue("getStudyRecommendations", error);
       if (!error && data) {
         return data.map((row) => ({
           id: row.id,
@@ -751,7 +776,7 @@ async function getStudyRecommendations(userId) {
         }));
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO getStudyRecommendations]:", err.message);
+      handleSupabaseIssue("getStudyRecommendations", err);
     }
   }
   return memoryStore.study_recommendations
@@ -771,6 +796,7 @@ async function updateStudyRecommendationStatus(userId, recId, status) {
         .select()
         .maybeSingle();
 
+      if (error) handleSupabaseIssue("updateStudyRecommendationStatus", error);
       if (!error && data) {
         return {
           id: data.id,
@@ -787,7 +813,7 @@ async function updateStudyRecommendationStatus(userId, recId, status) {
         };
       }
     } catch (err) {
-      console.error("[SUPABASE ERRO updateStudyRecommendationStatus]:", err.message);
+      handleSupabaseIssue("updateStudyRecommendationStatus", err);
     }
   }
   const item = memoryStore.study_recommendations.find((r) => r.id === recId && r.userId === userId);

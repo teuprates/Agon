@@ -82,6 +82,11 @@ function getSupabaseClient() {
   return publicClientInstance;
 }
 
+function getSupabasePublicConfig() {
+  if (!isSupabasePublicConfigured()) return null;
+  return { url: getSupabaseUrl().trim(), publishableKey: getPublicKey().trim() };
+}
+
 function getSupabaseStatus() {
   const urlConfigured = isValidUrl(getSupabaseUrl());
   const publicKeyConfigured = isValidKey(getPublicKey());
@@ -123,6 +128,7 @@ module.exports = {
   isSupabasePublicConfigured,
   getSupabaseAdmin,
   getSupabaseClient,
+  getSupabasePublicConfig,
   getSupabaseStatus,
   testSupabaseConnection,
 };

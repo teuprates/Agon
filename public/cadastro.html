@@ -33,7 +33,7 @@
       },
     };
   </script>
-  <link rel="icon" type="image/png" href="assets/img/AGON png.png" />
+  <link rel="icon" type="image/png" href="/assets/img/agon-light.png" />
   <style>
     .auth-bg-gradient {
       background: linear-gradient(135deg, #0f172a 0%, #23366e 60%, #1e1b4b 100%);
@@ -63,7 +63,7 @@
       <div>
         <a href="/" class="inline-flex items-center gap-2.5 mb-5 group">
           <div class="w-9 h-9 relative transition-transform group-hover:scale-105">
-            <img src="assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+            <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
           </div>
           <span class="text-2xl font-extrabold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
         </a>
@@ -89,7 +89,7 @@
               id="nome"
               name="nome"
               required
-              placeholder="Ex: Davi Brito"
+              placeholder="Ex: Estudante"
               class="w-full py-2.5 pl-10 pr-4 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"
             />
@@ -151,8 +151,8 @@
                 id="senha"
                 name="senha"
                 required
-                minlength="6"
-                placeholder="Mínimo 6 caracteres"
+                minlength="8"
+                placeholder="Mínimo 8 caracteres"
                 class="w-full py-2.5 pl-10 pr-4 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"
               />
@@ -171,7 +171,7 @@
                 id="confirmar-senha"
                 name="confirmar-senha"
                 required
-                minlength="6"
+                minlength="8"
                 placeholder="Repita sua senha"
                 class="w-full py-2.5 pl-10 pr-4 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"
@@ -180,17 +180,7 @@
           </div>
         </div>
 
-        <!-- Terms and Privacy Checkbox -->
-        <div class="flex items-start gap-2.5 pt-1">
-          <input type="checkbox" id="termos" required class="form-checkbox h-4 w-4 rounded text-blue-600 mt-0.5 cursor-pointer" />
-          <label for="termos" class="text-xs leading-relaxed select-none cursor-pointer" style="color: var(--text-secondary);">
-            Declaro que li e concordo com os
-            <a href="#" class="font-semibold text-blue-600 hover:underline">Termos de Serviço</a>
-            e a
-            <a href="#" class="font-semibold text-blue-600 hover:underline">Política de Privacidade</a>
-            do Agon.
-          </label>
-        </div>
+        <p class="text-[11px] leading-relaxed" style="color: var(--text-muted);">Termos de Serviço e Política de Privacidade em elaboração. Este cadastro cria uma conta de avaliação e salva seus dados de estudo no Supabase.</p>
 
         <!-- Submit Button -->
         <button
@@ -207,7 +197,7 @@
       <!-- Google Button -->
       <button
         type="button"
-        onclick="window.location.href='/index'"
+        data-google-auth="true"
         class="w-full py-2.5 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2.5 hover:bg-slate-50 transition-colors"
         style="border-color: var(--border-default); color: var(--text-primary);"
       >
@@ -249,7 +239,7 @@
           <h3 class="text-2xl font-extrabold leading-snug">
             O que você ganha ao criar sua conta agora:
           </h3>
-          <p class="text-xs text-blue-200 mt-2">Mais de 12.000 concurseiros já aceleraram seus resultados.</p>
+          <p class="text-xs text-blue-200 mt-2">Explore os recursos disponíveis; trilhas e ranking ainda são demonstrações.</p>
         </div>
 
         <div class="space-y-4 text-xs">
@@ -259,7 +249,7 @@
             </div>
             <div>
               <p class="font-bold">Trilhas de Estudo por Disciplina</p>
-              <p class="text-[11px] text-blue-200">Cronograma inteligente ajustado ao peso do seu edital.</p>
+              <p class="text-[11px] text-blue-200">Prévia visual de cronograma; esta tela ainda não salva o progresso.</p>
             </div>
           </div>
 
@@ -269,7 +259,7 @@
             </div>
             <div>
               <p class="font-bold">IA Tutor Integrada</p>
-              <p class="text-[11px] text-blue-200">Pergunte qualquer dúvida de jurisprudência ou teoria 24/7.</p>
+              <p class="text-[11px] text-blue-200">Disponível quando a integração com o Google Gemini estiver ativa.</p>
             </div>
           </div>
 
@@ -289,8 +279,8 @@
       <div class="relative z-10 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center gap-3 text-xs">
         <i class="fa-solid fa-shield-halved text-emerald-400 text-lg"></i>
         <div>
-          <p class="font-bold">Seus dados 100% protegidos</p>
-          <p class="text-[11px] text-blue-200">Criptografia de ponta a ponta e segurança com Supabase.</p>
+          <p class="font-bold">Autenticação de conta</p>
+          <p class="text-[11px] text-blue-200">Suas informações de estudo são vinculadas à sua conta.</p>
         </div>
       </div>
 
@@ -326,9 +316,9 @@
           return;
         }
 
-        if (senha.length < 6) {
+        if (senha.length < 8) {
           alertBox.className = 'p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium bg-red-100 text-red-600 border border-red-200';
-          alertBox.innerHTML = '<i class="fa-solid fa-circle-exclamation text-sm"></i> <span>A senha deve ter pelo menos 6 caracteres.</span>';
+          alertBox.innerHTML = '<i class="fa-solid fa-circle-exclamation text-sm"></i> <span>A senha deve ter pelo menos 8 caracteres.</span>';
           alertBox.classList.remove('hidden');
           return;
         }
@@ -364,16 +354,16 @@
             btnIcon.className = 'fa-solid fa-arrow-right text-xs';
           }
         } catch (err) {
-          // Fallback gracioso
-          alertBox.className = 'p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium bg-emerald-100 text-emerald-700 border border-emerald-200';
-          alertBox.innerHTML = '<i class="fa-solid fa-circle-check text-sm"></i> <span>Conta criada! Entrando na plataforma...</span>';
+          alertBox.className = 'p-3.5 rounded-xl text-xs font-medium bg-red-100 text-red-700 border border-red-200';
+          alertBox.textContent = 'Falha na conexao. Nenhuma conta foi criada. Confira sua internet e tente novamente.';
           alertBox.classList.remove('hidden');
-          setTimeout(() => {
-            window.location.href = '/login';
-          }, 1000);
+          btnSubmit.disabled = false;
+          btnText.innerText = 'Criar Minha Conta Gratuita';
+          btnIcon.className = 'fa-solid fa-arrow-right text-xs';
         }
       });
     });
   </script>
+  <script type="module" src="/js/google-auth.js"></script>
 </body>
 </html>

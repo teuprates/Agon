@@ -262,7 +262,7 @@ let currentProvider = null;
 
 function getAIProvider() {
   if (!currentProvider || currentProvider.apiKey !== process.env.GEMINI_API_KEY || currentProvider.primaryModel !== process.env.GEMINI_MODEL) {
-    currentProvider = new GeminiProvider(process.env.GEMINI_API_KEY, process.env.GEMINI_MODEL || "gemini-3.8-flash");
+    currentProvider = new GeminiProvider(process.env.GEMINI_API_KEY, process.env.GEMINI_MODEL || "gemini-flash-lite-latest");
   }
   return currentProvider;
 }

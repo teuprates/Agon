@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zuka IA | Tutora Inteligente — Agon</title>
+
+  <!-- Dependências Externas -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    .chat-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .chat-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .chat-scroll::-webkit-scrollbar-thumb {
+      background: var(--border-default);
+      border-radius: 4px;
+    }
+    .chat-scroll::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Typing animation indicator */
+    .typing-dot {
+      animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    .history-item.active {
+      background-color: var(--bg-active) !important;
+      border-color: var(--border-active) !important;
+    }
+    .history-item.active .history-title {
+      color: var(--color-blue) !important;
+      font-weight: 600;
+    }
+    .history-item.active .history-icon {
+      background-color: var(--color-blue) !important;
+      color: #ffffff !important;
+    }
+
+    /* Markdown Render Styling */
+    .prose-zuka p { margin-bottom: 0.65rem; line-height: 1.6; }
+    .prose-zuka p:last-child { margin-bottom: 0; }
+    .prose-zuka strong { font-weight: 700; color: var(--text-primary); }
+    .prose-zuka em { font-style: italic; }
+    .prose-zuka ul { list-style-type: disc; margin-left: 1.25rem; margin-bottom: 0.65rem; }
+    .prose-zuka ol { list-style-type: decimal; margin-left: 1.25rem; margin-bottom: 0.65rem; }
+    .prose-zuka li { margin-bottom: 0.25rem; }
+    .prose-zuka blockquote {
+      border-left: 3px solid var(--color-blue);
+      padding-left: 0.75rem;
+      margin: 0.5rem 0;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .prose-zuka pre {
+      background: var(--bg-hover);
+      padding: 0.75rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      margin: 0.5rem 0;
+    }
+    .prose-zuka code {
+      background: var(--bg-hover);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="/assets/img/agon-light.png" />
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR PRINCIPAL AGON -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="planos-estudo.html" class="nav-item"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item active"><i class="fa-solid fa-robot w-5 text-center"></i> <span>Zuka IA</span> <span class="badge badge-green ml-auto">Real</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+    </nav>
+
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Zuka IA integrada com respostas em tempo real.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" placeholder="Buscar dúvidas, conceitos ou editais na Zuka IA..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">1</span>
+        </button>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight student-name-display" style="color:var(--text-primary);">Estudante</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- BANNER DE STATUS DA IA (QUANDO SEM CHAVE OU ATIVA) -->
+    <div id="ai-status-banner" class="hidden px-8 py-2.5 text-xs flex items-center justify-between border-b transition">
+      <div class="flex items-center gap-2">
+        <i id="ai-status-icon" class="fa-solid fa-triangle-exclamation"></i>
+        <span id="ai-status-text">Verificando status da Zuka IA...</span>
+      </div>
+      <a href="https://aistudio.google.com" target="_blank" id="ai-status-cta" class="underline font-semibold hidden">Obter chave gratuita no Google AI Studio</a>
+    </div>
+
+    <!-- PAGE CONTENT (Chat) -->
+    <div class="flex-1 overflow-hidden p-0 animate-fade-in flex flex-col">
+      <section class="flex-1 flex h-full overflow-hidden -m-0">
+
+        <!-- ================= HISTÓRICO LATERAL ================= -->
+        <aside id="chat-history-sidebar" class="w-64 bg-input border-r border-default flex flex-col shrink-0 h-full relative z-10 transition-transform duration-300 md:translate-x-0" style="background-color: var(--bg-input); border-right: 1px solid var(--border-default);">
+          
+          <div class="p-4 border-b shrink-0" style="border-color: var(--border-default);">
+            <button id="btn-new-chat" type="button" class="btn-secondary w-full justify-center text-sm font-semibold flex items-center gap-2 py-2.5 rounded-xl transition hover:opacity-90 shadow-sm" style="background-color: var(--bg-card); border: 1px solid var(--border-default); color: var(--color-blue);">
+              <i class="fa-solid fa-plus text-xs" style="color: var(--color-blue);"></i>
+              <span>Nova Conversa</span>
+            </button>
+          </div>
+
+          <div class="px-4 py-2.5 border-b shrink-0" style="border-color: var(--border-light);">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
+              <input type="text" id="filter-chats" placeholder="Buscar conversas..." class="w-full text-xs py-2 pl-8 pr-3 rounded-xl border outline-none transition" style="background-color: var(--bg-card); border-color: var(--border-default); color: var(--text-primary);" />
+            </div>
+          </div>
+
+          <!-- Past Chats List -->
+          <div class="flex-1 overflow-y-auto px-3 py-3 space-y-1.5 chat-scroll" id="history-list">
+            <div class="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider flex items-center justify-between" style="color: var(--text-muted);">
+              <span>Suas Conversas</span>
+              <i class="fa-regular fa-clock text-[10px]"></i>
+            </div>
+            <!-- Carregado via JS -->
+            <div id="history-empty-placeholder" class="p-4 text-center text-xs" style="color: var(--text-muted);">
+              Nenhuma conversa salva ainda. Comece enviando uma dúvida!
+            </div>
+          </div>
+
+          <!-- Bottom Status -->
+          <div class="p-3.5 border-t shrink-0 flex items-center justify-between text-xs" style="border-color: var(--border-default); background-color: var(--bg-card);">
+            <div class="flex items-center gap-2">
+              <span id="ai-indicator-dot" class="w-2.5 h-2.5 rounded-full" style="background-color: var(--color-orange);"></span>
+              <span class="text-[11px] font-semibold" style="color: var(--text-primary);">Zuka IA</span>
+            </div>
+            <span id="ai-model-badge" class="badge badge-blue text-[10px] font-medium">Modelo</span>
+          </div>
+        </aside>
+
+        <!-- ================= CHAT PRINCIPAL ================= -->
+        <div class="flex-1 flex flex-col relative h-full overflow-hidden" style="background-color: var(--bg-body);">
+          
+          <!-- Top Header Bar -->
+          <div class="h-16 px-6 border-b shrink-0 flex items-center justify-between" style="background-color: var(--bg-card); border-color: var(--border-default);">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <button type="button" id="btn-toggle-history" class="w-9 h-9 rounded-xl flex items-center justify-center md:hidden transition hover:opacity-80" style="background-color: var(--bg-hover); color: var(--text-secondary);" title="Ver Histórico">
+                <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+              </button>
+
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h2 id="current-chat-header-title" class="text-sm font-bold truncate leading-tight" style="color: var(--text-primary);">Tire dúvidas com a Zuka IA</h2>
+                  <span id="header-status-badge" class="badge badge-green text-[10px] font-medium">Online</span>
+                </div>
+                <p id="current-chat-header-subtitle" class="text-xs truncate" style="color: var(--text-secondary);">Preparação para concursos públicos • Foco Cebraspe, FGV &amp; Vunesp</p>
+              </div>
+            </div>
+
+            <!-- Top Actions -->
+            <div class="flex items-center gap-2">
+              <a href="desempenho.html" class="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 hidden sm:flex" title="Ver meu mapa de dificuldades">
+                <i class="fa-solid fa-chart-line text-xs"></i>
+                <span>Meu Desempenho</span>
+              </a>
+              <button type="button" id="btn-clear-chat" class="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-medium transition hover:opacity-80" style="background-color: var(--bg-hover); color: var(--text-secondary);" title="Limpar conversa atual">
+                <i class="fa-regular fa-trash-can text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Context Alert (se vier de uma questão específica) -->
+          <div id="question-context-banner" class="hidden px-6 py-3 border-b text-xs flex items-center justify-between" style="background-color: var(--color-blue-light); color: var(--color-blue); border-color: var(--border-default);">
+            <div class="flex items-center gap-2 truncate">
+              <i class="fa-solid fa-circle-question text-sm shrink-0"></i>
+              <span class="truncate" id="question-context-label">Analisando Questão #Q...</span>
+            </div>
+            <button type="button" id="btn-remove-context" class="hover:underline font-semibold ml-3 shrink-0">Remover contexto</button>
+          </div>
+
+          <!-- Chat Messages Area -->
+          <div id="chat-messages-container" class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 chat-scroll">
+            
+            <!-- Boas-vindas Zuka IA -->
+            <div class="flex items-start gap-3.5 max-w-3xl animate-fade-in">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+                <i class="fa-solid fa-robot text-base"></i>
+              </div>
+              <div class="flex flex-col gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold" style="color: var(--text-primary);">Zuka IA</span>
+                  <span class="badge badge-blue text-[10px] px-1.5 py-0.5">Tutora Oficial</span>
+                  <span class="text-xs" style="color: var(--text-muted);">Agora</span>
+                </div>
+                <div class="chat-bubble-bot shadow-sm prose-zuka text-sm">
+                  <p>Olá! Sou a <strong>Zuka IA</strong>, sua tutora de estudos no AGON.</p>
+                  <p>Estou conectada ao seu histórico real de exercícios para te ajudar a entender conceitos difíceis, explicar por que uma alternativa está certa ou errada nas questões das bancas e montar revisões eficientes.</p>
+                  <p>Qual matéria ou dúvida você gostaria de destravar hoje?</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Input Area -->
+          <div class="p-6 border-t border-default bg-card shrink-0" style="border-top: 1px solid var(--border-default); background-color: var(--bg-card);">
+            
+            <!-- Suggestions Buttons -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-3 no-scrollbar" id="suggestions-row">
+              <span class="text-xs font-medium shrink-0 flex items-center gap-1 mr-1" style="color: var(--text-muted);">
+                <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Sugestões:
+              </span>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Quais são meus assuntos com maior taxa de erro e o que devo estudar hoje?">
+                <i class="fa-solid fa-chart-pie text-[11px]"></i> Diagnosticar minhas fraquezas
+              </button>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Explique a diferença entre atos administrativos nulos e anuláveis com exemplos práticos.">
+                <i class="fa-regular fa-lightbulb text-[11px]"></i> Atos Nulos vs Anuláveis
+              </button>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Crie uma questão inédita no estilo Cebraspe (Certo/Errado) sobre o princípio da impessoalidade.">
+                <i class="fa-solid fa-circle-question text-[11px]"></i> Criar questão inédita
+              </button>
+              <button type="button" class="btn-suggestion badge badge-blue px-3.5 py-1.5 text-xs font-medium cursor-pointer transition hover:opacity-80 shrink-0 flex items-center gap-1.5" data-prompt="Crie um mnemônico fácil para memorizar as competências privativas da União no art. 22 da CF/88.">
+                <i class="fa-solid fa-brain text-[11px]"></i> Mnemônico de memorização
+              </button>
+            </div>
+
+            <!-- Input Form -->
+            <form id="chat-form" class="relative flex items-center">
+              <input
+                type="text"
+                id="chat-input"
+                placeholder="Pergunte à Zuka IA (ex: 'Por que a alternativa C está errada nesta questão?')..."
+                class="form-input rounded-full py-3.5 pl-5 pr-14 text-sm w-full shadow-sm"
+                autocomplete="off"
+              />
+              <button
+                type="submit"
+                id="btn-send-message"
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white transition hover:opacity-90 shadow-md"
+                style="background-color: var(--color-blue);"
+                title="Enviar mensagem (Enter)"
+              >
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+              </button>
+            </form>
+
+            <div class="flex items-center justify-between mt-2.5 px-3 text-[11px]" style="color: var(--text-muted);">
+              <span>Pressione <kbd class="px-1.5 py-0.5 rounded text-[10px] font-mono" style="background-color: var(--bg-hover); border: 1px solid var(--border-default);">Enter ↵</kbd> para enviar</span>
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-[10px]"></i> Integração real protegida no servidor Agon</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+    <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" type="button" class="modal-close-btn w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80 transition" style="color:var(--text-muted);background:var(--bg-hover);" title="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button type="button" class="modal-tab active" data-tab="dados">Dados</button>
+        <button type="button" class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button type="button" class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar-lg" />
+            <button type="button" class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-sm hover:opacity-90 transition" style="background:var(--color-blue);color:#fff;" title="Alterar foto">
+              <i class="fa-solid fa-camera"></i>
+            </button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold user-name-display" style="color:var(--text-primary);">Estudante</h3>
+            <p class="text-sm user-email-display" style="color:var(--text-secondary);">E-mail da conta</p>
+            <span class="badge badge-blue text-[10px] mt-1">Concurseiro Elite</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+
+        <div class="pt-6 border-t mt-6 space-y-3" style="border-color:var(--border-light);">
+          <a href="configuracoes.html" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-user-pen"></i>
+            <span>Editar perfil</span>
+          </a>
+          <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sair da conta</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-sm" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;">
+            <i class="fa-solid fa-medal"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: Nao registrado</span>
+        </div>
+        <div class="pt-5 border-t mt-5">
+          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Ver todas as conquistas</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p>
+              <p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="theme-switch" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p>
+              <p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p>
+              <p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Data de renovacao nao informada</p>
+              </div>
+              <button type="button" class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <div class="pt-2 space-y-3">
+            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+              <i class="fa-solid fa-gear"></i>
+              <span>Configurações completas</span>
+            </a>
+            <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair da conta</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-sm" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;">
+            <i class="fa-solid fa-medal"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: Nao registrado</span>
+        </div>
+        <div class="pt-5 border-t mt-5">
+          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Ver todas as conquistas</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p>
+              <p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="theme-switch" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p>
+              <p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p>
+              <p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Data de renovacao nao informada</p>
+              </div>
+              <button type="button" class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <div class="pt-2 space-y-3">
+            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+              <i class="fa-solid fa-gear"></i>
+              <span>Configurações completas</span>
+            </a>
+            <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair da conta</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentConversationId = null;
+      let activeQuestionContext = null;
+      let isAiAvailable = false;
+
+      const chatForm = document.getElementById('chat-form');
+      const chatInput = document.getElementById('chat-input');
+      const messagesContainer = document.getElementById('chat-messages-container');
+      const historyList = document.getElementById('history-list');
+      const btnNewChat = document.getElementById('btn-new-chat');
+      const btnClearChat = document.getElementById('btn-clear-chat');
+      const statusBanner = document.getElementById('ai-status-banner');
+      const statusText = document.getElementById('ai-status-text');
+      const statusIcon = document.getElementById('ai-status-icon');
+      const statusCta = document.getElementById('ai-status-cta');
+      const headerTitle = document.getElementById('current-chat-header-title');
+      const questionContextBanner = document.getElementById('question-context-banner');
+      const questionContextLabel = document.getElementById('question-context-label');
+      const btnRemoveContext = document.getElementById('btn-remove-context');
+      const aiIndicatorDot = document.getElementById('ai-indicator-dot');
+      const aiModelBadge = document.getElementById('ai-model-badge');
+
+      function scrollToBottom() {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      // Formatador Markdown simples e seguro
+      function renderMarkdown(text) {
+        if (!text) return '';
+        let safe = text
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        // Negrito
+        safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Itálico
+        safe = safe.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        // Código inline
+        safe = safe.replace(/`([^`]+)`/g, '<code>$1</code>');
+        // Listas com marcadores
+        safe = safe.replace(/^\s*[-•]\s+(.+)$/gm, '<li>$1</li>');
+        safe = safe.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        // Quebras de linha em parágrafos
+        const paragraphs = safe.split(/\n\n+/).map(p => {
+          if (p.startsWith('<ul>') || p.startsWith('<pre>')) return p;
+          return `<p>${p.replace(/\n/g, '<br/>')}</p>`;
+        });
+        return paragraphs.join('');
+      }
+
+      // Checa status da IA no backend
+      async function checkAIStatus() {
+        try {
+          const res = await fetch('/api/zuka/status');
+          const data = await res.json();
+          isAiAvailable = data.configurada;
+
+          if (data.configurada) {
+            statusBanner.className = 'px-8 py-2 text-xs flex items-center justify-between border-b transition bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+            statusIcon.className = 'fa-solid fa-circle-check text-emerald-500';
+            statusText.textContent = `Zuka IA conectada com modelo ${data.modelo || 'Google Gemini'} ✨`;
+            statusCta.classList.add('hidden');
+            statusBanner.classList.remove('hidden');
+            aiIndicatorDot.style.backgroundColor = 'var(--color-green)';
+            aiModelBadge.textContent = data.modelo || 'Modelo indisponivel';
+          } else {
+            statusBanner.className = 'px-8 py-2.5 text-xs flex items-center justify-between border-b transition bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800';
+            statusIcon.className = 'fa-solid fa-triangle-exclamation text-amber-500';
+            statusText.innerHTML = `<strong>Aviso Zuka IA:</strong> GEMINI_API_KEY não configurada no <code>.env</code>. Para respostas ao vivo com o Google Gemini, adicione sua chave gratuita.`;
+            statusCta.classList.remove('hidden');
+            statusBanner.classList.remove('hidden');
+            aiIndicatorDot.style.backgroundColor = 'var(--color-orange)';
+            aiModelBadge.textContent = 'Aguardando Chave';
+          }
+        } catch (err) {
+          console.warn('Erro ao checar status da IA:', err);
+        }
+      }
+
+      // Carrega contexto de questão via URL (se o aluno clicou em "Tirar dúvida")
+      function checkUrlQuestionContext() {
+        const params = new URLSearchParams(window.location.search);
+        const encodedContext = params.get('qctx');
+        if (encodedContext) {
+          try {
+            activeQuestionContext = JSON.parse(decodeURIComponent(encodedContext));
+            questionContextLabel.innerHTML = `Dúvida vinculada: <strong>${activeQuestionContext.questionId || 'Questão'}</strong> (${activeQuestionContext.disciplina || ''} - ${activeQuestionContext.assunto || ''})`;
+            questionContextBanner.classList.remove('hidden');
+            chatInput.placeholder = `Pergunte sobre a questão ${activeQuestionContext.questionId || ''}...`;
+          } catch (e) {
+            console.warn('Erro ao decodificar contexto da questão:', e);
+          }
+        }
+      }
+
+      if (btnRemoveContext) {
+        btnRemoveContext.addEventListener('click', () => {
+          activeQuestionContext = null;
+          questionContextBanner.classList.add('hidden');
+          chatInput.placeholder = "Pergunte à Zuka IA...";
+        });
+      }
+
+      // Carrega conversas salvas
+      async function loadConversations() {
+        try {
+          const res = await fetch('/api/zuka/conversas');
+          const data = await res.json();
+          const list = data.conversas || [];
+
+          historyList.querySelectorAll('.history-item').forEach(el => el.remove());
+
+          if (list.length === 0) {
+            document.getElementById('history-empty-placeholder')?.classList.remove('hidden');
+            return;
+          }
+
+          document.getElementById('history-empty-placeholder')?.classList.add('hidden');
+
+          list.forEach(conv => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `history-item w-full text-left p-3 rounded-xl flex items-start gap-3 transition hover:opacity-90 ${conv.id === currentConversationId ? 'active' : ''}`;
+            btn.dataset.id = conv.id;
+            btn.innerHTML = `
+              <div class="history-icon w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style="background-color: var(--bg-hover); color: var(--text-secondary);">
+                <i class="fa-solid fa-message text-xs"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-1">
+                  <p class="history-title text-xs font-semibold truncate" style="color: var(--text-primary);">${conv.titulo || 'Conversa'}</p>
+                </div>
+                <p class="text-[10px] truncate mt-0.5" style="color: var(--text-muted);">${new Date(conv.atualizadoEm || conv.criadoEm).toLocaleDateString('pt-BR')}</p>
+              </div>
+            `;
+            btn.addEventListener('click', () => switchConversation(conv.id, conv.titulo));
+            historyList.appendChild(btn);
+          });
+        } catch (err) {
+          console.error('Erro ao carregar conversas:', err);
+        }
+      }
+
+      async function switchConversation(convId, title) {
+        currentConversationId = convId;
+        headerTitle.textContent = title || 'Conversa Zuka IA';
+
+        historyList.querySelectorAll('.history-item').forEach(el => {
+          el.classList.toggle('active', el.dataset.id === convId);
+        });
+
+        try {
+          const res = await fetch(`/api/zuka/conversas/${convId}`);
+          const data = await res.json();
+          messagesContainer.innerHTML = '';
+
+          if (data.mensagens && data.mensagens.length > 0) {
+            data.mensagens.forEach(msg => appendMessageDOM(msg.role, msg.conteudo, msg.criadoEm));
+          } else {
+            appendMessageDOM('model', 'Esta conversa está vazia. O que você gostaria de perguntar?');
+          }
+          scrollToBottom();
+        } catch (err) {
+          console.error('Erro ao carregar mensagens:', err);
+        }
+      }
+
+      function appendMessageDOM(role, content, timestamp) {
+        const isBot = role === 'model' || role === 'assistant';
+        const msgEl = document.createElement('div');
+        const hora = timestamp ? new Date(timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Agora';
+
+        if (isBot) {
+          msgEl.className = 'flex items-start gap-3.5 max-w-3xl animate-fade-in';
+          msgEl.innerHTML = `
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+              <i class="fa-solid fa-robot text-base"></i>
+            </div>
+            <div class="flex flex-col gap-1.5 max-w-[85%]">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold" style="color: var(--text-primary);">Zuka IA</span>
+                <span class="badge badge-blue text-[10px] px-1.5 py-0.5">Tutora</span>
+                <span class="text-xs" style="color: var(--text-muted);">${hora}</span>
+              </div>
+              <div class="chat-bubble-bot shadow-sm prose-zuka text-sm">
+                ${renderMarkdown(content)}
+              </div>
+            </div>
+          `;
+        } else {
+          msgEl.className = 'flex items-start justify-end gap-3.5 max-w-3xl ml-auto animate-fade-in';
+          msgEl.innerHTML = `
+            <div class="flex flex-col items-end gap-1.5 max-w-[85%]">
+              <div class="flex items-center gap-2">
+                <span class="text-xs" style="color: var(--text-muted);">${hora}</span>
+                <span class="text-xs font-semibold" style="color: var(--text-primary);">Você</span>
+              </div>
+              <div class="chat-bubble-user shadow-sm text-sm">
+                <p>${content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')}</p>
+              </div>
+            </div>
+            <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar shrink-0 mt-1" />
+          `;
+        }
+        messagesContainer.appendChild(msgEl);
+        scrollToBottom();
+      }
+
+      function showTypingIndicator() {
+        const ind = document.createElement('div');
+        ind.id = 'zuka-typing-indicator';
+        ind.className = 'flex items-start gap-3.5 max-w-3xl animate-fade-in';
+        ind.innerHTML = `
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" style="background-color: var(--color-blue); color: #ffffff;">
+            <i class="fa-solid fa-robot text-base"></i>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <span class="text-xs font-semibold" style="color: var(--text-primary);">Zuka IA está digitando...</span>
+            <div class="chat-bubble-bot shadow-sm flex items-center gap-1.5 py-3 px-4">
+              <span class="w-2 h-2 rounded-full bg-blue-600 typing-dot"></span>
+              <span class="w-2 h-2 rounded-full bg-blue-600 typing-dot"></span>
+              <span class="w-2 h-2 rounded-full bg-blue-600 typing-dot"></span>
+            </div>
+          </div>
+        `;
+        messagesContainer.appendChild(ind);
+        scrollToBottom();
+      }
+
+      function removeTypingIndicator() {
+        document.getElementById('zuka-typing-indicator')?.remove();
+      }
+
+      // Envio de mensagem
+      chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        chatInput.value = '';
+        appendMessageDOM('user', text);
+        showTypingIndicator();
+
+        const btnSubmit = document.getElementById('btn-send-message');
+        if (btnSubmit) btnSubmit.disabled = true;
+
+        try {
+          const res = await fetch('/api/zuka/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: text,
+              conversationId: currentConversationId,
+              questionContext: activeQuestionContext
+            })
+          });
+
+          const data = await res.json();
+          removeTypingIndicator();
+
+          if (!res.ok) {
+            const errorMsg = data.erro || 'Falha ao comunicar com a Zuka IA.';
+            appendMessageDOM('model', `⚠️ **Não foi possível gerar a resposta:**\n\n${errorMsg}`);
+          } else {
+            currentConversationId = data.conversationId;
+            appendMessageDOM('model', data.reply, data.criadoEm);
+            loadConversations();
+          }
+        } catch (err) {
+          removeTypingIndicator();
+          appendMessageDOM('model', `⚠️ **Erro de Conexão:** Falha ao contatar o servidor Agon. Verifique sua conexão e tente novamente.`);
+        } finally {
+          if (btnSubmit) btnSubmit.disabled = false;
+          chatInput.focus();
+        }
+      });
+
+      // Sugestões
+      document.querySelectorAll('.btn-suggestion').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const prompt = btn.dataset.prompt;
+          if (prompt) {
+            chatInput.value = prompt;
+            chatInput.focus();
+          }
+        });
+      });
+
+      // Nova Conversa
+      btnNewChat.addEventListener('click', async () => {
+        try {
+          const res = await fetch('/api/zuka/conversas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ titulo: 'Nova Dúvida' })
+          });
+          const conv = await res.json();
+          switchConversation(conv.id, conv.titulo);
+          loadConversations();
+        } catch (err) {
+          console.error('Erro ao criar conversa:', err);
+        }
+      });
+
+      // Limpar conversa atual
+      if (btnClearChat) {
+        btnClearChat.addEventListener('click', async () => {
+          if (!currentConversationId) {
+            messagesContainer.innerHTML = '';
+            appendMessageDOM('model', 'Histórico da tela limpo. Como posso te ajudar agora?');
+            return;
+          }
+          if (confirm('Deseja excluir esta conversa permanentemente?')) {
+            try {
+              await fetch(`/api/zuka/conversas/${currentConversationId}`, { method: 'DELETE' });
+              currentConversationId = null;
+              messagesContainer.innerHTML = '';
+              headerTitle.textContent = 'Tire dúvidas com a Zuka IA';
+              appendMessageDOM('model', 'Conversa excluída. O que você gostaria de estudar?');
+              loadConversations();
+            } catch (err) {
+              console.error('Erro ao excluir conversa:', err);
+            }
+          }
+        });
+      }
+
+      // Toggle histórico no mobile
+      const btnToggleHist = document.getElementById('btn-toggle-history');
+      const histSidebar = document.getElementById('chat-history-sidebar');
+      if (btnToggleHist && histSidebar) {
+        btnToggleHist.addEventListener('click', () => {
+          histSidebar.classList.toggle('hidden');
+          histSidebar.classList.toggle('absolute');
+          histSidebar.classList.toggle('inset-y-0');
+          histSidebar.classList.toggle('left-0');
+        });
+      }
+
+      // Inicialização
+      checkAIStatus();
+      checkUrlQuestionContext();
+      loadConversations();
+    });
+  </script>
+</body>
+</html>

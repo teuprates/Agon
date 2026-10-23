@@ -1,5 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert");
+process.env.NODE_ENV = "test";
 
 const {
   classifyTopicDifficulty,
@@ -222,68 +223,130 @@ test("Tratamento de Provedor de IA sem Chave Configurada", async () => {
 
 const app = require("../server");
 
-test("Integração HTTP Endpoints da Zuka IA e Dashboard", async () => {
+test("Private pages and data APIs require authentication without a guest identity", async () => {
   const server = app.listen(0);
-  const port = server.address().port;
-  const baseUrl = `http://localhost:${port}`;
-
+  const baseUrl = `http://localhost:${server.address().port}`;
   try {
-    const statusRes = await fetch(`${baseUrl}/api/zuka/status`);
-    assert.strictEqual(statusRes.status, 200);
-    const statusData = await statusRes.json();
-    assert.strictEqual(statusData.provedor, "Google Gemini");
-    assert.strictEqual(typeof statusData.configurada, "boolean");
-
-    // Teste de status do Supabase
-    const supaRes = await fetch(`${baseUrl}/api/supabase/status`);
-    assert.strictEqual(supaRes.status, 200);
-    const supaData = await supaRes.json();
-    assert.strictEqual(typeof supaData.configurado, "boolean");
-    assert.ok(typeof supaData.mensagem === "string");
-
-    // Inicia sessão para obter cookie
-    const authRes = await fetch(`${baseUrl}/api/check-auth`);
-    const rawCookie = authRes.headers.get("set-cookie");
-    const cookie = rawCookie ? rawCookie.split(";")[0] : "";
-    const sessionHeaders = {
-      "Content-Type": "application/json",
-      "Cookie": cookie
-    };
-
-    // Teste de criação e leitura de conversa com cookie da sessão
-    const convRes = await fetch(`${baseUrl}/api/zuka/conversas`, {
-      method: "POST",
-      headers: sessionHeaders,
-      body: JSON.stringify({ titulo: "Conversa Teste Automatizado" }),
+    const root = await fetch(baseUrl, { redirect: "manual" });
+    assert.strictEqual(root.status, 200);
+    assert.match(await root.text(), /Agon/i);
+    for (const path of ["/dashboard", "/index.html", "/ia-tutor.html"]) {
+      const response = await fetch(`${baseUrl}${path}`, { redirect: "manual" });
+      assert.strictEqual(response.status, 302, `${path} must require login`);
+      assert.strictEqual(response.headers.get("location"), "/login");
+    }
+    for (const path of ["/api/zuka/status", "/api/zuka/conversas", "/api/questoes/historico", "/api/desempenho/estatisticas", "/api/planos-estudo/recomendacoes", "/api/dashboard/resumo"]) {
+      const response = await fetch(`${baseUrl}${path}`);
+      assert.strictEqual(response.status, 401, `${path} must require login`);
+    }
+    const callback = await fetch(baseUrl + "/auth/google/callback");
+    assert.strictEqual(callback.status, 200);
+    assert.match(await callback.text(), /google-auth-callback/);
+    const googleScript = await fetch(baseUrl + "/js/google-auth.js");
+    assert.strictEqual(googleScript.status, 200);
+    assert.match(await googleScript.text(), /buildGoogleOAuthOptions/);
+    const googleOptions = await fetch(baseUrl + "/js/google-auth-options.mjs");
+    assert.strictEqual(googleOptions.status, 200);
+    assert.match(await googleOptions.text(), /select_account/);
+    const googleConfig = await fetch(baseUrl + "/api/auth/google/config");
+    assert.strictEqual(googleConfig.status, 503);
+    const googleSession = await fetch(baseUrl + "/api/auth/google/session", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ access_token: "fake-token" }),
     });
-    assert.strictEqual(convRes.status, 201);
-    const conv = await convRes.json();
-    assert.ok(conv.id);
+    assert.strictEqual(googleSession.status, 503);
 
-    // Teste de leitura das mensagens da conversa
-    const getConvRes = await fetch(`${baseUrl}/api/zuka/conversas/${conv.id}`, {
-      headers: sessionHeaders,
+    const shortPassword = await fetch(baseUrl + "/api/cadastrar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: "Teste", email: "short@example.com", senha: "1234567", telefone: "11999999999" }),
     });
-    assert.strictEqual(getConvRes.status, 200);
-    const convDetails = await getConvRes.json();
-    assert.strictEqual(convDetails.conversa.id, conv.id);
+    assert.strictEqual(shortPassword.status, 400);
+    assert.match((await shortPassword.json()).erro, /8 caracteres/);
 
-    // Teste de exclusão da conversa
-    const delRes = await fetch(`${baseUrl}/api/zuka/conversas/${conv.id}`, {
-      method: "DELETE",
-      headers: sessionHeaders,
+    const invalidEmail = await fetch(baseUrl + "/api/cadastrar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: "Teste", email: "email-invalido", senha: "senha-segura-123", telefone: "11999999999" }),
     });
-    assert.strictEqual(delRes.status, 200);
+    assert.strictEqual(invalidEmail.status, 400);
 
-    // Teste de endpoint de estatísticas
-    const statsRes = await fetch(`${baseUrl}/api/desempenho/estatisticas`, {
-      headers: sessionHeaders,
+    const testEmail = `student-${Date.now()}@example.com`;
+    const registration = await fetch(baseUrl + "/api/cadastrar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: "Conta de teste", email: testEmail, senha: "senha-segura-123", telefone: "11999999999",
+        tipo_usuario: "professor", tipo_assinatura: "premium",
+      }),
     });
-    assert.strictEqual(statsRes.status, 200);
-    const stats = await statsRes.json();
-    assert.ok(stats.indicadoresGerais);
-    assert.ok(Array.isArray(stats.desempenhoPorDisciplina));
-    assert.ok(Array.isArray(stats.mapaDificuldades));
+    assert.strictEqual(registration.status, 201);
+    const registered = await databaseService.findUserByEmail(testEmail);
+    assert.strictEqual(registered.tipo_usuario, "aluno");
+    assert.strictEqual(registered.tipo_assinatura, "gratuito");
+
+    const secondEmail = `student-isolation-${Date.now()}@example.com`;
+    const secondRegistration = await fetch(baseUrl + "/api/cadastrar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: "Segundo estudante", email: secondEmail, senha: "senha-segura-456", telefone: "11999999998" }),
+    });
+    assert.strictEqual(secondRegistration.status, 201);
+
+    const loginFor = async (email) => fetch(baseUrl + "/api/login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, senha: "senha-segura-123" }),
+    });
+    const firstLogin = await loginFor(testEmail);
+    assert.strictEqual(firstLogin.status, 200);
+    const firstCookie = firstLogin.headers.get("set-cookie")?.match(/agon\.sid=[^;]+/)?.[0];
+    assert.ok(firstCookie);
+
+    const secondLogin = await fetch(baseUrl + "/api/login", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: secondEmail, senha: "senha-segura-456" }),
+    });
+    assert.strictEqual(secondLogin.status, 200);
+    const secondCookie = secondLogin.headers.get("set-cookie")?.match(/agon\.sid=[^;]+/)?.[0];
+    assert.ok(secondCookie);
+
+    const answered = await fetch(baseUrl + "/api/questoes/responder", {
+      method: "POST", headers: { "Content-Type": "application/json", cookie: firstCookie },
+      body: JSON.stringify({ questionId: "private-question", disciplina: "Português", respostaSelecionada: "A", respostaCorreta: "A" }),
+    });
+    assert.strictEqual(answered.status, 201);
+    const ownHistory = await fetch(baseUrl + "/api/questoes/historico?questionId=private-question", { headers: { cookie: firstCookie } });
+    const otherHistory = await fetch(baseUrl + "/api/questoes/historico?questionId=private-question", { headers: { cookie: secondCookie } });
+    assert.strictEqual((await ownHistory.json()).total, 1);
+    assert.strictEqual((await otherHistory.json()).total, 0);
+
+    const dashboardSummary = await fetch(baseUrl + "/api/dashboard/resumo", { headers: { cookie: firstCookie } });
+    assert.strictEqual(dashboardSummary.status, 200);
+    const dashboardData = await dashboardSummary.json();
+    assert.strictEqual(dashboardData.estudanteId, registered.id);
+    assert.strictEqual(dashboardData.indicadoresGerais.totalRespondidas, 1);
+    assert.equal(dashboardData.atividadesRecentes[0].subtitulo, "Português • Geral");
+
+    const createdConversation = await fetch(baseUrl + "/api/zuka/conversas", {
+      method: "POST", headers: { "Content-Type": "application/json", cookie: firstCookie },
+      body: JSON.stringify({ titulo: "Conversa privada de teste" }),
+    });
+    assert.strictEqual(createdConversation.status, 201);
+    const conversation = await createdConversation.json();
+    const ownConversation = await fetch(baseUrl + `/api/zuka/conversas/${conversation.id}`, { headers: { cookie: firstCookie } });
+    const otherConversation = await fetch(baseUrl + `/api/zuka/conversas/${conversation.id}`, { headers: { cookie: secondCookie } });
+    assert.strictEqual(ownConversation.status, 200);
+    assert.strictEqual(otherConversation.status, 404);
+
+    let limitedLogin;
+    for (let attempt = 0; attempt < 11; attempt += 1) {
+      limitedLogin = await fetch(baseUrl + "/api/login", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "missing@example.com", senha: "senha-incorreta" }),
+      });
+    }
+    assert.strictEqual(limitedLogin.status, 429);
+
+    const auth = await fetch(`${baseUrl}/api/check-auth`);
+    assert.deepStrictEqual(await auth.json(), { autenticado: false });
+    assert.strictEqual(auth.headers.has("set-cookie"), false);
+    assert.strictEqual((await fetch(`${baseUrl}/login`)).status, 200);
+    assert.strictEqual((await fetch(`${baseUrl}/api/supabase/status`)).status, 200);
   } finally {
     server.close();
   }

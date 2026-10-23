@@ -8,14 +8,14 @@ Este documento descreve a arquitetura relacional completa do banco de dados **AG
 
 ### Contexto Atual
 - Na migração inicial (`20261022000001_initial_schema.sql`), `public.usuarios.id` foi definido como `TEXT PRIMARY KEY`.
-- O backend Node.js (`server.js` + `services/database.js`) autentica usuários com `bcryptjs` + `express-session` e acessa o Supabase utilizando a chave administrativa `SUPABASE_SERVICE_ROLE_KEY` (com fallback transparente para `data/local_db.json`).
+- Backend Express usa `SUPABASE_SECRET_KEY` somente no servidor; o armazenamento local e para desenvolvimento/testes, e a producao exige Supabase.
 - As políticas de Row Level Security (RLS) utilizam `auth.uid()::text = user_id`.
 
 ### Estratégia Recomendada e Implementada: **Híbrida (A + Preparação B — Defense in Depth)**
 
 1. **Estratégia A (Operação Imediata — Zero Quebra):**
    - O backend Express (`server.js`) permanece como o gateway oficial utilizando `service_role` e validando a sessão do aluno (`req.session.user`).
-   - O RLS está **100% ativo em todas as 53 tabelas** como **defesa em profundidade (Defense in Depth)**: nenhuma tabela fica exposta caso a `SUPABASE_ANON_KEY` seja utilizada no navegador, exceto o catálogo público de leitura (`concursos`, `bancas`, `disciplinas`, `questoes`, `roadmap_fases`, `depoimentos`).
+   - RLS habilitado nas 75 tabelas definidas pelas migracoes; as APIs tambem validam sessao e propriedade dos registros, porque a chave administrativa ignora RLS.
    - Todas as tabelas novas de dados do aluno mantêm `user_id TEXT NOT NULL REFERENCES public.usuarios(id) ON DELETE CASCADE`, garantindo compatibilidade total com IDs legados (`user_179...`) e UUIDs (`UUID::text`).
 
 2. **Preparação para Estratégia B (Migração Futura para Supabase Auth sem Downtime):**
@@ -113,7 +113,7 @@ erDiagram
 
 ---
 
-## 📚 4. Dicionário Completo de Tabelas (53 Tabelas)
+## 📚 4. Dicionário Completo de Tabelas (75 Tabelas)
 
 ### 4.1. Tabelas Originais (Migrações `001` e `002` — Preservadas e Estendidas)
 
@@ -233,6 +233,7 @@ erDiagram
 | 72 | `depoimentos` | `id UUID` | Depoimentos de aprovados da landing page (`nome_aluno`, `cargo_aprovado`, `cidade_uf`, `texto`, `aprovado_moderacao`). |
 | 73 | `ai_generation_logs` | `id UUID` | Telemetria de consumo e latência da Zuka IA (`user_id`, `funcionalidade`, `modelo`, `tokens_entrada`, `tokens_saida`). |
 | 74 | `ai_rate_limits` | `id UUID` | Controle diário de uso da IA por aluno (`user_id`, `data_referencia`, `mensagens_enviadas`, `simulados_ia_gerados`). |
+| 75 | `agon_sessions` | `session_id TEXT` | Sessao Express compartilhada por instancias serverless (`session_data JSONB`, `expires_at TIMESTAMPTZ`); RLS habilitado, sem acesso a `anon` ou `authenticated`, permissao restrita a `service_role`. |
 
 ---
 

@@ -33,7 +33,7 @@
       },
     };
   </script>
-  <link rel="icon" type="image/png" href="assets/img/AGON png.png" />
+  <link rel="icon" type="image/png" href="/assets/img/agon-light.png" />
   <style>
     .auth-bg-gradient {
       background: linear-gradient(135deg, #1e293b 0%, #23366e 50%, #0f172a 100%);
@@ -63,7 +63,7 @@
       <div>
         <a href="/" class="inline-flex items-center gap-2.5 mb-6 group">
           <div class="w-9 h-9 relative transition-transform group-hover:scale-105">
-            <img src="assets/img/AGON png.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+            <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
           </div>
           <span class="text-2xl font-extrabold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
         </a>
@@ -90,7 +90,6 @@
               name="email"
               required
               placeholder="seu.email@exemplo.com"
-              value="davi.brito@exemplo.com"
               class="w-full py-2.5 pl-10 pr-4 text-xs rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               style="background-color: var(--bg-body); border-color: var(--border-default); color: var(--text-primary);"
             />
@@ -101,9 +100,7 @@
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label for="password" class="block text-xs font-semibold" style="color: var(--text-primary);">Senha</label>
-            <a href="#" onclick="alert('Um link seguro de redefinição foi enviado para o seu e-mail!'); return false;" class="text-[11px] font-semibold text-blue-600 hover:underline">
-              Esqueceu a senha?
-            </a>
+            <span aria-disabled="true" class="text-[11px] font-semibold text-slate-400" title="Recuperação de senha em breve">Esqueceu a senha? — em breve</span>
           </div>
           <div class="relative">
             <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
@@ -161,7 +158,7 @@
       <!-- Google Button -->
       <button
         type="button"
-        onclick="window.location.href='/index'"
+        data-google-auth="true"
         class="w-full py-2.5 px-4 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2.5 hover:bg-slate-50 transition-colors"
         style="border-color: var(--border-default); color: var(--text-primary);"
       >
@@ -206,10 +203,10 @@
           "A constância diária vence o talento sem rotina. Cada questão feita hoje é um passo a menos até a sua posse."
         </h2>
         <div class="pt-2 flex items-center gap-3">
-          <img src="assets/img/perfil.jpg" alt="Davi" class="w-10 h-10 rounded-full border-2 border-white/30 object-cover" />
+          <img src="assets/img/perfil.jpg" alt="Estudante" class="w-10 h-10 rounded-full border-2 border-white/30 object-cover" />
           <div>
-            <p class="text-xs font-bold">Davi Brito</p>
-            <p class="text-[11px] text-blue-200">Polícia Federal • 14 dias seguidos</p>
+            <p class="text-xs font-bold">Estudante</p>
+            <p class="text-[11px] text-blue-200">Sequência de estudos não registrada</p>
           </div>
         </div>
       </div>
@@ -221,11 +218,11 @@
             <i class="fa-solid fa-check-double"></i>
           </div>
           <div>
-            <p class="text-xs font-bold">+85 Questões Hoje</p>
-            <p class="text-[10px] text-blue-200">92% de precisão nos simulados</p>
+            <p class="text-xs font-bold">Questões hoje: não registrado</p>
+            <p class="text-[10px] text-blue-200">Acompanhe seu próprio progresso nos estudos</p>
           </div>
         </div>
-        <span class="text-xs font-bold text-emerald-400">+150 XP</span>
+        <span class="text-xs font-bold text-emerald-400">XP não registrado</span>
       </div>
 
     </div>
@@ -284,7 +281,12 @@
             alertBox.classList.remove('hidden');
 
             setTimeout(() => {
-              window.location.href = '/index';
+              alertBox.className = "p-3.5 rounded-xl text-xs font-medium bg-red-100 text-red-700 border border-red-200";
+          alertBox.textContent = "Falha na conexao. Confira sua internet e tente novamente.";
+          alertBox.classList.remove("hidden");
+          btnSubmit.disabled = false;
+          btnText.innerText = "Acessar Plataforma";
+          btnIcon.className = "fa-solid fa-arrow-right text-xs";
             }, 800);
           } else {
             alertBox.className = 'p-3.5 rounded-xl text-xs flex items-center gap-2.5 font-medium bg-red-100 text-red-600 border border-red-200';
@@ -296,10 +298,16 @@
           }
         } catch (err) {
           // Fallback gracioso
-          window.location.href = '/index';
+          alertBox.className = "p-3.5 rounded-xl text-xs font-medium bg-red-100 text-red-700 border border-red-200";
+          alertBox.textContent = "Falha de conex?o. Confira sua internet e tente novamente.";
+          alertBox.classList.remove("hidden");
+          btnSubmit.disabled = false;
+          btnText.innerText = "Acessar Plataforma";
+          btnIcon.className = "fa-solid fa-arrow-right text-xs";
         }
       });
     });
   </script>
+  <script type="module" src="/js/google-auth.js"></script>
 </body>
 </html>

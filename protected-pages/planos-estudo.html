@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planos de Estudo & Cronograma | Agon — Plataforma de Estudos</title>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Agon Design System Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            agonBlue: '#23366e', agonBg: '#F5F7FB', agonGreen: '#10B981',
+            agonOrange: '#F59E0B', agonPurple: '#8B5CF6', agonCyan: '#06B6D4',
+          },
+          borderRadius: { '2xl': '16px' },
+        },
+      },
+    };
+  </script>
+  <link rel="icon" type="image/png" href="/assets/img/agon-light.png" />
+  <style>
+    .day-column {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: 16px;
+      transition: all 0.2s ease;
+    }
+    .day-column.today {
+      border: 2px solid var(--color-blue);
+      box-shadow: 0 4px 20px -2px rgba(35, 54, 110, 0.12);
+    }
+    .task-item {
+      background-color: var(--bg-body);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+    .task-item:hover {
+      border-color: var(--color-blue);
+    }
+    .task-item.completed {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body class="font-sans h-screen overflow-hidden flex" style="background-color: var(--bg-body); color: var(--text-primary);">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar w-64 flex flex-col h-full z-10 relative shrink-0">
+    <!-- Logo -->
+    <div class="p-6 flex items-center gap-2 cursor-pointer">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 relative">
+          <img src="/assets/img/agon-light.png" alt="AGON" class="w-full h-full object-contain agon-logo-img" />
+        </div>
+        <span class="text-2xl font-bold tracking-wider agon-brand-text" style="color: var(--color-blue);">AGON</span>
+      </a>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <a href="index.html" class="nav-item"><i class="fa-solid fa-house w-5 text-center"></i> Dashboard</a>
+      <a href="estudos.html" class="nav-item"><i class="fa-solid fa-book-open w-5 text-center"></i> Estudos</a>
+      <a href="questoes.html" class="nav-item"><i class="fa-solid fa-circle-question w-5 text-center"></i> Questões</a>
+      <a href="simulados.html" class="nav-item"><i class="fa-solid fa-file-signature w-5 text-center"></i> Simulados</a>
+      <a href="aulas.html" class="nav-item"><i class="fa-solid fa-play w-5 text-center"></i> <span>Aulas</span></a>
+      <a href="planos-estudo.html" class="nav-item active"><i class="fa-solid fa-calendar-days w-5 text-center"></i> <span>Planos de Estudo</span></a>
+      <a href="desempenho.html" class="nav-item"><i class="fa-solid fa-chart-line w-5 text-center"></i> Desempenho</a>
+      <a href="ia-tutor.html" class="nav-item"><i class="fa-solid fa-robot w-5 text-center"></i> <span>IA Tutor</span> <span class="badge badge-green ml-auto">Novo</span></a>
+      <a href="materiais.html" class="nav-item"><i class="fa-solid fa-folder-open w-5 text-center"></i> <span>Materiais</span></a>
+      <a href="comunidade.html" class="nav-item"><i class="fa-solid fa-users w-5 text-center"></i> Comunidade</a>
+      <a href="conquistas.html" class="nav-item"><i class="fa-solid fa-trophy w-5 text-center"></i> Conquistas</a>
+      <a href="configuracoes.html" class="nav-item"><i class="fa-solid fa-gear w-5 text-center"></i> <span>Configurações</span></a>
+    </nav>
+
+    <!-- Upsell -->
+    <div class="p-4 mt-auto">
+      <div class="upsell-card">
+        <i class="fa-solid fa-gem upsell-bg-icon"></i>
+        <div class="flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-gem" style="color: rgba(255,255,255,0.7);"></i>
+          <span class="font-bold text-lg">Agon Premium</span>
+        </div>
+        <p class="text-xs mb-4 leading-relaxed" style="color: rgba(255,255,255,0.8);">Planos de estudo gerados por inteligência artificial para o seu edital.</p>
+        <button class="w-full font-semibold py-2 rounded-xl text-sm hover:opacity-90 transition-opacity" style="background: #fff; color: var(--color-blue);">Ver planos</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+    <aside class="mx-4 mt-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950" role="note"><strong>Integração parcial.</strong> Recomendações de estudo usam seus dados; o cronograma e os indicadores desta tela são demonstrativos e não são salvos.</aside>
+    <!-- TOPBAR -->
+    <header class="topbar h-20 flex items-center justify-between px-8 shrink-0 z-10">
+      <div class="flex items-center gap-4 w-1/2">
+        <button id="mobile-menu-btn" class="lg:hidden" style="color: var(--text-muted);"><i class="fa-solid fa-bars text-xl"></i></button>
+        <div class="relative w-full max-w-lg">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2" style="color: var(--text-muted);"></i>
+          <input type="text" id="global-search-input" placeholder="Buscar planos, matérias ou metas..." class="search-input w-full rounded-full py-2.5 pl-11 pr-4 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center gap-5">
+        <button class="theme-toggle" title="Alternar tema"><i class="fa-solid fa-moon"></i></button>
+        <button id="notif-btn" class="relative" style="color: var(--text-secondary);">
+          <i class="fa-regular fa-bell text-xl"></i>
+          <span class="notif-badge">3</span>
+        </button>
+        <!-- Notification Dropdown -->
+        <div id="notif-dropdown" class="hidden absolute right-16 top-16 w-80 card p-4 z-50" style="border-radius:16px;">
+          <h4 class="font-bold text-sm mb-3" style="color:var(--text-primary);">Notificações</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-calendar-check text-xs"></i></div>
+              <div><p class="text-xs" style="color:var(--text-primary);">Você completou as tarefas de <strong>Hoje</strong> com sucesso!</p><span class="text-xs" style="color:var(--text-muted);">Há 40 min</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 pl-5 cursor-pointer open-profile-modal" style="border-left:1px solid var(--border-default);">
+          <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar" />
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold leading-tight" style="color:var(--text-primary);">Estudante</p>
+            <p class="text-xs" style="color:var(--text-secondary);">Concurseiro</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-xs" style="color:var(--text-muted);"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8 animate-fade-in space-y-6">
+      <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- HEADER & ACTIONS -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs md:text-sm mb-1" style="color: var(--text-muted);">
+              <a href="index.html" class="hover:underline flex items-center gap-1.5"><i class="fa-solid fa-house text-xs"></i> Início</a>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <span style="color: var(--text-primary);" class="font-medium">Planos de Estudo</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight" style="color: var(--text-primary);">Cronograma & Ciclo de Estudos</h1>
+            <p class="text-xs sm:text-sm mt-1" style="color: var(--text-secondary);">Gerencie sua rotina semanal de preparação com metas inteligentes.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button id="open-plan-modal-btn" class="btn-primary text-xs flex items-center gap-2 py-2.5 px-4 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Personalizar Cronograma
+            </button>
+            <button class="btn-secondary text-xs flex items-center gap-2 py-2.5 px-3">
+              <i class="fa-solid fa-arrow-rotate-right"></i> Recalcular Ciclo
+            </button>
+          </div>
+        </div>
+
+        <!-- OVERVIEW KPI METRICS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="card p-5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">Concurso Alvo</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-100 text-blue-600 text-sm">
+                <i class="fa-solid fa-bullseye"></i>
+              </div>
+            </div>
+            <p class="text-xl font-bold" style="color: var(--text-primary);" id="target-exam-display">Polícia Federal (Agente)</p>
+            <p class="text-xs text-blue-600 font-medium"><i class="fa-regular fa-clock mr-1"></i> 118 dias até a prova</p>
+          </div>
+
+          <div class="card p-5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">Meta Semanal de Estudo</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-100 text-emerald-600 text-sm">
+                <i class="fa-solid fa-stopwatch"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <p class="text-xl font-bold" style="color: var(--text-primary);">18h <span class="text-xs font-normal text-slate-500">/ 25h</span></p>
+              <span class="badge badge-green text-[10px]">72%</span>
+            </div>
+            <div class="progress-track h-1.5 w-full mt-2">
+              <div class="progress-fill-green h-1.5" style="width: 72%;"></div>
+            </div>
+          </div>
+
+          <div class="card p-5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">Cobertura do Edital</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-100 text-purple-600 text-sm">
+                <i class="fa-solid fa-chart-pie"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <p class="text-xl font-bold" style="color: var(--text-primary);">58%</p>
+              <span class="text-xs" style="color: var(--text-muted);">(128 de 220 tópicos)</span>
+            </div>
+            <div class="progress-track h-1.5 w-full mt-2">
+              <div class="progress-fill-blue h-1.5" style="width: 58%;"></div>
+            </div>
+          </div>
+
+          <div class="card p-5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold" style="color: var(--text-secondary);">Sequência de Foco</span>
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-100 text-amber-600 text-sm">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+            </div>
+            <p class="text-xl font-bold text-amber-600">14 Dias Seguidos</p>
+            <p class="text-xs" style="color: var(--text-secondary);">Recorde pessoal: 22 dias 🔥</p>
+          </div>
+        </div>
+
+        <!-- WEEKLY SCHEDULE GRID -->
+        <div class="card p-6 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b" style="border-color: var(--border-default);">
+            <div>
+              <h3 class="font-bold text-base" style="color: var(--text-primary);"><i class="fa-solid fa-calendar-week mr-2 text-blue-600"></i> Cronograma Semanal</h3>
+              <p class="text-xs" style="color: var(--text-secondary);">Clique nas tarefas concluídas para registrar seu avanço.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-700">Semana 12 de 24</span>
+              <button class="btn-secondary text-xs py-1.5 px-3"><i class="fa-solid fa-chevron-left"></i></button>
+              <button class="btn-secondary text-xs py-1.5 px-3"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </div>
+
+          <!-- 7 Columns: Seg to Dom -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-3">
+
+            <!-- Segunda -->
+            <div class="day-column p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs" style="color: var(--text-primary);">Segunda</h4>
+                  <span class="text-[10px]" style="color: var(--text-muted);">Ontem</span>
+                </div>
+                <span class="badge badge-green text-[9px]">100%</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item completed p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-blue-600">D. Constitucional</span>
+                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">2h • Art. 5º Direitos Indiv.</p>
+                </div>
+                <div class="task-item completed p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-purple-600">Português</span>
+                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">1h30 • Sintaxe & Regência</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terça -->
+            <div class="day-column p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs" style="color: var(--text-primary);">Terça</h4>
+                  <span class="text-[10px]" style="color: var(--text-muted);">Ontem</span>
+                </div>
+                <span class="badge badge-green text-[9px]">100%</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item completed p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-amber-600">Informática / TI</span>
+                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">2h • Redes e Protocolos</p>
+                </div>
+                <div class="task-item completed p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-blue-600">Questões</span>
+                    <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">30 questões Cebraspe</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quarta (HOJE) -->
+            <div class="day-column today p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs text-blue-600">Quarta</h4>
+                  <span class="badge badge-blue text-[9px]">Hoje</span>
+                </div>
+                <span class="text-[10px] font-bold text-blue-600" id="today-progress">50%</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item p-2.5 space-y-1 cursor-pointer transition-all interactive-task" data-completed="true">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-emerald-600">D. Administrativo</span>
+                    <input type="checkbox" checked class="form-checkbox h-3.5 w-3.5 rounded text-blue-600 cursor-pointer pointer-events-none" />
+                  </div>
+                  <p class="text-[11px] line-through text-slate-400">2h • Atos Administrativos</p>
+                </div>
+                <div class="task-item p-2.5 space-y-1 cursor-pointer transition-all interactive-task" data-completed="false">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-indigo-600">Raciocínio Lógico</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600 cursor-pointer pointer-events-none" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">1h30 • Lógica Proposicional</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quinta -->
+            <div class="day-column p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs" style="color: var(--text-primary);">Quinta</h4>
+                  <span class="text-[10px]" style="color: var(--text-muted);">Amanhã</span>
+                </div>
+                <span class="badge badge-orange text-[9px]">Pendente</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-purple-600">Português</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">2h • Interpretação & Crase</p>
+                </div>
+                <div class="task-item p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-blue-600">D. Constitucional</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">1h30 • Remédios Constit.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sexta -->
+            <div class="day-column p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs" style="color: var(--text-primary);">Sexta</h4>
+                  <span class="text-[10px]" style="color: var(--text-muted);">Em 2 dias</span>
+                </div>
+                <span class="badge badge-orange text-[9px]">Pendente</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-amber-600">Contabilidade</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">2h • Balanço Patrimonial</p>
+                </div>
+                <div class="task-item p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-cyan-600">Revisão Flash</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">1h • Flashcards da semana</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sábado -->
+            <div class="day-column p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs" style="color: var(--text-primary);">Sábado</h4>
+                  <span class="text-[10px]" style="color: var(--text-muted);">Fim de semana</span>
+                </div>
+                <span class="badge badge-blue text-[9px]">Simulado</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-red-600 font-bold">Simulado Geral #08</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">4h • 120 itens Cebraspe</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Domingo -->
+            <div class="day-column p-3.5 space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--border-default);">
+                <div>
+                  <h4 class="font-bold text-xs" style="color: var(--text-primary);">Domingo</h4>
+                  <span class="text-[10px]" style="color: var(--text-muted);">Descanso / Erros</span>
+                </div>
+                <span class="badge badge-purple text-[9px]">Análise</span>
+              </div>
+              <div class="space-y-2">
+                <div class="task-item p-2.5 space-y-1">
+                  <div class="flex items-center justify-between text-xs font-semibold">
+                    <span class="text-purple-600">Caderno de Erros</span>
+                    <input type="checkbox" class="form-checkbox h-3.5 w-3.5 rounded text-blue-600" />
+                  </div>
+                  <p class="text-[11px]" style="color: var(--text-secondary);">2h • Correção do Simulado</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- STUDY CYCLES & DISCIPLINE WEIGHTS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          <!-- Left: Disciplinas do Ciclo (ColSpan 2) -->
+          <div class="lg:col-span-2 card p-6 space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b" style="border-color: var(--border-default);">
+              <div>
+                <h3 class="font-bold text-base" style="color: var(--text-primary);"><i class="fa-solid fa-arrows-spin mr-2 text-indigo-600"></i> Distribuição por Disciplina</h3>
+                <p class="text-xs" style="color: var(--text-secondary);">Pesos baseados na incidência do último edital.</p>
+              </div>
+              <span class="badge badge-blue">6 Matérias Ativas</span>
+            </div>
+
+            <div class="space-y-3">
+              <!-- Item 1 -->
+              <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-100 text-blue-600 text-base font-bold">
+                    DC
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold" style="color: var(--text-primary);">Direito Constitucional</h4>
+                    <p class="text-[11px]" style="color: var(--text-muted);">4h semanais • Peso 2 no concurso</p>
+                  </div>
+                </div>
+                <div class="w-48 hidden sm:block">
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span style="color: var(--text-secondary);">Progresso</span>
+                    <span class="font-bold text-blue-600">65%</span>
+                  </div>
+                  <div class="progress-track h-2 w-full"><div class="progress-fill-blue h-2" style="width:65%;"></div></div>
+                </div>
+                <a href="aulas.html" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
+              </div>
+
+              <!-- Item 2 -->
+              <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-100 text-purple-600 text-base font-bold">
+                    LP
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold" style="color: var(--text-primary);">Língua Portuguesa</h4>
+                    <p class="text-[11px]" style="color: var(--text-muted);">6h semanais • Peso 3 no concurso</p>
+                  </div>
+                </div>
+                <div class="w-48 hidden sm:block">
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span style="color: var(--text-secondary);">Progresso</span>
+                    <span class="font-bold text-purple-600">80%</span>
+                  </div>
+                  <div class="progress-track h-2 w-full"><div class="progress-fill-purple h-2" style="width:80%; background-color:#8B5CF6;"></div></div>
+                </div>
+                <a href="questoes.html" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
+              </div>
+
+              <!-- Item 3 -->
+              <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4" style="border-color: var(--border-default); background-color: var(--bg-body);">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-amber-100 text-amber-600 text-base font-bold">
+                    TI
+                  </div>
+                  <div>
+                    <h4 class="text-xs font-bold" style="color: var(--text-primary);">Informática & Tecnologia da Informação</h4>
+                    <p class="text-[11px]" style="color: var(--text-muted);">6h semanais • Peso 3 no concurso</p>
+                  </div>
+                </div>
+                <div class="w-48 hidden sm:block">
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span style="color: var(--text-secondary);">Progresso</span>
+                    <span class="font-bold text-amber-600">45%</span>
+                  </div>
+                  <div class="progress-track h-2 w-full"><div class="progress-fill-orange h-2" style="width:45%; background-color:#F59E0B;"></div></div>
+                </div>
+                <a href="estudos.html" class="btn-secondary text-xs py-1.5 px-3">Estudar</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Dicas de Produtividade & IA Tutor (ColSpan 1) -->
+          <div class="space-y-4">
+            <div class="card p-5 space-y-3">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                <h4 class="font-bold text-sm" style="color: var(--text-primary);">Sugestão da IA Agon</h4>
+              </div>
+              <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+                Ainda não há dados suficientes para uma sugestão personalizada. Resolva questões para gerar recomendações com base no seu desempenho.
+              </p>
+              <button class="btn-primary w-full text-xs py-2 justify-center" disabled title="Indisponível na demonstração">Otimização automática — em breve</button>
+            </div>
+
+            <div class="card p-5 space-y-3">
+              <h4 class="font-bold text-sm" style="color: var(--text-primary);"><i class="fa-solid fa-clock-rotate-left mr-1.5 text-blue-600"></i> Revisão Espaçada Ativa</h4>
+              <p class="text-xs" style="color: var(--text-secondary);">Você tem 3 revisões programadas para as próximas 24 horas:</p>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between p-2 rounded-lg" style="background-color: var(--bg-body);">
+                  <span>Atos Administrativos (7 dias)</span>
+                  <span class="badge badge-blue text-[9px]">Hoje</span>
+                </div>
+                <div class="flex items-center justify-between p-2 rounded-lg" style="background-color: var(--bg-body);">
+                  <span>Regência Verbal (14 dias)</span>
+                  <span class="badge badge-orange text-[9px]">Amanhã</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: PERSONALIZAR CRONOGRAMA -->
+  <div id="plan-modal" class="modal-overlay">
+    <div class="modal-content max-w-lg">
+      <div class="p-6 border-b flex items-center justify-between" style="border-color:var(--border-default);">
+        <h3 class="font-bold text-lg" style="color:var(--text-primary);">Configurar Cronograma de Estudos</h3>
+        <button id="close-plan-modal-btn" class="text-sm p-2 rounded-lg hover:bg-slate-100" style="color:var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color:var(--text-primary);">Concurso Objetivo</label>
+          <select id="modal-exam-select" class="form-select w-full text-xs p-2.5 rounded-xl" style="background-color:var(--bg-body); border-color:var(--border-default); color:var(--text-primary);">
+            <option value="Polícia Federal (Agente)">Polícia Federal (Agente)</option>
+            <option value="Receita Federal (Auditor)">Receita Federal (Auditor)</option>
+            <option value="TJSP (Escrevente)">TJSP (Escrevente)</option>
+            <option value="INSS (Técnico)">INSS (Técnico)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color:var(--text-primary);">Horas de Estudo por Dia Útil (Seg a Sex)</label>
+          <input type="number" id="modal-hours-input" value="4" min="1" max="14" class="form-input w-full text-xs p-2.5 rounded-xl" style="background-color:var(--bg-body); border-color:var(--border-default); color:var(--text-primary);" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color:var(--text-primary);">Método de Estudo Preferido</label>
+          <select class="form-select w-full text-xs p-2.5 rounded-xl" style="background-color:var(--bg-body); border-color:var(--border-default); color:var(--text-primary);">
+            <option>Ciclo de Estudos Dinâmico (Recomendado)</option>
+            <option>Grade Fixa Semanal</option>
+            <option>Reta Final Pós-Edital (Foco em Questões e Simulados)</option>
+          </select>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-3 border-t" style="border-color:var(--border-default);">
+          <button id="cancel-plan-modal-btn" class="btn-secondary text-xs py-2 px-4">Cancelar</button>
+          <button id="save-plan-modal-btn" class="btn-primary text-xs py-2 px-4">Salvar Alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- PROFILE MODAL -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 pb-0">
+        <h2 class="text-xl font-bold" style="color:var(--text-primary);">Meu Perfil</h2>
+        <button id="modal-close-btn" type="button" class="modal-close-btn w-8 h-8 rounded-lg flex items-center justify-center hover:opacity-80 transition" style="color:var(--text-muted);background:var(--bg-hover);" title="Fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-0 px-6 mt-4" style="border-bottom:1px solid var(--border-light);">
+        <button type="button" class="modal-tab active" data-tab="dados">Dados</button>
+        <button type="button" class="modal-tab" data-tab="conquistas">Conquistas</button>
+        <button type="button" class="modal-tab" data-tab="config">Configurações</button>
+      </div>
+
+      <!-- Tab: Dados -->
+      <div id="tab-dados" class="modal-tab-content active p-6">
+        <div class="flex items-center gap-5 mb-6">
+          <div class="relative">
+            <img src="/assets/img/perfil.jpg" alt="Avatar" class="user-avatar-lg" />
+            <button type="button" class="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-sm hover:opacity-90 transition" style="background:var(--color-blue);color:#fff;" title="Alterar foto">
+              <i class="fa-solid fa-camera"></i>
+            </button>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold user-name-display" style="color:var(--text-primary);">Estudante</h3>
+            <p class="text-sm user-email-display" style="color:var(--text-secondary);">E-mail da conta</p>
+            <span class="badge badge-blue text-[10px] mt-1">Concurseiro Elite</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Perfil</span><span class="font-medium" style="color:var(--text-primary);">Concurseiro</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Cadastro</span><span class="font-medium" style="color:var(--text-primary);">15/01/2025</span></div>
+          <div class="flex justify-between text-sm"><span style="color:var(--text-muted);">Plano</span><span class="font-medium" style="color:var(--color-blue);">Premium</span></div>
+        </div>
+
+        <div class="pt-6 border-t mt-6 space-y-3" style="border-color:var(--border-light);">
+          <a href="configuracoes.html" class="btn-primary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-user-pen"></i>
+            <span>Editar perfil</span>
+          </a>
+          <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Sair da conta</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab: Conquistas -->
+      <div id="tab-conquistas" class="modal-tab-content p-6">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-sm" style="background:linear-gradient(135deg,var(--color-blue),var(--color-cyan));color:#fff;">
+            <i class="fa-solid fa-medal"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold" style="color:var(--text-primary);">Nível 12 — Concurseiro Dedicado</p>
+            <p class="text-xs mb-1" style="color:var(--text-muted);">1.800 / 2.500 XP</p>
+            <div class="progress-track h-2"><div class="progress-fill-gradient h-2" style="width:72%;"></div></div>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-3" style="color:var(--text-primary);">Badges Conquistados</p>
+        <div class="grid grid-cols-4 gap-3 mb-5">
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-orange-light);color:var(--color-orange);"><i class="fa-solid fa-fire"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Foco Total</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-blue-light);color:var(--color-blue);"><i class="fa-solid fa-book"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Estudioso</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--color-green-light);color:var(--color-green);"><i class="fa-solid fa-check-double"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-primary);">Centurião</span>
+          </div>
+          <div class="flex flex-col items-center text-center gap-1 opacity-40 grayscale">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background:var(--bg-hover);color:var(--text-muted);"><i class="fa-solid fa-crown"></i></div>
+            <span class="text-xs font-medium" style="color:var(--text-muted);">Mestre</span>
+          </div>
+        </div>
+        <p class="text-sm font-semibold mb-2" style="color:var(--text-primary);">Sequência de Estudos</p>
+        <div class="flex items-center gap-2">
+          <span class="text-2xl font-bold" style="color:var(--color-orange);">12</span>
+          <span class="text-sm" style="color:var(--text-secondary);">dias consecutivos</span>
+          <span class="text-xs ml-auto" style="color:var(--text-muted);">Recorde: Nao registrado</span>
+        </div>
+        <div class="pt-5 border-t mt-5">
+          <a href="conquistas.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+            <i class="fa-solid fa-trophy"></i>
+            <span>Ver todas as conquistas</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tab: Configurações -->
+      <div id="tab-config" class="modal-tab-content p-6">
+        <div class="space-y-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Tema Escuro</p>
+              <p class="text-xs" style="color:var(--text-muted);">Alternar entre tema claro e escuro</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="theme-switch" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Notificações por e-mail</p>
+              <p class="text-xs" style="color:var(--text-muted);">Receber atualizações por e-mail</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium" style="color:var(--text-primary);">Lembrete de estudos</p>
+              <p class="text-xs" style="color:var(--text-muted);">Lembrete diário às 19:00</p>
+            </div>
+            <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <hr style="border-color:var(--border-light);" />
+          <div>
+            <p class="text-sm font-medium mb-2" style="color:var(--text-primary);">Assinatura</p>
+            <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--color-blue-light);">
+              <div>
+                <span class="text-sm font-bold" style="color:var(--color-blue);">Agon Premium</span>
+                <p class="text-xs" style="color:var(--text-secondary);">Data de renovacao nao informada</p>
+              </div>
+              <button type="button" class="text-xs font-medium px-3 py-1 rounded-lg" style="background:var(--color-blue);color:#fff;">Gerenciar</button>
+            </div>
+          </div>
+          <div class="pt-2 space-y-3">
+            <a href="configuracoes.html" class="btn-secondary w-full justify-center text-sm flex items-center gap-2">
+              <i class="fa-solid fa-gear"></i>
+              <span>Configurações completas</span>
+            </a>
+            <button type="button" class="btn-logout w-full justify-center text-sm flex items-center gap-2 py-2.5 px-4 rounded-xl border transition-all text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold cursor-pointer">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              <span>Sair da conta</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="js/script.js"></script>
+
+  <!-- Interactive Schedule Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Interactive tasks in "Hoje"
+      const interactiveTasks = document.querySelectorAll('.interactive-task');
+      const todayProgress = document.getElementById('today-progress');
+
+      interactiveTasks.forEach(task => {
+        task.addEventListener('click', () => {
+          const checkbox = task.querySelector('input[type="checkbox"]');
+          const isCompleted = task.getAttribute('data-completed') === 'true';
+          const nextState = !isCompleted;
+
+          task.setAttribute('data-completed', nextState ? 'true' : 'false');
+          checkbox.checked = nextState;
+
+          const textP = task.querySelector('p');
+          if (nextState) {
+            textP.classList.add('line-through', 'text-slate-400');
+            textP.style.color = '';
+          } else {
+            textP.classList.remove('line-through', 'text-slate-400');
+            textP.style.color = 'var(--text-secondary)';
+          }
+
+          // recalculate today's percentage
+          let total = interactiveTasks.length;
+          let done = document.querySelectorAll('.interactive-task[data-completed="true"]').length;
+          let pct = Math.round((done / total) * 100);
+          if (todayProgress) todayProgress.innerText = pct + '%';
+        });
+      });
+
+      // Plan modal open/close
+      const openBtn = document.getElementById('open-plan-modal-btn');
+      const closeBtn = document.getElementById('close-plan-modal-btn');
+      const cancelBtn = document.getElementById('cancel-plan-modal-btn');
+      const saveBtn = document.getElementById('save-plan-modal-btn');
+      const modal = document.getElementById('plan-modal');
+      const examSelect = document.getElementById('modal-exam-select');
+      const targetDisplay = document.getElementById('target-exam-display');
+
+      if (openBtn && modal) {
+        openBtn.addEventListener('click', () => modal.classList.add('active'));
+      }
+      if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+      }
+      if (cancelBtn && modal) {
+        cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+      }
+      if (saveBtn && modal) {
+        saveBtn.addEventListener('click', () => {
+          if (targetDisplay && examSelect) {
+            targetDisplay.innerText = examSelect.value;
+          }
+          modal.classList.remove('active');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

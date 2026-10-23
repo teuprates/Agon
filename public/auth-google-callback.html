@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Entrando com Google | Agon</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+  <main class="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-lg">
+    <h1 class="mb-3 text-xl font-bold text-slate-900">Autenticando sua conta</h1>
+    <p id="google-auth-message" class="text-sm text-slate-600">Aguarde enquanto confirmamos sua identidade com o Google.</p>
+    <div id="google-auth-error" class="hidden mt-5">
+      <p id="google-auth-error-text" class="mb-4 text-sm text-red-700"></p>
+      <a href="/login" class="font-semibold text-blue-700">Voltar ao login</a>
+    </div>
+  </main>
+  <script type="module" src="/js/google-auth-callback.js"></script>
+</body>
+</html>

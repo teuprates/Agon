@@ -44,18 +44,18 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateThemeLogos(theme) {
     const isDark = theme === 'dark';
 
-    // 1. Swap all logo images between dark (agon-white.png) and light (AGON png.png)
+    // 1. Swap the logo image for dark and light themes.
     const logoImgs = document.querySelectorAll('img[alt="AGON"], img[alt="Agon"], img[alt="Logo"], .agon-logo-img');
     logoImgs.forEach(img => {
       const currentSrc = img.getAttribute('src');
       if (!currentSrc) return;
       if (isDark) {
-        if (currentSrc.includes('AGON%20png.png') || currentSrc.includes('AGON png.png')) {
-          img.src = currentSrc.replace(/AGON(%20|\s)png\.png/, 'agon-white.png');
+        if (currentSrc.includes('agon-light.png')) {
+          img.src = currentSrc.replace('agon-light.png', 'agon-white.png');
         }
       } else {
         if (currentSrc.includes('agon-white.png')) {
-          img.src = currentSrc.replace('agon-white.png', 'AGON png.png');
+          img.src = currentSrc.replace('agon-white.png', 'agon-light.png');
         }
       }
     });
@@ -84,6 +84,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ─── Sidebar Active State ─────────────────────────────────
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const pageKey = currentPage.replace('.html', '');
+  const noticeCopy = {
+    index: 'Demonstracao: questoes e acertos usam seus dados. Horas, metas e historico semanal ainda nao estao integrados.',
+    dashboard: 'Demonstracao: questoes e acertos usam seus dados. Horas, metas e historico semanal ainda nao estao integrados.',
+    questoes: 'Banco demonstrativo: estas questoes sao exemplos e nao representam uma fonte oficial.',
+    desempenho: 'Demonstracao: questoes e acertos usam seus dados. Sequencia, horas, simulados e comparativos ainda nao estao integrados.',
+    'planos-estudo': 'Demonstracao: as recomendacoes consideram sua atividade; a agenda exibida pode conter exemplos.',
+    aulas: 'Prototipo: conteudo das aulas e progresso ainda nao sao salvos na sua conta.',
+    materiais: 'Prototipo: materiais e downloads ainda nao estao ligados a um catalogo gerenciado.',
+    estudos: 'Prototipo: sessoes e progresso de estudo ainda nao sao salvos na sua conta.',
+    simulados: 'Prototipo: simulados sao exemplos e os resultados ainda nao sao salvos.',
+    comunidade: 'Prototipo: publicacoes e classificacoes sao exemplos, nao dados de uma comunidade ativa.',
+    conquistas: 'Prototipo: conquistas e classificacoes sao exemplos, nao calculados para a sua conta.',
+    configuracoes: 'Prototipo: alteracoes de perfil, preferencias e pagamentos nao sao persistidas.',
+    'em-breve': 'Prototipo: estes recursos ainda nao estao disponiveis.'
+  }[pageKey];
+  if (noticeCopy) {
+    const main = document.querySelector('main');
+    if (main) {
+      const notice = document.createElement('div');
+      notice.setAttribute('role', 'status');
+      notice.textContent = noticeCopy;
+      notice.style.cssText = 'margin: 12px 20px; padding: 10px 14px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: 12px;';
+      main.prepend(notice);
+    }
+  }
+
   document.querySelectorAll('.nav-item').forEach(item => {
     const href = item.getAttribute('href');
     if (href === currentPage || (currentPage === '' && href === 'index.html')) {
@@ -191,16 +218,31 @@ document.addEventListener('DOMContentLoaded', function () {
   fetch('/api/check-auth')
     .then(r => r.json())
     .then(data => {
-      const user = data.usuario || data.usuarioConvidado;
+      const user = data.usuario;
       if (user && user.nome) {
         document.querySelectorAll('.user-name-display, .student-name-display').forEach(el => {
           el.textContent = user.nome;
         });
+        document.querySelectorAll('.open-profile-modal').forEach(container => {
+          const displayName = container.querySelector('p');
+          if (displayName) displayName.textContent = user.nome;
+        });
+        const composer = document.getElementById('composer-textarea');
+        if (composer) composer.placeholder = `No que voce esta pensando, ${user.nome}? Compartilhe uma duvida, dica ou material...`;
         if (user.email) {
           document.querySelectorAll('.user-email-display').forEach(el => {
             el.textContent = user.email;
           });
         }
+        const initials = user.nome.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase()
+          .replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[character]);
+        const avatarUrl = typeof user.avatar_url === 'string' && /^https:\/\//i.test(user.avatar_url) && !user.avatar_url.includes('/assets/img/perfil.jpg')
+          ? user.avatar_url
+          : `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="48" fill="#23366e"/><text x="50%" y="53%" dominant-baseline="middle" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#fff">${initials}</text></svg>`)}`;
+        document.querySelectorAll('img[src*="/assets/img/perfil.jpg"]').forEach(img => {
+          img.src = avatarUrl;
+          img.alt = `Avatar de ${user.nome}`;
+        });
       }
     })
     .catch(() => {});

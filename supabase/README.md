@@ -1,12 +1,12 @@
 # 🚀 Guia de Integração e Migrações Supabase — AGON
 
-Este diretório contém a arquitetura completa de banco de dados PostgreSQL + Supabase da plataforma **AGON**, incluindo **14 migrações sequenciais idempotentes**, **seeds de catálogo e demonstração**, **views analíticas**, **funções RPC**, **políticas RLS** e **buckets de Storage**, cobrindo todas as **16 páginas** de `public/`.
+Este diretório contém a arquitetura completa de banco de dados PostgreSQL + Supabase da plataforma **AGON**, incluindo **15 migracoes sequenciais idempotentes**, **seeds de catálogo e demonstração**, **views analíticas**, **funções RPC**, **políticas RLS** e **buckets de Storage**, cobrindo todas as **16 páginas** de `public/`.
 
 ---
 
 ## 📂 Documentação Técnica do Banco
 
-- **[`SCHEMA.md`](./SCHEMA.md)**: Diagrama Entidade-Relacionamento (Mermaid ER), estratégia de Identidade/RLS, ambiguidades resolvidas e dicionário completo das **53 tabelas**, **6 views**, **5 funções RPC** e **4 buckets de Storage**.
+- **[`SCHEMA.md`](./SCHEMA.md)**: Diagrama Entidade-Relacionamento (Mermaid ER), estratégia de Identidade/RLS, ambiguidades resolvidas e dicionário completo das **75 tabelas**, **6 views**, **5 funções RPC** e **4 buckets de Storage**.
 - **[`MAPA_PAGINAS.md`](./MAPA_PAGINAS.md)**: Mapeamento completo página por página (`public/*.html`) → tabelas/views utilizadas → endpoints existentes e sugeridos.
 
 ---
@@ -48,6 +48,7 @@ Execute os arquivos de `supabase/migrations/` em ordem numérica no **SQL Editor
 | **12** | [`20261022000012_views_funcoes_rpc.sql`](./migrations/20261022000012_views_funcoes_rpc.sql) | 6 Views analíticas + 5 Funções RPC (Nota Cebraspe, XP/Nível, Streak, Conquistas, SuperMemo SM-2) |
 | **13** | [`20261022000013_rls_policies_completas.sql`](./migrations/20261022000013_rls_policies_completas.sql) | Habilitação de RLS e políticas de segurança para todas as tabelas novas + trigger Auth |
 | **14** | [`20261022000014_storage_buckets_policies.sql`](./migrations/20261022000014_storage_buckets_policies.sql) | Buckets de Storage (`avatars`, `materiais`, `aulas-anexos`, `comunidade-anexos`) e políticas |
+| **15** | [`20261022000015_agon_sessions.sql`](./migrations/20261022000015_agon_sessions.sql) | Sessoes Express persistentes na Vercel |
 
 ---
 
